@@ -26,31 +26,38 @@ bool supportsAsyncReturn(DartType type) =>
         type.element.name == 'Future' &&
         type.element.library.uri.toString() == 'dart:async');
 
-// Shared class, mixin and named application view, preserving resolved nodes.
+// Shared class, enum, mixin and named application view, preserving resolved nodes.
 extension ProgramTypeDeclaration on CompilationUnitMember {
   Token get typeName => switch (this) {
     ClassDeclaration c => c.namePart.typeName,
+    EnumDeclaration e => e.namePart.typeName,
     ClassTypeAlias c => c.name,
     MixinDeclaration m => m.name,
     _ => throw StateError('Not a class/mixin'),
   };
   TypeParameterList? get typeParameters => switch (this) {
     ClassDeclaration c => c.namePart.typeParameters,
+    EnumDeclaration e => e.namePart.typeParameters,
     ClassTypeAlias c => c.typeParameters,
     GenericTypeAlias a => a.typeParameters,
     FunctionTypeAlias a => a.typeParameters,
     MixinDeclaration m => m.typeParameters,
     _ => null,
   };
-  Iterable<ClassMember> get members =>
-      this is ClassTypeAlias ? const [] : body.members;
-  ClassBody get body => switch (this) {
+  Iterable<ClassMember> get members => this is ClassTypeAlias
+      ? const []
+      : this is EnumDeclaration
+      ? (this as EnumDeclaration).body.members
+      : (body as ClassBody).members;
+  AstNode get body => switch (this) {
+    EnumDeclaration e => e.body,
     ClassDeclaration c => c.body,
     MixinDeclaration m => m.body,
     _ => throw StateError('Not a class/mixin'),
   };
   InterfaceElement get typeElement => switch (this) {
     ClassDeclaration c => c.declaredFragment!.element,
+    EnumDeclaration e => e.declaredFragment!.element,
     ClassTypeAlias c => c.declaredFragment!.element,
     MixinDeclaration m => m.declaredFragment!.element,
     _ => throw StateError('Not a class/mixin'),
@@ -60,6 +67,7 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
       : null;
   WithClause? get withClause => switch (this) {
     ClassDeclaration c => c.withClause,
+    EnumDeclaration e => e.withClause,
     ClassTypeAlias c => c.withClause,
     _ => null,
   };
@@ -67,6 +75,7 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
       this is MixinDeclaration ? (this as MixinDeclaration).onClause : null;
   ImplementsClause? get implementsClause => switch (this) {
     ClassDeclaration c => c.implementsClause,
+    EnumDeclaration e => e.implementsClause,
     ClassTypeAlias c => c.implementsClause,
     MixinDeclaration m => m.implementsClause,
     _ => null,
@@ -336,6 +345,19 @@ class _References extends RecursiveAstVisitor<void> {
       return;
     }
     super.visitIndexExpression(node);
+  }
+
+  @override
+  void visitEnumConstantDeclaration(EnumConstantDeclaration node) {
+    super.visitEnumConstantDeclaration(node);
+    // The selector identifier itself may be unresolved; the enum constant
+    // carries the resolved constructor, including generic instantiation.
+    final selector = node.arguments?.constructorSelector?.name;
+    final symbol = classes?.memberSymbols[node.constructorElement?.baseElement];
+    if (selector != null && symbol != null) {
+      edits.removeWhere((edit) => edit.start == selector.offset);
+      replace(selector.offset, selector.end, symbol);
+    }
   }
 
   @override
@@ -743,6 +765,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (declaration is! FunctionDeclaration &&
           declaration is! ClassDeclaration &&
           declaration is! ClassTypeAlias &&
+          declaration is! EnumDeclaration &&
           declaration is! GenericTypeAlias &&
           declaration is! FunctionTypeAlias &&
           declaration is! MixinDeclaration &&
@@ -917,6 +940,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         (node) =>
             node is ClassDeclaration ||
             node is ClassTypeAlias ||
+            node is EnumDeclaration ||
             node is MixinDeclaration,
       )) {
         classes.register(library, declaration);

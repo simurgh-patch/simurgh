@@ -258,7 +258,9 @@ class _Classes {
       final supertype = owner.element.supertype?.element;
       if (supertype != null &&
           !(supertype.library.uri.toString() == 'dart:core' &&
-              supertype.name == 'Object') &&
+              (supertype.name == 'Object' ||
+                  (owner.node is EnumDeclaration &&
+                      supertype.name == 'Enum'))) &&
           !declarations.containsKey(supertype) &&
           !sdkSuperclass(supertype)) {
         _reject('Superclass must be a supported program or public SDK class');
@@ -286,6 +288,19 @@ class _Classes {
         if (!declarations.containsKey(interface.element) &&
             !sdkInterface(interface.element)) {
           _reject('Interfaces must be supported program or public SDK classes');
+        }
+      }
+      if (owner.node is EnumDeclaration) {
+        for (final constant in (owner.node as EnumDeclaration).body.constants) {
+          if (constant.metadata.isNotEmpty)
+            _reject('Annotated enum constants are not implemented');
+          final field = constant.declaredFragment!.element;
+          final name = _privateMember(
+            owner.library.ownerUri,
+            constant.name.lexeme,
+          );
+          memberSymbols[field] = name;
+          if (field.getter != null) memberSymbols[field.getter!] = name;
         }
       }
       for (final member in owner.node.members) {
@@ -697,6 +712,22 @@ class _Classes {
           '${owner.symbol}${classArguments.isEmpty ? '' : '<${classArguments.join(', ')}>'}';
       final classBody = StringBuffer();
       final lifted = StringBuffer();
+      if (node is EnumDeclaration) {
+        classBody.writeln(
+          node.body.constants
+              .map((constant) => text(owner, constant))
+              .join(', '),
+        );
+        classBody.writeln(';');
+        for (final constant in node.body.constants) {
+          if (constant.name.lexeme.startsWith('_')) {
+            final field = constant.declaredFragment!.element;
+            classBody.writeln(
+              'static const ${memberSymbols[field]} = ${constant.name.lexeme};',
+            );
+          }
+        }
+      }
       for (final member in node.members) {
         if (member is MethodDeclaration) {
           final element = member.declaredFragment!.element;

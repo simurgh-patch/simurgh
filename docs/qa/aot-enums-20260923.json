@@ -1,0 +1,216 @@
+{
+  "recorded_at": "2026-09-23 15:57 +08:00",
+  "scope": "Plain/enhanced enums, private constants and constructors, default/custom/super display, shape relinking and AOT/bytecode boundaries on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073357Z-uhmmjprm/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073429Z-6kpd7_ic/build.json",
+    "enums": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073502Z-jhp7ciye/build.json",
+    "enum_custom": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073535Z-yy7t8fkq/build.json",
+    "enum_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073613Z-q0m8o_c4/build.json",
+    "enum_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073645Z-__l9e5fc/build.json",
+    "records": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073718Z-5anyibon/build.json",
+    "record_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073750Z-hogztsfr/build.json",
+    "record_shapes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073823Z-guzzbta5/build.json",
+    "record_dynamic": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073856Z-ubhdutpw/build.json",
+    "record_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073932Z-_flvhvw5/build.json",
+    "typedefs": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074003Z-5_m5valx/build.json",
+    "typedef_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074035Z-59_u79wa/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074107Z-ra1h3oe4/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074142Z-20a0jftk/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074221Z-1tk0udt4/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074300Z-mb5dkjyd/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074335Z-pr89ksat/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074412Z-ra_1b7bs/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074447Z-4u8ggyux/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074520Z-k71pwzsa/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074557Z-406_f4m1/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T073357Z-uhmmjprm/native-checks/report.json",
+    "verification": "output/m1-enums-verification.log",
+    "native_log": "output/m1-enums-native.log",
+    "compiler_analysis": "output/enum-inspection/final-analysis.log",
+    "format": "output/enum-inspection/final-format.log",
+    "input_hashes": "output/m1-enums-start-hashes.json",
+    "process_results": "output/m1-enums-process-results.json"
+  },
+  "compiler_sha256": "7dba21d776d7e555fd603ea1aa43f9f0750e775e957f8078bdcee257d3134094",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667",
+      "pkg/front_end/lib/src/source/source_enum_builder.dart": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 135,
+    "flutter_widget_tests": 7,
+    "native_checks": 168,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "enums": {
+      "baseline": "ready:Status.ready:Status\nready:0:Status.ready|running:1:Status.running|_hidden:2:Status._hidden\ntrue:hidden\n3:x:0:int:1:String:1\ngc:ready:Status.ready:Status\nBoxed<int>:Boxed.number:text\n",
+      "patched": "fresh:Added.fresh:Added\nready:0:Status.ready|running:1:Status.running|_hidden:2:Status._hidden\ntrue:hidden\n3:x:patched:0:int:patched:1:String:10\ngc:fresh:Added.fresh:Added\nBoxed<int>:Boxed.number:text\n"
+    },
+    "enum_custom": {
+      "baseline": "one:mixed:0:first:custom:Custom.first:3:_second:custom:Custom._second:7\ntrue:user-name:first\n",
+      "patched": "one:changed:0:first:updated:Custom.first:3:_second:updated:Custom._second:7\ntrue:user-name:first\n"
+    },
+    "enum_relink": {
+      "baseline": "running:1:State.running:5:running:3\nready:0:State.ready|running:1:State.running\ngc:running:1:State.running\n",
+      "patched": "_done:0:State._done:13:done:8\n_done:0:State._done|ready:1:State.ready\ngc:_done:0:State._done\n"
+    },
+    "enum_multilang": {
+      "baseline": "_hidden:1:Legacy._hidden:Legacy\n_hidden:1:Legacy._hidden:Legacy\n",
+      "patched": "_private:1:Added._private:Added\n_hidden:1:Legacy._hidden:Legacy\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "enums": {
+      "baseline": {
+        "source_sha256": "bd711054402368c18e9d45701773ccdc0b62ad5da3459d998083669b8d79896b",
+        "executable_sha256": "ac06e3ba626e425c7aba1956293f04647e8e383689bb8e8a2f49df50411966e9",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "b1d0f22f2eaf305797739fcf689b82e93a2e49a8f31ba775648a60d136930fde"
+      },
+      "patch": {
+        "source_sha256": "b399d5e0b262ca565530bc75975388a169df807a606a025de486a4d25a881216",
+        "executable_sha256": "be0a5b16e6b10b0d73a4c37dbd5e75b01b39ab3027f757936462bd8f41286f2d",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "2bf6a65434bdf629eedccbc5f994082eb1cf48c882c6d71318b3a917d1c9468c"
+      }
+    },
+    "enum_custom": {
+      "baseline": {
+        "source_sha256": "ae1ae382b759d9b8badc61bf109c60b736d99363d24876349274a8d865a8526f",
+        "executable_sha256": "6c4c20f7127cb7887a9602bd400dd47fc394bbeb902434125146b2fc64afda49",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "43f7a4a09f07b4de58b37106a623585e43c3383e01d1a1e4a9eab4c9ac52c70c"
+      },
+      "patch": {
+        "source_sha256": "8655f17ee0b24c1d78b7538c233b5feac5024259b0d990a365ef99689c2b22f0",
+        "executable_sha256": "6afc38be61102f309956a7e1bad283acb35dc81cddc80d4513af4b151616f8af",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "4bd06ed686e15c22c85dfab11a0b0259cefe1277cff419e4e6c29937b795ffe0"
+      }
+    },
+    "enum_relink": {
+      "baseline": {
+        "source_sha256": "4395a8489267056f1eb4d67b630a1437f069ca686f7ede3541b47aebcbe449fc",
+        "executable_sha256": "0593ae3648ce31da994e3d74ade67c06741d95897419612a53bf9d28815f4433",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "aefe177848a8fed9317bfa14b93fd771fff1874821e1ddb833d7a1c64ec3245c"
+      },
+      "patch": {
+        "source_sha256": "3bf4bf6f37e39e74138f4523af95a333aa708bf88f4f10cca66adb80f8e39b72",
+        "executable_sha256": "d048696e0f727d96d4ea5499128ea277abe77bd68277ad45363e8eef00bc0c36",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "acce189fb1c20c472ec8cf1d3a5fde878cc732b1887749c4c988d4d39c5ef5f7"
+      }
+    },
+    "enum_multilang": {
+      "baseline": {
+        "source_sha256": "ce6f0846bbcd52c6a2490a86bb1ef7666b6b726036ade436d91605626107174d",
+        "executable_sha256": "ca26585f1d1f873e4e5ee695dbedef5f56496f516ae57b1761df0910a1561983",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "561832e1a648d350cb798bd5bd3e6148de7365941f36b73f3e6c203001c41fbc"
+      },
+      "patch": {
+        "source_sha256": "35f30b16e5584207d668df3b19e9192e8f6b39e802f4d4f001cf9a7bb95b4e71",
+        "executable_sha256": "9dcdcd9b63c8b5988b7d97805268787ed5379a1ad74921a4d97f867e1504da80",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "1732183687bf55f56f1da777b471ed314617357d8debae4174853129ef9f11dc"
+      }
+    }
+  },
+  "gc": {
+    "enum_scavenges": 16,
+    "enum_relink_scavenges": 16
+  },
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0"
+  },
+  "patch_kernel_sha256": "216bc4eadcb44107ee2361066b97ccf352371be755dcfab09f1088675ae082f7",
+  "display_name_guards": true,
+  "supplementary_constructors": {
+    "run": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T074204Z-thps28k2",
+    "compiler_sha256": "7dba21d776d7e555fd603ea1aa43f9f0750e775e957f8078bdcee257d3134094",
+    "identity": {
+      "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+      "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+      "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+      "runtime_patchset_sha256": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+      "runtime_source_files": {
+        "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+        "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+        "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667",
+        "pkg/front_end/lib/src/source/source_enum_builder.dart": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+      }
+    },
+    "source_aot_matches": true,
+    "installed": [
+      "Choice.read"
+    ],
+    "replaced_classes": [],
+    "artifacts_verified": true,
+    "sources": {
+      "baseline": {
+        "sha256": "1c67aa35d998c627ccef3c35647865e380074d3f60b04d947baf1b67555a9d76",
+        "text": "enum Choice<T> {\n  first<int>._(3), second<String>.named('x');\n  const Choice._(this.value);\n  const Choice.named(T value) : this._(value);\n  factory Choice.cached() => Choice.first as Choice<T>;\n  final T value;\n  String read() => '$value';\n}\nenum _Hidden { _one }\nvoid main() {\n  print('${Choice<int>.cached().read()}:${Choice.second.read()}:${Choice.second.runtimeType}');\n  print('${_Hidden._one.name}:${_Hidden._one}:${_Hidden._one.runtimeType}');\n}\n",
+        "reference_binary_sha256": "907b23227a331cc0424283619d5c9f43ab1046a7ec654693ab10c5508b8eaa71"
+      },
+      "patch": {
+        "sha256": "84f851d2377f1f38ef2becd2b3c17fc920c88262a72b7325b48817abae38fe54",
+        "text": "enum Choice<T> {\n  first<int>._(3), second<String>.named('x');\n  const Choice._(this.value);\n  const Choice.named(T value) : this._(value);\n  factory Choice.cached() => Choice.first as Choice<T>;\n  final T value;\n  String read() => 'patched:$value';\n}\nenum _Hidden { _one }\nvoid main() {\n  print('${Choice<int>.cached().read()}:${Choice.second.read()}:${Choice.second.runtimeType}');\n  print('${_Hidden._one.name}:${_Hidden._one}:${_Hidden._one.runtimeType}');\n}\n",
+        "reference_binary_sha256": "41f2ab6df172f0dc2be6717157bcf7635b3ef27dd48d0b7826b787a6ce72de52"
+      }
+    },
+    "outputs": {
+      "baseline": "3:x:Choice<String>\n_one:_Hidden._one:_Hidden\n",
+      "patch": "patched:3:patched:x:Choice<String>\n_one:_Hidden._one:_Hidden\n"
+    },
+    "scope": "Supplementary generic enum private/redirecting constructors, cached factory and private enum type names; not counted in main native check total",
+    "source_archives_verified": true
+  },
+  "notes": [
+    "Retain actual enum declarations, constructors, constants and value names; generated public const aliases preserve private references across generated libraries.",
+    "Use resolved enum constructor elements to rename private constructor selectors, including enhanced generic declarations.",
+    "A pinned CFE patch decodes only valid source-linker names in marked generated libraries inside synthesized _enumToString. Custom and inherited toString, super dispatch, user name getters and EnumName keep native semantics.",
+    "Native display probes verify valid generated names, unmarked libraries and malformed encodings. Original-source AOT is a separate oracle.",
+    "Enum value additions/removals/reordering and constructor arguments relink dependent classes, storage and typed functions; Enum-typed AOT consumers stay retained.",
+    "Enum classes are excluded from the extendable contract. Original source privacy, invalid type arguments, forbidden inheritance/construction/mutable fields remain rejected; metadata is still rejected.",
+    "The initial analyzer lookup call used the old positional API; corrected to the pinned named-parameter API before successful generation.",
+    "The initial private enum constructor selector was not resolved on its identifier and failed Kernel compilation; it now uses the constant constructorElement and native regression passes.",
+    "Applying the entire extended patch set to already-patched sources was refused as partial application. Only the new patch was applied after git apply --check; exact patch-set verification and the provenance-preserving host rebuild then passed.",
+    "An early display override prototype was replaced before freezing by the frontend synthesis patch, retaining native custom/mixin/super behavior.",
+    "Historical full native suite was not rerun; this report covers twenty-two rebuilt groups."
+  ],
+  "limitations": [
+    "Enum metadata and other unsupported declaration forms remain outside this acceptance.",
+    "Full Flutter/mobile cold start, signing/rollback and physical-device performance remain incomplete. Mobile engines/frontends predate this patch; no mobile acceptance is claimed."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

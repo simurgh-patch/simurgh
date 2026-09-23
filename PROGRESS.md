@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-23 15:13 +08:00
+最后实质更新：2026-09-23 15:57 +08:00
 
 ## 当前状态
 
@@ -9,6 +9,8 @@
 M0 基础工具已落地；用户已授权忽略空间检查，完整源码与依赖已同步成功，用户已安装Metal，宿主/Android/iOS Release源码编译已成功，独立样例双端Release接入编译和包内引擎标识核对已通过，尚未完成真机验证；M1已开始，M2–M7未开始。已实现宿主ARM64受限AOT/字节码替换实验，完整Dart/Flutter补丁编译器、移动端混合运行时、更新器、服务和控制台未完成。所有实现和独立样例均在 simurgh 项目；不修改 OA 管理端或 oa-app。
 
 ## 已实现
+
+- 最新M1枚举：真实枚举声明与常量身份、增强泛型/成员/mixin/interface及私有值别名；CFE按生成库/编码边界恢复默认显示，保留custom/mixin/super行为。值集合变化重连类型与存储。158项普通测试、168项专项原生检查及22组当前指纹/源码/制品核对通过，独立原始AOT、GC与实际3.0/3.4/3.12 Kernel已验。证据docs/qa/aot-enums-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未验收。
 
 - 最新M1 record：支持记录类型的递归渲染、泛型字段/函数/nullable/typedef及形状变化重连；按已解析字段保留动态get/invoke，未知getter仍拒绝。152项普通测试、126项专项原生检查及18组当前指纹/源码/制品核对通过，原始源码AOT对照、GC、实际3.0/3.4/3.12 Kernel及签名原子拒绝已验。证据docs/qa/aot-records-20260923.json。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
@@ -232,3 +234,9 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
   - 本轮补充：两条过时泛型约束断言失败日志为output/m1-records-final-verification.log（完整129项Python，退出1），独立复现output/m1-records-boundary-reproduction.log；修正后output/m1-records-boundary-retry.log退出0，Flutter分析及7项测试另行退出0。最初定向命令使用错误Python模块路径，仅导入失败，纠正PYTHONPATH后才得到真实复现。泛型record约束补充实验output/record-bounds-inspection/RESULT.json：类与函数的Iterable<(int,int)>约束均可用，仅C.total进入字节码，保留AOT泛型调用方；10→14与两侧独立源码AOT一致，编译器及制品哈希核对通过，不并入126项原生统计。
   - 磁盘归档完成：113个2026-09-23之前已完成output/m1-aot-*目录仅生成的.aot/.dill/.bytecode无损压缩，逐成员SHA256读回核验后移除原件；源码、日志和build.json保持原位，ARCHIVED-BINARIES.json含恢复命令。对output/m1-aot-20260921T070954Z-elxymfow实际恢复并校验，恢复件保留；净释放1,440,316,046字节。证据docs/qa/historical-binary-archive-20260923.json；当前验收与引擎制品未改动。
   - 下一轮enum预研仅在output/enum-inspection：原始源码AOT覆盖普通/私有值、增强泛型枚举、mixin/interface、索引/名称/穷尽switch/常量身份。直接重命名会改变Enum.name/toString；手工保留私有值并生成public const别名、补原始默认toString，配合现有运行时显示名修复，真实Kernel/AOT输出与原始一致（BRIDGE-RESULT.json）。analyzer证实Enum可实现不可普通继承，默认toString不在用户methods列表。尚无自动enum lowering或混合补丁验收；下一步实现真实枚举声明/构造参数/私有值别名、默认显示及值变化重连，再补独立原生回归。完整目标仍进行中。
+
+- 2026-09-23 15:33 +08:00：枚举主线检查点：增加真实EnumDeclaration、增强泛型/成员/mixin/interface与私有值public const别名；值名不改写，私有命名构造器选择器用解析constructorElement重命名。CFE新增dart-original-enum-names.patch，仅生成库与合法编码名称恢复_enumToString类型显示，保留custom/mixin/super分派。宿主构建与溯源更新成功；初次批量apply因既有补丁已应用而保护性拒绝，单独git apply --check后仅应用新补丁并核验全集；初版analyzer API参数与私有构造器选择器失败均有日志，已修复。4组枚举探索混合运行通过，6项定向回归、编译器分析和16文件格式通过。冻结output/m1-enums-start-hashes.json，完整verify.sh在session22795，22组最终原生重建/验收在session50224，日志output/m1-enums-verification.log与output/m1-enums-native.log。完整结果尚未通过，未commit/push；下一步核对原始源码AOT/GC/Kernel/显示名边界和当前指纹后提交Important Changes并推送main。PROGRESS中其他设计任务的已有修改保留；不属于本轮运行时提交范围。完整Flutter/移动冷启动/签名回退/真机性能仍未验收。
+
+- 2026-09-23 15:57 +08:00：完成枚举声明和混合执行接入：保留原生普通/增强泛型枚举、值名/index/values/穷尽switch/常量身份、字段/私有命名构造器/静态状态/mixin/interface。私有值保留原始名字，引用跨生成库用public const别名；构造器选择器基于真实constructorElement重命名。新增固定CFE补丁，仅在simurgh_generated_v1及合法64位十六进制编码下恢复_enumToString前缀，不替换用户方法；custom/mixin/super.toString及用户name getter/EnumName与原始AOT一致。新增枚举由旧Enum消费者读取，方法补丁保持类身份；值增删/重排/实参改变重连State/Holder/stored及typed/make，旧read仍AOT。枚举不放入可扩展契约，源非法构造/继承/实现/可变字段/index/泛型/隐私和metadata负例通过。实际GC为16/16；parts及3.0/3.4/3.12 Kernel通过。初版analyzer API、私有构造器选择器和整套补丁部分应用保护失败均保留日志并修正；新补丁单独check/apply后精确核对，宿主构建溯源更新，历史制品归档保留。完整verify.sh为16 Dart+135 Python+7 Flutter共158项，168项原生检查、编译器分析/格式与22组当前输入/源码/制品核对通过；未重跑历史原生全集。证据docs/qa/aot-enums-20260923.json。未验收完整Flutter/移动冷启动/签名回退/性能真机，移动引擎仍需重建；下一步继续Flutter所需声明语义和启动接入。按约定提交Important Changes并推送main，实际交付以Git核对；其他设计任务修改保留。
+
+  - 补充验证output/enum-constructor-inspection/RESULT.json：增强泛型枚举的私有/重定向构造器、缓存factory及私有枚举类型显示与独立原始AOT一致，只替换Choice.read；源码归档及制品哈希已核对，不并入原生主统计。后续metadata预研仅在output/metadata-inspection：原始常量泛型/命名构造注解及vm:never-inline源码AOT通过；analyzer已解析实际实例化构造器，Kernel检查读回类/枚举值/字段/函数/形参的真实注解常量及类型参数。初次Kernel探针未过滤SDK URI失败，修复file scheme判断后通过。主线仍明确拒绝这些注解，未计作支持；NOTES.md记录下一步元数据引用重写、wrapper/helper保留、依赖重连及pragma语义边界。

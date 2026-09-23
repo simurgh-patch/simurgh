@@ -31,6 +31,16 @@
           "patched_sha256": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
         }
       }
+    },
+    {
+      "path": "dart-original-enum-names.patch",
+      "sha256": "5f51a860c8d118fd31beca1be0236bc221fe6952d8ae1d87cce237120c9d5266",
+      "files": {
+        "pkg/front_end/lib/src/source/source_enum_builder.dart": {
+          "base_sha256": "15b2153c3a83680b1d51449d8921b5fa10dd72d761fb0931a28368b9061a67bb",
+          "patched_sha256": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+        }
+      }
     }
   ]
 }

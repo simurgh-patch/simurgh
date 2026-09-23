@@ -1096,6 +1096,64 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
 
+    def test_enums_preserve_identity_and_aot_consumers(self):
+        base, patch, manifest = self.named_mixin_pair('enums')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Boxed.tick', 'Description.describe', 'make'])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        original = json.loads((base / 'manifest.json').read_text())
+        contract = (base / 'dynamic_interface.yaml').read_text().split('extendable:\n')[1]
+        for name in ['Status', 'Boxed']:
+            self.assertNotIn("class: '" + self.symbol(original, name) + "'", contract)
+
+    def test_enum_custom_super_and_private_constructor(self):
+        base, patch, manifest = self.named_mixin_pair('enum_custom')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Custom.toString', 'Display.toString'])
+
+    def test_enum_value_changes_relink_storage_and_typed_consumers(self):
+        base, patch, manifest = self.named_mixin_pair('enum_relink')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Holder', 'State'])
+        self.assertEqual(self.names(manifest, manifest['replaced_globals']), ['stored'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['make', 'typed'])
+
+    def test_enum_parts_and_new_language_version(self):
+        base, patch, manifest = self.named_mixin_pair('enum_multilang')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+
+    def test_enum_invalid_source_stays_rejected(self):
+        sources = {
+            'construct': 'enum E { value } void main() { E(); }',
+            'extend': 'enum E { value } class C extends E {} void main() {}',
+            'implement': 'enum E { value } class C implements E {} void main() {}',
+            'mutable': 'enum E { value; int number = 0; } void main() {}',
+            'index': 'enum E { value; int get index => 2; } void main() {}',
+            'generic': 'enum E<T extends num> { value<String>(); const E(); } void main() {}',
+        }
+        for name, source in sources.items():
+            with self.subTest(name=name):
+                dest = self.root / name
+                result = self.command('baseline', self.source(name + '.dart', source), dest)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertIn('Static source errors', result.stderr)
+                self.assertFalse(dest.exists())
+
+    def test_enum_metadata_and_cross_library_privacy_rejected(self):
+        result = self.command('baseline', self.source('metadata.dart', 'enum E { @deprecated value } void main() {}'), self.root / 'metadata')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Annotated enum constants', result.stderr)
+        self.source('private.dart', 'enum E { _value }')
+        result = self.command('baseline', self.source('app.dart', "import 'private.dart'; void main() { print(E._value); }"), self.root / 'private')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Static source errors', result.stderr)
+
     def test_records_preserve_aot_consumers_and_add_payload_classes(self):
         base, patch, manifest = self.named_mixin_pair('records')
         self.assertEqual(manifest['replaced_classes'], [])

@@ -719,3 +719,33 @@ writes and missing fields; no broad dynamic-validation bypass is enabled.
 Separate 3.0/3.12 libraries and a newly added 3.4 payload library are checked in
 both baseline and patch Kernel. These host experiments do not complete all
 pattern forms, Flutter/mobile integration or performance acceptance.
+
+
+### Enum declarations
+
+Plain and enhanced enum declarations retain native CFE construction and constant
+identity. Generic enum arguments, fields, constructors, methods, static state,
+mixins and interfaces use the same resolved source graph as other program types.
+Private value names stay in the actual declaration; generated public const aliases
+carry references across generated libraries without changing `Enum.name` or
+exhaustive constant patterns. Private named constructor selectors use the enum
+constant's resolved constructor element.
+
+The pinned frontend patch restores the original enum type spelling in its
+synthesized `_enumToString` body only for valid encoded names in
+`simurgh_generated_v1` libraries. It does not inject a replacement user method:
+custom overrides, mixin dispatch, `super.toString()` and a user-defined `name`
+getter retain their normal Dart behavior. See the runtime patch manifest.
+
+Method-only patches preserve baseline enum identity and retained AOT consumers.
+Changes to values, order, constructor arguments or other enum structure relink
+the enum and dependent classes, storage and typed functions at cold start.
+Enums are excluded from the generated extendable-class contract. Original source
+analysis still rejects illegal enum construction, extension/implementation,
+mutable fields, forbidden members, private access and invalid type arguments;
+annotated enum constants remain outside this supported subset.
+
+The `aot_enums`, `aot_enum_custom`, `aot_enum_relink` and `aot_enum_multilang`
+fixtures cover these cases, GC, source-AOT output comparisons and actual
+3.0/3.4/3.12 library versions. This is host mixed-execution support, not complete
+Flutter/mobile startup or performance acceptance.

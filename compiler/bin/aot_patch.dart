@@ -53,6 +53,7 @@ bool isTypeParameter(NamedType type) {
       MethodDeclaration() => scope.typeParameters,
       GenericFunctionType() => scope.typeParameters,
       ClassDeclaration() => scope.namePart.typeParameters,
+      EnumDeclaration() => scope.namePart.typeParameters,
       ClassTypeAlias() => scope.typeParameters,
       GenericTypeAlias() => scope.typeParameters,
       MixinDeclaration() => scope.typeParameters,
@@ -158,6 +159,7 @@ class Program {
       if (declaration is GenericTypeAlias) continue;
       if (declaration is ClassDeclaration ||
           declaration is ClassTypeAlias ||
+          declaration is EnumDeclaration ||
           declaration is MixinDeclaration) {
         if (!supportedTypeParameters(declaration.typeParameters))
           reject('Unsupported class type parameter bounds');
@@ -549,6 +551,7 @@ void writeLinkedSources(
       name = declaration.name.lexeme;
     } else if (declaration is ClassDeclaration ||
         declaration is ClassTypeAlias ||
+        declaration is EnumDeclaration ||
         declaration is MixinDeclaration) {
       name = declaration.typeName.lexeme;
     } else if (declaration is TopLevelVariableDeclaration) {
@@ -706,6 +709,7 @@ String dynamicClassInterface(Program program) {
       program.classes.entries
           .where(
             (entry) =>
+                entry.value is! EnumDeclaration &&
                 entry.value.finalKeyword == null &&
                 entry.value.sealedKeyword == null,
           )

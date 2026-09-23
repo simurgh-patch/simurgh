@@ -1,0 +1,24 @@
+--- a/pkg/front_end/lib/src/source/source_enum_builder.dart
++++ b/pkg/front_end/lib/src/source/source_enum_builder.dart
+@@ -536,10 +536,20 @@
+       assert(nameFieldBuilder != null);
+       Field nameField = nameFieldBuilder!.readTarget as Field;
+ 
++      // Decode the source linker's display-name ABI only in generated libraries.
++      // Keep the enum's identity and native _name storage unchanged, including
++      // the normal custom/mixin/super toString dispatch above.
++      String displayName = _enumBuilder.cls.demangledName;
++      if (_enumBuilder.cls.enclosingLibrary.name == 'simurgh_generated_v1') {
++        RegExpMatch? encoded = new RegExp(
++          r'^msbEntity_class_[0-9a-f]{64}__(.+)$',
++        ).firstMatch(displayName);
++        if (encoded != null) displayName = encoded.group(1)!;
++      }
+       _procedure.function.registerFunctionBody(
+         new ReturnStatement(
+           new StringConcatenation([
+-            new StringLiteral("${_enumBuilder.cls.demangledName}."),
++            new StringLiteral("$displayName."),
+             new InstanceGet.byReference(
+               InstanceAccessKind.Instance,
+               new ThisExpression(),

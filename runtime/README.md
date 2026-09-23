@@ -40,6 +40,14 @@ provenance is not upgraded by changing these source files. Obfuscated builds,
 method/stack-frame name restoration and full Flutter semantics are not established
 by the class display-name experiment.
 
+`dart-original-enum-names.patch` applies the same guarded display-name ABI in
+the pinned frontend's synthesized enum `_enumToString` body. The actual enum
+value names, canonical identity and user/mixin/super dispatch are preserved.
+Ordinary libraries and malformed names are unchanged. This frontend source is
+used by the laboratory Kernel and bytecode commands; previously built frontend
+snapshots and mobile engines do not acquire the patch automatically. The manifest
+binds the original and patched frontend source hashes along with runtime sources.
+
 ## Project naming
 
 The current compiler emits the `simurgh` namespace and the
