@@ -51,7 +51,7 @@ Each run generates baseline AOT and a bytecode module, then launches the same AO
 
 Currently supported: a graph of local libraries under the entry file's directory and resolved pure Dart package libraries, relative/package imports/exports and the linked SDK libraries described below, synchronous or Future/dynamic-returning async public/private top-level and supported instance methods and explicit getters/setters, resolved primitive/linked-SDK/program-class/type-parameter/function return and required/optional positional or named parameter types, new libraries/functions with recursion, unchanged retained-entry signatures, function tear-offs in accepted expression positions, synchronous/async closures and local functions with resolved parameter types, mutable captures, primitive expressions, branches, while/for loops, local pattern bindings and exceptions. Class method changes work for the checked class subset, including generic receiver types, with explicit or inferred instance fields, generative/body-factory/redirecting constructors and single inheritance. Resolved local bindings may shadow ordinary program names. Dispatch slots preserve required named markers and optional parameter groups without putting default expressions in function types. Wrappers forward named arguments by name; methods, super bridges, constructors and closures retain their original defaults. Default-value changes unrelated to dependency relocation are rejected as signature changes because unchanged AOT callers can bake them in. A default that captures a relocated function moves with that function and its callers. Existing function references retain baseline wrapper identity, while new functions refer to module-local entities. Returned bytecode closures can be called by unchanged AOT functions, including across GC and exception boundaries. Function body changes are installed before the user's `main` runs.
 
-Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, conditional/deferred imports, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, generators and void-async top-level/method declarations, external/annotated constructors, named mixin-application aliases, unsupported inherited record type substitutions, direct super access to user-declared fields, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
+Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, conditional/deferred imports, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, generators and void-async top-level/method declarations, external/annotated constructors, unsupported inherited record type substitutions, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
 
 The generated installer checks the baseline fingerprint and all replacement types before mutating slots. The fingerprint binds the complete original source graph, toolchain lock and all three compiler source files. Logical identities are independent of the checkout's absolute location. Baseline and patch archives contain `source_graph.json` with original sources, dependencies and logical-to-generated symbol mappings; archived-source tampering is rejected. Class-shape hashes record the frozen structural baseline. **This is compatibility binding, not authentication:** bytecode is trusted local experimental input. No signature parser, untrusted-bytecode hardening, rollback, mobile startup hook, network service or published update is implemented.
 
@@ -533,7 +533,7 @@ and storage remain in the SDK. Bridges are present in the baseline so a patch
 can introduce a first super call without replacing an otherwise unchanged
 class. Business mixins constrained to a business class can find its inherited
 SDK implementations. SDK mixin applications and SDK mixin ancestors are covered
-in the following increment; direct super access to user fields remains unsupported.
+in the following increment; user superclass fields are covered in the later field increment below.
 
 Explicit super-call type arguments are rewritten by resolved identity. Indexed
 writes use the existing typed indexed adapter with distinct read and write key
@@ -644,3 +644,27 @@ unused helper retirement. The native verifier compares full exception text
 against separately compiled original-source AOT and checks retained AOT callers
 and actual GC. Mobile behavior and broader covariant declarations remain
 outside this acceptance scope.
+
+
+### Named mixin applications
+
+Named applications such as `class Named<T> = Base<T> with Label<T>;` retain
+Dart's real alias declaration and analyzer identity. CFE synthesizes constructor
+forwarding, including generic, optional/named, const, and accessible private
+constructors; private forwarded names follow the original constructor mapping.
+Inherited method wrappers handle patches without replacing an unchanged alias.
+
+Aliases have no declaration body. When an implicit interface needs generated
+bridge or foreign-private-member stubs, an internal mixin supplies only those
+members while the original alias keeps its constructor behavior. Unused internal
+mixins may retire with their interface obligations, under the same no-reference
+check as other generated infrastructure. User class removal remains rejected.
+
+The named-mixin fixtures cover multi-level aliases, constructor tear-offs and
+identity, SDK ListBase applications, implements/noSuchMethod and foreign private
+errors, patch-first aliases, constructor-default relinking, and helper retirement.
+Separate 3.0/3.12 libraries can accept a new 3.4 alias library; native verification
+inspects both baseline and freshly compiled patch Kernel versions, compares
+original-source AOT output, and checks old AOT consumers and actual GC. Factory
+constructors are not forwarded by Dart aliases; invalid private access, mixin
+constraints, and generic bounds continue to fail original-source analysis.

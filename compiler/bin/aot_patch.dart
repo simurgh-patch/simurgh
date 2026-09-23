@@ -53,6 +53,7 @@ bool isTypeParameter(NamedType type) {
       MethodDeclaration() => scope.typeParameters,
       GenericFunctionType() => scope.typeParameters,
       ClassDeclaration() => scope.namePart.typeParameters,
+      ClassTypeAlias() => scope.typeParameters,
       MixinDeclaration() => scope.typeParameters,
       _ => null,
     };
@@ -140,7 +141,9 @@ class Program {
       reject('Expected canonical linked SDK imports');
     }
     for (final declaration in unit.declarations) {
-      if (declaration is ClassDeclaration || declaration is MixinDeclaration) {
+      if (declaration is ClassDeclaration ||
+          declaration is ClassTypeAlias ||
+          declaration is MixinDeclaration) {
         if (!supportedTypeParameters(declaration.typeParameters))
           reject('Unsupported class type parameter bounds');
         classes[declaration.typeName.lexeme] = declaration;
@@ -522,6 +525,7 @@ void writeLinkedSources(
             : null;
       }
     } else if (declaration is ClassDeclaration ||
+        declaration is ClassTypeAlias ||
         declaration is MixinDeclaration) {
       name = declaration.typeName.lexeme;
     } else if (declaration is TopLevelVariableDeclaration) {
@@ -776,6 +780,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
         (name) => const {
           'super-index-cell',
           'private-interface-trap',
+          'alias-interface-mixin',
         }.contains(original.entities[name]?['generated']),
       )
       .toSet();

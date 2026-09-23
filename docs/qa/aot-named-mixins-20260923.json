@@ -1,0 +1,184 @@
+{
+  "recorded_at": "2026-09-23 13:37 +08:00",
+  "scope": "Named mixin applications with native constructor forwarding, interface helpers, mixed language versions and class relinking on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T051828Z-rcvu58f_/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T051858Z-ocll9qpd/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T051928Z-armxifg6/build.json",
+    "named_mixin_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052000Z-s3y50f2r/build.json",
+    "named_mixin_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052030Z-beaeq7j8/build.json",
+    "named_mixin_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052104Z-4e5i_mu6/build.json",
+    "named_mixin_retire": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052136Z-09sw5w02/build.json",
+    "private_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052208Z-f_k27t3a/build.json",
+    "private_interface_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052238Z-b3kcx72a/build.json",
+    "private_interface_removed": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052309Z-xzbhqge8/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052339Z-6366qtvw/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052411Z-enqs4ehw/build.json",
+    "sdk_mixin_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052442Z-ex6nf8dg/build.json",
+    "sdk_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052514Z-4eh9vd55/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052547Z-od6qvz63/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052619Z-k6t81cw3/build.json",
+    "parts": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052653Z-ybtbtx30/build.json",
+    "late_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052722Z-mush6818/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T052754Z-tix0r7ec/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T051828Z-rcvu58f_/native-checks/report.json",
+    "verification": "output/m1-named-mixins-verification.log",
+    "native_log": "output/m1-named-mixins-native.log",
+    "compiler_analysis": "output/m1-named-mixins-analysis.log",
+    "format": "output/m1-named-mixins-format.log",
+    "input_hashes": "output/m1-named-mixins-start-hashes.json",
+    "process_results": "output/m1-named-mixins-process-results.json"
+  },
+  "compiler_sha256": "39663dd4f28a86a455e32cee9fe109432cab901680308b2cbc4c422e84b076e0",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 116,
+    "flutter_widget_tests": 7,
+    "native_checks": 130,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "named_mixins": {
+      "baseline": "8:2:8:3:9:3:10:4:true:5\nadded:12:Named<int>\ngc:12:Named<int>\n",
+      "patched": "patched:8:2:patched:8:3:patched:9:3:patched:10:4:true:5\nadded:12:Added<int>\ngc:12:Added<int>\n"
+    },
+    "named_mixin_interfaces": {
+      "baseline": "8:2:9:3:10:4:true:5\nmock:77\nprivate:NoSuchMethodError: Class 'AliasPrivate' has no instance getter '_secret'.\nReceiver: Instance of 'AliasPrivate'\nTried calling: _secret\n",
+      "patched": "patched:8:2:patched:9:3:patched:10:4:true:5\nmock:77\nprivate:NoSuchMethodError: Class 'AliasPrivate' has no instance getter '_secret'.\nReceiver: Instance of 'AliasPrivate'\nTried calling: _secret\n"
+    },
+    "named_mixin_relink": {
+      "baseline": "8:2:8:3:9:3:10:4:true:5\nadded:12:Named<int>\ngc:12:Named<int>\n",
+      "patched": "patched:8:20:patched:8:30:patched:9:30:patched:10:4:true:5\nadded:12:Added<int>\ngc:12:Added<int>\n"
+    },
+    "named_mixin_multilang": {
+      "baseline": "7:3:Named<int>\n10:4:Named<int>\nforward:6\n",
+      "patched": "7:3:Added<int>\n10:4:Named<int>\nforward:6\n"
+    },
+    "named_mixin_retire": {
+      "baseline": "8:2:9:3:10:4:true:5\nmock:77\nprivate:NoSuchMethodError: Class 'AliasPrivate' has no instance getter '_secret'.\nReceiver: Instance of 'AliasPrivate'\nTried calling: _secret\n",
+      "patched": "patched:8:2:patched:9:3:patched:10:4:true:5\nmock:77\nprivate:null\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "named_mixins": {
+      "baseline": {
+        "source_sha256": "8200ac5f6935836bfb96a24c08f103e54d917939e06a4a32f1b5f6d15daf93c1",
+        "executable_sha256": "e4f538cabbbc33cbbee0976e33cca4e4de2e86f8a2a6dcd585be8606d01b97b7",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "4d4f35d2cc150106881d87e3dfa4c625ca49ffcfc065edbc87f5fce3f687749b"
+      },
+      "patch": {
+        "source_sha256": "216218a71bc25ffda6e216a6f3117823fc2486d61f6b2d7ea84319a4b5ebb433",
+        "executable_sha256": "53ddb27f8a9c6b1b92f166833e71181dab2df90b6d4590f863c6ef9d2f4a03f0",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "99b36e22204d4158d8771542e17cac5d8e3ffd04718ccaf6f5051aae2d9fa53f"
+      }
+    },
+    "named_mixin_interfaces": {
+      "baseline": {
+        "source_sha256": "a22ac616ba784bdb40deee4579e16a85ad61b8e7dcbb6cbba99f752ef677167f",
+        "executable_sha256": "554d728a85d3f7d9f52b9edac1377a3a0e0175205f65af4e1b66a2da7f6ea6de",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "6060a372525460c984139d3d7e62f7fa6e16072d48a1883482b2815a1715e719"
+      },
+      "patch": {
+        "source_sha256": "df47a8b0a7f994986268af3b55f7eafb6cad93810c00de67efadb67fc1f79233",
+        "executable_sha256": "4ed0bd86d88bebf7f8b1ce19a01577a7b018dbcdb05dba5c199816137156c419",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "ce4c6a67a90c8d45ac4576d1756ae6c548aa215db9c6ca0a030182e2e2e41693"
+      }
+    },
+    "named_mixin_relink": {
+      "baseline": {
+        "source_sha256": "8200ac5f6935836bfb96a24c08f103e54d917939e06a4a32f1b5f6d15daf93c1",
+        "executable_sha256": "7977d283e9f1e68c37572140e111513605a29c370256ff4c10117fa983a485d8",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "4d4f35d2cc150106881d87e3dfa4c625ca49ffcfc065edbc87f5fce3f687749b"
+      },
+      "patch": {
+        "source_sha256": "f89adc053854c230f7f6274e29ed4103db861f87be77777241bcc6bfe7687e7c",
+        "executable_sha256": "b777524c367b96d4fd65fc31b49106ba5787ebf04cb688b25c172d84aeb2db72",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "e625e5ed2b21c3add6d54285fae599ff1ad4f16be44426470d62623e4f2f5294"
+      }
+    },
+    "named_mixin_multilang": {
+      "baseline": {
+        "source_sha256": "280d9a1e964b0be23f40ca5e102e31821ab36efdfd4975ac4f90626194330c02",
+        "executable_sha256": "3fce2e0717cd53ba8829326355669f2186a5a87dac4cae29dd4944fffac4edb4",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "6bc98709698226adec0516f15f812eec82be5ddeba3e22e6045476ece53c88b6"
+      },
+      "patch": {
+        "source_sha256": "ede47fc2163ea1ba778016d4944bb43ec5010a6066ba8403cbc949fc0e89ee11",
+        "executable_sha256": "0f443c329af845216dded737c35e70882b8263192935a91b7e0fd28cf52ff5f2",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "a16ef140fc2873284a4ebb6fc4693409c3ff8d7ed9b83978e6d4be6957f152cf"
+      }
+    },
+    "named_mixin_retire": {
+      "baseline": {
+        "source_sha256": "b4836677619bf689022d2332d0f83614fa141f9936b42d87290fd234ff4a35cd",
+        "executable_sha256": "a86e826baee08930fb33722230fb41fe10d2c66708d480cff0a947faf27dd2ad",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "aa153ab2b46850e1f799ae17edcf02bce734cec905dbe2510f5bf46af0fa3b96"
+      },
+      "patch": {
+        "source_sha256": "80311f94b109d5315e07680d95f65a23854d44703849b9d02af5816c56d0924d",
+        "executable_sha256": "2ae24b207cea47b6d833d3c8901332cddde568bc6f5298d9332b8d72bf03bb56",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "5406296d6d7c2420226ee8dc81c232c0493c5faaa09db3ea1a51fe712180e4e1"
+      }
+    }
+  },
+  "named_mixin_scavenges": 16,
+  "named_mixin_relink_scavenges": 16,
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "app.dart": "3.12"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0"
+  },
+  "patch_kernel_sha256": "bd079a4d4596656bf83e56fa39d70682d575c5b5554650a1e5521a1377f7fe25",
+  "notes": [
+    "ClassTypeAlias declarations retain resolved class identity and real CFE constructor synthesis; private forwarding constructor names follow their original declarations.",
+    "Aliases inherit real base/mixin wrappers without own super bridges. Necessary synthetic interface bodies are emitted in internal helper mixins without changing constructor forwarding.",
+    "Generic and multi-level aliases, defaults, named/private constructors, constructor tear-offs, const identity and SDK ListBase aliases match original-source AOT.",
+    "Patch-only Added aliases are consumed by retained AOT after GC. Changed superclass constructor defaults relink Base/Label/Named/Again/Child and typed consumers.",
+    "NoSuchMethod/private interfaces and retirement of five unused helpers match original-source behavior; user class deletion remains prohibited.",
+    "Baseline and fresh patch Kernel inspections verify actual 3.0/3.4/3.12 versions across libraries.",
+    "The first targeted version assertion looked in the patch manifest rather than the source graph and failed; corrected test and complete final checks passed.",
+    "Historical full native suite was not rerun; this report covers nineteen rebuilt groups."
+  ],
+  "limitations": [
+    "Full Flutter and mobile cold start, signing/rollback and physical-device performance remain incomplete.",
+    "Covariant declarations and broader language combinations are not accepted by these fixtures. Helper overhead is not benchmarked."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

@@ -227,7 +227,7 @@ class _Classes {
           );
         }
         for (final member
-            in parent.node.body.members.whereType<MethodDeclaration>()) {
+            in parent.node.members.whereType<MethodDeclaration>()) {
           final method = member.declaredFragment!.element;
           if (method.isStatic || method.isPrivate) continue;
           methods[method] = member;
@@ -273,7 +273,7 @@ class _Classes {
           _reject('Interfaces must be supported program or public SDK classes');
         }
       }
-      for (final member in owner.node.body.members) {
+      for (final member in owner.node.members) {
         if (member is FieldDeclaration) {
           if (member.metadata.isNotEmpty ||
               member.externalKeyword != null ||
@@ -376,9 +376,26 @@ class _Classes {
         }
       }
     }
+    // Alias constructors are synthesized by Dart. Their forwarded names must
+    // follow any private-constructor renaming at the original declaration.
+    for (final owner in declarations.values) {
+      if (owner.node is! ClassTypeAlias) continue;
+      for (final constructor in owner.element.constructors) {
+        ConstructorElement? target = constructor;
+        while (target != null &&
+            !memberSymbols.containsKey(target.baseElement)) {
+          target = target.superConstructor;
+        }
+        if (target != null)
+          memberSymbols[constructor] = memberSymbols[target.baseElement]!;
+      }
+    }
     // Pre-create bridges for all visible inherited concrete user/SDK methods. A
     // patch can introduce a super call without changing the baseline class.
     for (final owner in declarations.values) {
+      // Named applications inherit their base/mixin wrappers. They have no body
+      // in which to declare additional super bridges.
+      if (owner.node is ClassTypeAlias) continue;
       final seen = <String>{};
       final superUses = _SuperUses();
       owner.node.accept(superUses);
@@ -661,7 +678,7 @@ class _Classes {
           '${owner.symbol}${classArguments.isEmpty ? '' : '<${classArguments.join(', ')}>'}';
       final classBody = StringBuffer();
       final lifted = StringBuffer();
-      for (final member in node.body.members) {
+      for (final member in node.members) {
         if (member is MethodDeclaration) {
           final element = member.declaredFragment!.element;
           final name = memberSymbols[element]!;
@@ -959,6 +976,7 @@ class _Classes {
       // wrappers. Constructor/field/hierarchy changes are checked by the backend.
       final headerRefs = visitor(owner);
       node.extendsClause?.accept(headerRefs);
+      if (node is ClassTypeAlias) node.superclass.accept(headerRefs);
       node.withClause?.accept(headerRefs);
       node.onClause?.accept(headerRefs);
       node.implementsClause?.accept(headerRefs);
@@ -966,9 +984,46 @@ class _Classes {
       headerRefs.edits.add(
         _Edit(node.typeName.offset, node.typeName.end, owner.symbol),
       );
-      headerRefs.edits.add(
-        _Edit(node.body.offset, node.body.end, '{\n$classBody}\n'),
-      );
+      if (node is ClassTypeAlias) {
+        if (classBody.isNotEmpty) {
+          final id = _hash(
+            '${owner.library.ownerUri}::alias-interface::${owner.symbol}',
+          );
+          final helper = '${entityPrefix}class_${id}__AliasInterface';
+          final parameters = node.typeParameters == null
+              ? ''
+              : text(owner, node.typeParameters!);
+          final arguments = classArguments.isEmpty
+              ? ''
+              : '<${classArguments.join(', ')}>';
+          final helperSource = 'mixin $helper$parameters {\n$classBody}';
+          records[helper] = {
+            'library': owner.library.ownerUri,
+            'name': '<alias-interface>',
+            'entity': id,
+            'kind': 'class',
+            'generated': 'alias-interface-mixin',
+          };
+          manifest[helper] = {
+            'library': owner.library.ownerUri,
+            'name': '<alias-interface>',
+            'source': helperSource,
+            'source_sha256': _hash(helperSource),
+          };
+          output.writeln(helperSource);
+          headerRefs.edits.add(
+            _Edit(
+              node.withClause.end,
+              node.withClause.end,
+              ', $helper$arguments',
+            ),
+          );
+        }
+      } else {
+        headerRefs.edits.add(
+          _Edit(node.body.offset, node.body.end, '{\n$classBody}\n'),
+        );
+      }
       final normalized = _rewrite(owner.library.source, node, headerRefs.edits);
       output.writeln(normalized);
       output.write(lifted);

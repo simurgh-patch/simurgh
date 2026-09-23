@@ -1074,6 +1074,66 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
 
+    def named_mixin_pair(self, kind):
+        base, patch = self.root / (kind + '-base'), self.root / (kind + '-patch')
+        for action, side, args in [('baseline', 'baseline', [base]), ('patch', 'patch', [base, patch])]:
+            result = self.command(action, ROOT / f'compiler/fixtures/aot_{kind}_{side}/app.dart', *args)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        return base, patch, json.loads((patch / 'manifest.json').read_text())
+
+    def test_named_mixins_keep_aot_consumers_and_add_aliases(self):
+        base, patch, manifest = self.named_mixin_pair('named_mixins')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Label.label', 'make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_named_mixin_interface_helpers_preserve_business_dispatch(self):
+        base, patch, manifest = self.named_mixin_pair('named_mixin_interfaces')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Label.label'])
+        self.assertEqual(manifest['module_only_functions'], [])
+        helpers = [v for v in manifest['entities'].values() if v.get('generated') == 'alias-interface-mixin']
+        self.assertEqual(len(helpers), 2)
+
+    def test_named_mixin_constructor_defaults_relink_alias_family(self):
+        base, patch, manifest = self.named_mixin_pair('named_mixin_relink')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Again', 'Base', 'Child', 'Label', 'Named'])
+        self.assertIn('consume', self.names(manifest, manifest['module_only_functions']))
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main', 'run'])
+
+    def test_named_mixin_new_library_keeps_original_language_versions(self):
+        base, patch, manifest = self.named_mixin_pair('named_mixin_multilang')
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_named_mixin_unused_interface_helpers_retire(self):
+        base, patch, manifest = self.named_mixin_pair('named_mixin_retire')
+        original = json.loads((base / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['AliasPrivate'])
+        retired = manifest['retired_infrastructure_classes']
+        self.assertEqual(len(retired), 5)
+        self.assertEqual({original['entities'][s]['generated'] for s in retired}, {'alias-interface-mixin', 'private-interface-trap'})
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Label.label', 'makePrivate'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_named_mixin_invalid_source_still_rejected(self):
+        self.source('private_base.dart', 'class B { B._hidden(); }')
+        cases = {
+            'private': "import 'private_base.dart'; mixin M {} class A = B with M; void main() { A._hidden(); }",
+            'factory': 'class B { B(); factory B.named() => B(); } mixin M {} class A = B with M; void main() { A.named(); }',
+            'constraint': 'class B {} class C {} mixin M on B {} class A = C with M; void main() {}',
+            'bound': 'class B<T extends num> {} mixin M {} class A<T> = B<T> with M; void main() {}',
+        }
+        for name, source in cases.items():
+            result = self.command('baseline', self.source(name + '.dart', source), self.root / (name + '-out'))
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('Static source errors', result.stderr)
+
     def test_private_interfaces_preserve_aot_consumers_and_real_implementations(self):
         base, patch = self.root / 'private-base', self.root / 'private-patch'
         for action, side, args in [('baseline', 'baseline', [base]), ('patch', 'patch', [base, patch])]:

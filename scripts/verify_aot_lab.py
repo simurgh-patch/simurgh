@@ -51,6 +51,11 @@ def main():
     parser.add_argument('--type-names-run-dir', type=Path)
     parser.add_argument('--super-parameters-run-dir', type=Path)
     parser.add_argument('--super-fields-run-dir', type=Path)
+    parser.add_argument('--named-mixins-run-dir', type=Path)
+    parser.add_argument('--named-mixin-interfaces-run-dir', type=Path)
+    parser.add_argument('--named-mixin-relink-run-dir', type=Path)
+    parser.add_argument('--named-mixin-multilang-run-dir', type=Path)
+    parser.add_argument('--named-mixin-retire-run-dir', type=Path)
     parser.add_argument('--private-interfaces-run-dir', type=Path)
     parser.add_argument('--private-interface-added-run-dir', type=Path)
     parser.add_argument('--private-interface-removed-run-dir', type=Path)
@@ -84,7 +89,7 @@ def main():
             raise RuntimeError(f'{name} failed; inspect {destination}')
         return process.stdout
 
-    folders = [run, gc_run] + [p.resolve() for p in [args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
+    folders = [run, gc_run] + [p.resolve() for p in [args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -123,6 +128,21 @@ def main():
         return result
 
     for kind, folder, expected_base, expected_patch in [
+        ('named_mixins', args.named_mixins_run_dir,
+         ['8:2:8:3:9:3:10:4:true:5', 'added:12:Named<int>', 'gc:12:Named<int>'],
+         ['patched:8:2:patched:8:3:patched:9:3:patched:10:4:true:5', 'added:12:Added<int>', 'gc:12:Added<int>']),
+        ('named_mixin_relink', args.named_mixin_relink_run_dir,
+         ['8:2:8:3:9:3:10:4:true:5', 'added:12:Named<int>', 'gc:12:Named<int>'],
+         ['patched:8:20:patched:8:30:patched:9:30:patched:10:4:true:5', 'added:12:Added<int>', 'gc:12:Added<int>']),
+        ('named_mixin_interfaces', args.named_mixin_interfaces_run_dir,
+         ['8:2:9:3:10:4:true:5', 'mock:77'] + private_error('AliasPrivate', 'getter', '_secret', '_secret', 'private:'),
+         ['patched:8:2:patched:9:3:patched:10:4:true:5', 'mock:77'] + private_error('AliasPrivate', 'getter', '_secret', '_secret', 'private:')),
+        ('named_mixin_retire', args.named_mixin_retire_run_dir,
+         ['8:2:9:3:10:4:true:5', 'mock:77'] + private_error('AliasPrivate', 'getter', '_secret', '_secret', 'private:'),
+         ['patched:8:2:patched:9:3:patched:10:4:true:5', 'mock:77', 'private:null']),
+        ('named_mixin_multilang', args.named_mixin_multilang_run_dir,
+         ['7:3:Named<int>', '10:4:Named<int>', 'forward:6'],
+         ['7:3:Added<int>', '10:4:Named<int>', 'forward:6']),
         ('private_interfaces', args.private_interfaces_run_dir, private_output('Plain'), private_output('Added')),
         ('private_interface_added', args.private_interface_added_run_dir, ['4:3'], private_error('Added', 'getter', '_secret', '_secret')),
         ('private_interface_removed', args.private_interface_removed_run_dir, private_error('Added', 'getter', '_secret', '_secret'), ['4:3']),
@@ -256,11 +276,11 @@ def main():
             continue
         folder = folder.resolve()
         before = digest(folder / 'baseline/app.aot')
-        if kind in ['multilang', 'multilang_added', 'multilang_packages', 'parts_packages']:
+        if kind in ['multilang', 'multilang_added', 'multilang_packages', 'parts_packages', 'named_mixin_multilang']:
             metadata = json.loads((folder / 'baseline/manifest.json').read_text())
             expected_versions = {'multilang': {'3.0', '3.12'},
                                  'multilang_added': {'3.0'},
-                                 'multilang_packages': {'3.0', '3.1'}, 'parts_packages': {'3.0', '3.12'}}[kind]
+                                 'multilang_packages': {'3.0', '3.1'}, 'parts_packages': {'3.0', '3.12'}, 'named_mixin_multilang': {'3.0', '3.12'}}[kind]
             if set(metadata['library_language_versions'].values()) != expected_versions:
                 raise ValueError('Fixture source language versions were not preserved')
             if kind == 'multilang_packages' and (
@@ -278,14 +298,35 @@ def main():
                     raise ValueError('CFE Kernel library language does not match original source')
             report[kind + '_kernel_languages'] = versions
             report['kernel_language_inspector_sha256'] = digest(inspector)
+            if kind == 'named_mixin_multilang':
+                sdk = source_dart.parent.parent
+                packages = ROOT / 'compiler/.dart_tool/package_config.json'
+                kernel = destination / 'named-mixin-patch.dill'
+                compiler = ROOT / '.engine-workspace/engine/engine/src/flutter/third_party/dart/pkg/vm/bin/gen_kernel.dart'
+                execute(kind + '-patch-kernel', [source_dart, '--packages=' + str(packages), compiler,
+                    '--no-aot', '--platform', sdk / 'lib/_internal/vm_platform_strong.dill', '--packages', packages,
+                    '-Ddart.vm.product=true', '-Ddart.vm.profile=false', '--output', kernel, folder / 'patch/module.dart'])
+                result = execute(kind + '-patch-kernel-languages', [source_dart, '--packages=' + str(packages), inspector,
+                    kernel, folder / 'patch'])
+                actual = json.loads(result)
+                graph = json.loads((folder / 'patch/source_graph.json').read_text())
+                if set(graph['library_language_versions'].values()) != {'3.0', '3.4', '3.12'}:
+                    raise ValueError('Named mixin patch version fixture changed')
+                for uri, version in graph['library_language_versions'].items():
+                    name = 'unit_' + hashlib.sha256(uri.encode()).hexdigest() + '.dart'
+                    if actual.get(name) != version:
+                        raise ValueError('Patch Kernel language version differs from original library')
+                report[kind + '_patch_kernel_languages'] = actual
+                report[kind + '_patch_kernel_sha256'] = digest(kernel)
+
 
         baseline_output = execute(kind + '-baseline', [RUNTIME, folder / 'baseline/app.aot'], lines=expected_base)
-        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in ['closures', 'classes', 'new-classes', 'accessors', 'async', 'generics', 'generic_classes', 'layout', 'dynamic_calls', 'multilang', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'parts', 'sdk_interfaces', 'sdk_super', 'sdk_super_gc', 'sdk_mixins', 'super_fields', 'private_interfaces'] else []
+        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in ['closures', 'classes', 'new-classes', 'accessors', 'async', 'generics', 'generic_classes', 'layout', 'dynamic_calls', 'multilang', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'parts', 'sdk_interfaces', 'sdk_super', 'sdk_super_gc', 'sdk_mixins', 'super_fields', 'private_interfaces', 'named_mixins', 'named_mixin_relink'] else []
         output = execute(kind + '-patched', [RUNTIME, *options, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'],
                          contains=(['Scavenge('] if options else []), lines=expected_patch)
         if options:
-            report[{'closures': 'closure_scavenges', 'classes': 'class_scavenges', 'new-classes': 'new_class_scavenges', 'accessors': 'accessor_scavenges', 'async': 'async_scavenges', 'generics': 'generic_scavenges', 'generic_classes': 'generic_class_scavenges', 'layout': 'layout_scavenges', 'dynamic_calls': 'dynamic_scavenges', 'multilang': 'multilang_scavenges', 'static': 'static_scavenges', 'interfaces': 'interface_scavenges', 'mixins': 'mixin_scavenges', 'factories': 'factory_scavenges', 'late_fields': 'late_field_scavenges', 'late_references': 'late_reference_scavenges', 'operators': 'operator_scavenges', 'parts': 'parts_scavenges', 'sdk_interfaces': 'sdk_interface_scavenges', 'sdk_super': 'sdk_super_scavenges', 'sdk_super_gc': 'sdk_super_new_object_scavenges', 'sdk_mixins': 'sdk_mixin_scavenges', 'super_fields': 'super_field_scavenges', 'private_interfaces': 'private_interface_scavenges'}[kind]] = output.count('Scavenge(')
-        if kind in ['async', 'generics', 'generic_classes', 'layout', 'globals', 'late_final', 'inference', 'signatures', 'dynamic_calls', 'sdk', 'packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed']:
+            report[{'closures': 'closure_scavenges', 'classes': 'class_scavenges', 'new-classes': 'new_class_scavenges', 'accessors': 'accessor_scavenges', 'async': 'async_scavenges', 'generics': 'generic_scavenges', 'generic_classes': 'generic_class_scavenges', 'layout': 'layout_scavenges', 'dynamic_calls': 'dynamic_scavenges', 'multilang': 'multilang_scavenges', 'static': 'static_scavenges', 'interfaces': 'interface_scavenges', 'mixins': 'mixin_scavenges', 'factories': 'factory_scavenges', 'late_fields': 'late_field_scavenges', 'late_references': 'late_reference_scavenges', 'operators': 'operator_scavenges', 'parts': 'parts_scavenges', 'sdk_interfaces': 'sdk_interface_scavenges', 'sdk_super': 'sdk_super_scavenges', 'sdk_super_gc': 'sdk_super_new_object_scavenges', 'sdk_mixins': 'sdk_mixin_scavenges', 'super_fields': 'super_field_scavenges', 'private_interfaces': 'private_interface_scavenges', 'named_mixins': 'named_mixin_scavenges', 'named_mixin_relink': 'named_mixin_relink_scavenges'}[kind]] = output.count('Scavenge(')
+        if kind in ['async', 'generics', 'generic_classes', 'layout', 'globals', 'late_final', 'inference', 'signatures', 'dynamic_calls', 'sdk', 'packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire']:
             # Compare with the unmodified source compiled to ordinary AOT too;
             # the transformer and hand-written expected values are not oracles
             # for scheduling and type semantics by themselves.
@@ -293,7 +334,7 @@ def main():
             for side, expected in [('baseline', expected_base), ('patch', expected_patch)]:
                 graph = json.loads((folder / side / 'source_graph.json').read_text())
                 source = destination / (kind + '-source-' + side + '.dart')
-                if kind in ['packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed']:
+                if kind in ['packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire']:
                     reference = destination / (kind + '-reference-' + side)
                     reference.mkdir()
                     def library_path(uri):
@@ -335,6 +376,25 @@ def main():
                 if actual.splitlines() != expected:
                     raise RuntimeError('Untransformed source differs from expected observable behavior')
             report[kind + '_source_aot_reference_matches'] = True
+        if kind in ['named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire']:
+            clean = execute(kind + '-patched-clean', [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'], lines=expected_patch)
+            if baseline_output.splitlines() != expected_base or clean.splitlines() != expected_patch:
+                raise RuntimeError('Named mixin application differs from original-source AOT')
+            metadata = json.loads((folder / 'patch/manifest.json').read_text())
+            names = lambda field: sorted(metadata['entities'][symbol]['name'] for symbol in metadata[field])
+            if kind == 'named_mixin_relink':
+                if names('replaced_classes') != ['Again', 'Base', 'Child', 'Label', 'Named'] or 'consume' not in names('module_only_functions'):
+                    raise RuntimeError('Changed constructor defaults must relink the alias family')
+            elif kind == 'named_mixin_retire':
+                if names('replaced_classes') != ['AliasPrivate'] or len(metadata['retired_infrastructure_classes']) != 5:
+                    raise RuntimeError('Alias must retire only its unused interface helpers')
+                if names('module_only_functions') or names('installed_functions') != ['Label.label', 'makePrivate']:
+                    raise RuntimeError('Alias retirement must retain unrelated AOT consumers')
+            else:
+                expected = {'named_mixins': ['Label.label', 'make'], 'named_mixin_interfaces': ['Label.label'], 'named_mixin_multilang': ['make']}[kind]
+                if names('replaced_classes') or names('module_only_functions') or names('installed_functions') != expected:
+                    raise RuntimeError('Named mixin patch must preserve old classes and consumers')
+            report[kind + '_aot_consumers_and_alias_semantics'] = True
         if kind in ['private_interfaces', 'private_interface_added', 'private_interface_removed']:
             clean = execute(kind + '-patched-clean', [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'], lines=expected_patch)
             if baseline_output.splitlines() != expected_base or clean.splitlines() != expected_patch:

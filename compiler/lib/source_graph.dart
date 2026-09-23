@@ -20,18 +20,22 @@ import 'package:yaml/yaml.dart';
 
 part 'class_lowering.dart';
 
-// Shared class/mixin declaration view, preserving original resolved nodes.
+// Shared class, mixin and named application view, preserving resolved nodes.
 extension ProgramTypeDeclaration on CompilationUnitMember {
   Token get typeName => switch (this) {
     ClassDeclaration c => c.namePart.typeName,
+    ClassTypeAlias c => c.name,
     MixinDeclaration m => m.name,
     _ => throw StateError('Not a class/mixin'),
   };
   TypeParameterList? get typeParameters => switch (this) {
     ClassDeclaration c => c.namePart.typeParameters,
+    ClassTypeAlias c => c.typeParameters,
     MixinDeclaration m => m.typeParameters,
     _ => null,
   };
+  Iterable<ClassMember> get members =>
+      this is ClassTypeAlias ? const [] : body.members;
   ClassBody get body => switch (this) {
     ClassDeclaration c => c.body,
     MixinDeclaration m => m.body,
@@ -39,31 +43,44 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
   };
   InterfaceElement get typeElement => switch (this) {
     ClassDeclaration c => c.declaredFragment!.element,
+    ClassTypeAlias c => c.declaredFragment!.element,
     MixinDeclaration m => m.declaredFragment!.element,
     _ => throw StateError('Not a class/mixin'),
   };
   ExtendsClause? get extendsClause => this is ClassDeclaration
       ? (this as ClassDeclaration).extendsClause
       : null;
-  WithClause? get withClause =>
-      this is ClassDeclaration ? (this as ClassDeclaration).withClause : null;
+  WithClause? get withClause => switch (this) {
+    ClassDeclaration c => c.withClause,
+    ClassTypeAlias c => c.withClause,
+    _ => null,
+  };
   MixinOnClause? get onClause =>
       this is MixinDeclaration ? (this as MixinDeclaration).onClause : null;
   ImplementsClause? get implementsClause => switch (this) {
     ClassDeclaration c => c.implementsClause,
+    ClassTypeAlias c => c.implementsClause,
     MixinDeclaration m => m.implementsClause,
     _ => null,
   };
-  Token? get finalKeyword =>
-      this is ClassDeclaration ? (this as ClassDeclaration).finalKeyword : null;
-  Token? get sealedKeyword => this is ClassDeclaration
-      ? (this as ClassDeclaration).sealedKeyword
-      : null;
-  Token? get interfaceKeyword => this is ClassDeclaration
-      ? (this as ClassDeclaration).interfaceKeyword
-      : null;
+  Token? get finalKeyword => switch (this) {
+    ClassDeclaration c => c.finalKeyword,
+    ClassTypeAlias c => c.finalKeyword,
+    _ => null,
+  };
+  Token? get sealedKeyword => switch (this) {
+    ClassDeclaration c => c.sealedKeyword,
+    ClassTypeAlias c => c.sealedKeyword,
+    _ => null,
+  };
+  Token? get interfaceKeyword => switch (this) {
+    ClassDeclaration c => c.interfaceKeyword,
+    ClassTypeAlias c => c.interfaceKeyword,
+    _ => null,
+  };
   Token? get baseKeyword => switch (this) {
     ClassDeclaration c => c.baseKeyword,
+    ClassTypeAlias c => c.baseKeyword,
     MixinDeclaration m => m.baseKeyword,
     _ => null,
   };
@@ -643,6 +660,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     for (final declaration in parsed.unit.declarations) {
       if (declaration is! FunctionDeclaration &&
           declaration is! ClassDeclaration &&
+          declaration is! ClassTypeAlias &&
           declaration is! MixinDeclaration &&
           declaration is! TopLevelVariableDeclaration) {
         _reject(
@@ -808,7 +826,10 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     final classes = _Classes(entities, records);
     for (final library in sorted) {
       for (final declaration in resolved[library.uri]!.unit.declarations.where(
-        (node) => node is ClassDeclaration || node is MixinDeclaration,
+        (node) =>
+            node is ClassDeclaration ||
+            node is ClassTypeAlias ||
+            node is MixinDeclaration,
       )) {
         classes.register(library, declaration);
       }
