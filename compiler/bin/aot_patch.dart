@@ -767,13 +767,16 @@ Future<void> patch(Program program, Directory base, Directory output) async {
   }
   final before = original.functions.keys.toSet();
   final originalClasses = original.classes.keys.toSet();
-  // Immutable compiler-generated lvalue adapters can become unused when an
-  // index setter is removed. They remain in the baseline snapshot; no user
+  // Immutable compiler-generated adapters can become unused when an index
+  // setter or a private interface obligation is removed. They remain in the baseline snapshot; no user
   // class deletion or live-object migration is permitted by this exception.
   final retiredInfrastructure = originalClasses
       .difference(program.classes.keys.toSet())
       .where(
-        (name) => original.entities[name]?['generated'] == 'super-index-cell',
+        (name) => const {
+          'super-index-cell',
+          'private-interface-trap',
+        }.contains(original.entities[name]?['generated']),
       )
       .toSet();
   for (final declaration in <AstNode>[

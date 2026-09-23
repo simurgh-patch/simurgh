@@ -1,0 +1,127 @@
+{
+  "recorded_at": "2026-09-23 13:06 +08:00",
+  "scope": "Foreign private interface forwarders with native error text, generic arguments, and retained AOT consumers on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T044904Z-tyt6q7ux/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T044933Z-yjfcd1c5/build.json",
+    "private_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045001Z-59k5srn7/build.json",
+    "private_interface_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045032Z-w464w5wt/build.json",
+    "private_interface_removed": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045103Z-kcfatm_6/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045133Z-mdj812s2/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045205Z-x6eqwmy9/build.json",
+    "sdk_mixin_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045237Z-y7ezuhd8/build.json",
+    "sdk_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045308Z-w_26kvii/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045341Z-t7akhq2w/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045411Z-v1vrwyri/build.json",
+    "parts": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045445Z-51fxkh68/build.json",
+    "late_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045514Z-t8r1vd9r/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T045546Z-ylh51wrv/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T044904Z-tyt6q7ux/native-checks/report.json",
+    "verification": "output/m1-private-interfaces-verification.log",
+    "native_log": "output/m1-private-interfaces-native.log",
+    "compiler_analysis": "output/m1-private-interfaces-analysis.log",
+    "format": "output/m1-private-interfaces-format.log",
+    "input_hashes": "output/m1-private-interfaces-start-hashes.json",
+    "process_results": "output/m1-private-interfaces-process-results.json"
+  },
+  "compiler_sha256": "713b35da67bb743625d2fdd18e57cd7596b0097d8dab1de57243c1b84889a386",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 110,
+    "flutter_widget_tests": 7,
+    "native_checks": 92,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "private_interfaces": {
+      "baseline": "NoSuchMethodError: Class 'Plain' has no instance getter '_field'.\nReceiver: Instance of 'Plain'\nTried calling: _field\nNoSuchMethodError: Class 'Plain' has no instance setter '_field='.\nReceiver: Instance of 'Plain'\nTried calling: _field=3\nNoSuchMethodError: Class 'Plain' has no instance method '_method'.\nReceiver: Instance of 'Plain'\nTried calling: _method(1)\nNoSuchMethodError: Class 'Plain' has no instance getter '_property'.\nReceiver: Instance of 'Plain'\nTried calling: _property\nNoSuchMethodError: Class 'Plain' has no instance setter '_property='.\nReceiver: Instance of 'Plain'\nTried calling: _property=8\nNoSuchMethodError: Class 'Plain' has no instance method '_generic'.\nReceiver: Instance of 'Plain'\nTried calling: _generic<int>(2, suffix: \"default\")\nNoSuchMethodError: Class 'Plain' has no instance method '_collision'.\nReceiver: Instance of 'Plain'\nTried calling: _collision<int>(7, suffix: \"c\")\nNoSuchMethodError: Class 'Mock' has no instance getter '_field'.\nReceiver: Instance of 'Mock'\nTried calling: _field\nNoSuchMethodError: Class 'Mock' has no instance setter '_field='.\nReceiver: Instance of 'Mock'\nTried calling: _field=3\nNoSuchMethodError: Class 'Mock' has no instance method '_method'.\nReceiver: Instance of 'Mock'\nTried calling: _method(1)\nNoSuchMethodError: Class 'Mock' has no instance getter '_property'.\nReceiver: Instance of 'Mock'\nTried calling: _property\nNoSuchMethodError: Class 'Mock' has no instance setter '_property='.\nReceiver: Instance of 'Mock'\nTried calling: _property=8\nNoSuchMethodError: Class 'Mock' has no instance method '_generic'.\nReceiver: Instance of 'Mock'\nTried calling: _generic<int>(2, suffix: \"default\")\nNoSuchMethodError: Class 'Mock' has no instance method '_collision'.\nReceiver: Instance of 'Mock'\nTried calling: _collision<int>(7, suffix: \"c\")\nlive:5:6\nhome:8:77\nback:NoSuchMethodError: Class 'Back' has no instance getter '_field'.\nReceiver: Instance of 'Back'\nTried calling: _field\nleft:NoSuchMethodError: Class 'Both' has no instance getter '_field'.\nReceiver: Instance of 'Both'\nTried calling: _field\nright:NoSuchMethodError: Class 'Both' has no instance getter '_field'.\nReceiver: Instance of 'Both'\nTried calling: _field\ngc:NoSuchMethodError: Class 'Plain' has no instance getter '_field'.\nReceiver: Instance of 'Plain'\nTried calling: _field\n",
+      "patched": "NoSuchMethodError: Class 'Added' has no instance getter '_field'.\nReceiver: Instance of 'Added'\nTried calling: _field\nNoSuchMethodError: Class 'Added' has no instance setter '_field='.\nReceiver: Instance of 'Added'\nTried calling: _field=3\nNoSuchMethodError: Class 'Added' has no instance method '_method'.\nReceiver: Instance of 'Added'\nTried calling: _method(1)\nNoSuchMethodError: Class 'Added' has no instance getter '_property'.\nReceiver: Instance of 'Added'\nTried calling: _property\nNoSuchMethodError: Class 'Added' has no instance setter '_property='.\nReceiver: Instance of 'Added'\nTried calling: _property=8\nNoSuchMethodError: Class 'Added' has no instance method '_generic'.\nReceiver: Instance of 'Added'\nTried calling: _generic<int>(2, suffix: \"default\")\nNoSuchMethodError: Class 'Added' has no instance method '_collision'.\nReceiver: Instance of 'Added'\nTried calling: _collision<int>(7, suffix: \"c\")\nNoSuchMethodError: Class 'Mock' has no instance getter '_field'.\nReceiver: Instance of 'Mock'\nTried calling: _field\nNoSuchMethodError: Class 'Mock' has no instance setter '_field='.\nReceiver: Instance of 'Mock'\nTried calling: _field=3\nNoSuchMethodError: Class 'Mock' has no instance method '_method'.\nReceiver: Instance of 'Mock'\nTried calling: _method(1)\nNoSuchMethodError: Class 'Mock' has no instance getter '_property'.\nReceiver: Instance of 'Mock'\nTried calling: _property\nNoSuchMethodError: Class 'Mock' has no instance setter '_property='.\nReceiver: Instance of 'Mock'\nTried calling: _property=8\nNoSuchMethodError: Class 'Mock' has no instance method '_generic'.\nReceiver: Instance of 'Mock'\nTried calling: _generic<int>(2, suffix: \"default\")\nNoSuchMethodError: Class 'Mock' has no instance method '_collision'.\nReceiver: Instance of 'Mock'\nTried calling: _collision<int>(7, suffix: \"c\")\nlive:5:6\nhome:8:77\nback:NoSuchMethodError: Class 'Back' has no instance getter '_field'.\nReceiver: Instance of 'Back'\nTried calling: _field\nleft:NoSuchMethodError: Class 'Both' has no instance getter '_field'.\nReceiver: Instance of 'Both'\nTried calling: _field\nright:NoSuchMethodError: Class 'Both' has no instance getter '_field'.\nReceiver: Instance of 'Both'\nTried calling: _field\ngc:NoSuchMethodError: Class 'Added' has no instance getter '_field'.\nReceiver: Instance of 'Added'\nTried calling: _field\n"
+    },
+    "private_interface_added": {
+      "baseline": "4:3\n",
+      "patched": "NoSuchMethodError: Class 'Added' has no instance getter '_secret'.\nReceiver: Instance of 'Added'\nTried calling: _secret\n"
+    },
+    "private_interface_removed": {
+      "baseline": "NoSuchMethodError: Class 'Added' has no instance getter '_secret'.\nReceiver: Instance of 'Added'\nTried calling: _secret\n",
+      "patched": "4:3\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "private_interfaces": {
+      "baseline": {
+        "source_sha256": "1f992c33e578e0569201bbbe55e10a91e5cedb17a6eaa598a3bd4b3fde817c13",
+        "executable_sha256": "ae72d575da69734bbde97cf1149bb1cebfd343dee7c39543b1a9a844e9e11e8f",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "87adf8a5b3b54e62cd1e96f265ab217f95927264c20af2482fad95ce9e9ea67b"
+      },
+      "patch": {
+        "source_sha256": "e38c6ffcf2f663bb0dfe5b4c1c2fbb2aff156d19a3a38c4d72f73cc35cb405cb",
+        "executable_sha256": "344c63163a04d6631bf4ddd23c1ce4ccde8d14827ac80222f2b9b7952baa60bc",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "706f1858d55227b44ec187fa34f0916b77e04b4d30a9c9b36ac6bfe32088f199"
+      }
+    },
+    "private_interface_added": {
+      "baseline": {
+        "source_sha256": "47934e9a6f8dd554e40072997408280d6b1ae42e9d8d15dcbe76d09dee98bebb",
+        "executable_sha256": "ecd263e34b494ff32de0b65219fd754e23a0ba6a13b5989f4bb9c595d48e5754",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "dff5092c369566523460df95d08fe2c19f85a589ff6b4aec60663758bf280442"
+      },
+      "patch": {
+        "source_sha256": "0b0d81e37fff1cc2c92f7fa1755ff5af39fd9b457e45b1ca35fcf9633388e4b9",
+        "executable_sha256": "8d6177f3027293f42a93fbe295aff620a20551cb28d371b5dcac51219a11b87d",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "578e612df305d4e7d1519ba4500875aecf60600dc9c624db0be7eed0db15f2a6"
+      }
+    },
+    "private_interface_removed": {
+      "baseline": {
+        "source_sha256": "0b0d81e37fff1cc2c92f7fa1755ff5af39fd9b457e45b1ca35fcf9633388e4b9",
+        "executable_sha256": "c804c0afaa765076a506e840f367f5b18ee2e5fb6a5faf9aa48397d221a91c25",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "578e612df305d4e7d1519ba4500875aecf60600dc9c624db0be7eed0db15f2a6"
+      },
+      "patch": {
+        "source_sha256": "6bc3ea79046e10970a94861605d4710bd2626725d6bcb6011e52ed7a99aa14ba",
+        "executable_sha256": "6cb9603efc0686fe992ec1ccb5f6c4837fbb9cbc34daaee76cfdbf1115dc02ac",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "10a0facabb0ccd6a30b9226c2b3d5da8191081ca5d5e62000da29db1b59b57fa"
+      }
+    }
+  },
+  "private_interface_scavenges": 16,
+  "notes": [
+    "Missing foreign private members throw directly, bypassing business noSuchMethod, matching pinned CFE behavior.",
+    "Generated contracts obtain native Invocation data from genuine CFE noSuchMethod forwarders. Public fail entry points keep helper private selectors inside their declaring library across bytecode modules.",
+    "Original concrete inheritance, same-library implementations, part ownership and duplicate private names across libraries retain their behavior.",
+    "Patch-first implementations can add helper classes; removing the obligation can retire only unused generated helpers. User class deletion remains prohibited.",
+    "The initial public Invocation prototype matched exception types but not native error text; that failed comparison was preserved and the implementation replaced before final validation.",
+    "Historical full native suite was not rerun; this report covers fourteen rebuilt groups."
+  ],
+  "limitations": [
+    "Full Flutter and mobile cold start, signing/rollback and physical-device performance remain incomplete.",
+    "Covariant declarations and broader language combinations are not accepted by these fixtures. Failing-path helper allocations are not benchmarked."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

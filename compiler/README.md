@@ -622,7 +622,25 @@ covariant-field, part/private-field combinations, and mobile behavior are not
 accepted by this fixture. Class layout changes remain subject to class-version
 relinking, not live object migration.
 
-Known boundary: a concrete cross-library implementation of a descendant whose
-ancestor has private fields can acquire artificial member obligations after
-private-name mangling. This case currently fails generated Kernel compilation;
-it is not accepted as supported cross-library implements behavior.
+### Foreign private interface members
+
+Concrete external implementations may omit private interface members declared
+in another source library. Their generated members now throw NoSuchMethodError,
+as the original Dart front end does, without invoking a business noSuchMethod.
+Existing concrete superclass/mixin implementations and implementations inside
+the declaring library keep their original behavior.
+
+Compiler-generated contracts and forwarding objects let Dart create its native
+Invocation data, preserving the original error text, generic arguments, defaults,
+and named arguments. Public helper entry points keep private selectors local
+when a new implementation arrives in a bytecode module. These helpers use no
+application annotations or hand-written bridges. They are allocated only on
+these missing-member paths; their performance has not been measured.
+
+The private-interface fixtures cover fields, accessors, generic methods,
+receiver-name collisions, part-library ownership, duplicate private names in
+different libraries, custom noSuchMethod, patch-first implementations, and
+unused helper retirement. The native verifier compares full exception text
+against separately compiled original-source AOT and checks retained AOT callers
+and actual GC. Mobile behavior and broader covariant declarations remain
+outside this acceptance scope.

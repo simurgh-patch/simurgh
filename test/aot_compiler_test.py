@@ -1074,6 +1074,45 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
 
+    def test_private_interfaces_preserve_aot_consumers_and_real_implementations(self):
+        base, patch = self.root / 'private-base', self.root / 'private-patch'
+        for action, side, args in [('baseline', 'baseline', [base]), ('patch', 'patch', [base, patch])]:
+            result = self.command(action, ROOT / f'compiler/fixtures/aot_private_interfaces_{side}/app.dart', *args)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertIn('NoSuchMethodError.withInvocation', (base / 'source.dart').read_text())
+        self.assertNotIn('Invocation.genericMethod', (base / 'source.dart').read_text())
+
+    def test_patch_can_first_require_private_interface_forwarders(self):
+        base, patch = self.root / 'private-added-base', self.root / 'private-added-patch'
+        for action, side, args in [('baseline', 'baseline', [base]), ('patch', 'patch', [base, patch])]:
+            result = self.command(action, ROOT / f'compiler/fixtures/aot_private_interface_added_{side}/app.dart', *args)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        user_classes = [s for s in manifest['added_classes'] if not manifest['entities'][s].get('generated')]
+        self.assertEqual(self.names(manifest, user_classes), ['Added'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(len(manifest['added_classes']), 7)
+
+    def test_unused_private_interface_infrastructure_can_retire(self):
+        base, patch = self.root / 'private-removed-base', self.root / 'private-removed-patch'
+        for action, side, args in [('baseline', 'baseline', [base]), ('patch', 'patch', [base, patch])]:
+            result = self.command(action, ROOT / f'compiler/fixtures/aot_private_interface_removed_{side}/app.dart', *args)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        original = json.loads((base / 'manifest.json').read_text())
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        retired = manifest['retired_infrastructure_classes']
+        self.assertEqual(len(retired), 6)
+        self.assertTrue(all(original['entities'][s]['generated'] == 'private-interface-trap' for s in retired))
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Added'])
+        self.assertNotIn('consume', self.names(manifest, manifest['module_only_functions']))
+
     def test_super_fields_keep_parent_storage_and_aot_consumers(self):
         base, patch = self.root / 'super-fields-base', self.root / 'super-fields-patch'
         for action, fixture, args in [

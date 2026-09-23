@@ -19,6 +19,7 @@ class _Class {
   final InterfaceElement element;
   final String symbol;
   final bridges = <Element, String>{};
+  final privateInterfaceStubs = <Element, String>{};
   String? indexCellBridge;
   final bridgeStubs = <MapEntry<Element, String>>[];
   final indexCellStubs = <_Class>[];
@@ -494,6 +495,23 @@ class _Classes {
           inherit(constraint.element);
         }
       }
+      // CFE permits missing foreign private interface members, synthesizing
+      // throwing forwarders even when a class overrides noSuchMethod. Public
+      // private-name mangling must not turn them into business obligations.
+      if (owner.element is ClassElement &&
+          !(owner.element as ClassElement).isAbstract) {
+        for (final entry in owner.element.inheritedMembers.entries) {
+          final member = entry.value;
+          if (!member.isPrivate ||
+              member.library == owner.element.library ||
+              owner.element.getInheritedConcreteMember(entry.key) != null) {
+            continue;
+          }
+          final symbol = memberSymbols[member.baseElement];
+          if (symbol != null)
+            owner.privateInterfaceStubs[member.baseElement] = symbol;
+        }
+      }
       final emitted = <String>{};
       for (final type in owner.element.allSupertypes) {
         final interface = declarations[type.element];
@@ -554,6 +572,85 @@ class _Classes {
           output.writeln(source);
           return symbol;
         });
+    final privateTraps = <Element, String>{};
+    // CFE-created noSuchMethod forwarders carry a native Invocation. Using the
+    // public Invocation factories loses the VM's original error details.
+    String privateInterfaceTrap(
+      ExecutableElement member,
+    ) => privateTraps.putIfAbsent(member, () {
+      final parent = fieldOwners[member] ?? methodOwners[member]!;
+      final library = parent.library.ownerUri;
+      final kind = member is GetterElement
+          ? 'get'
+          : member is SetterElement
+          ? 'set'
+          : 'call';
+      final id = _hash(
+        '$library::infrastructure::private-interface::${parent.symbol}::$kind::${member.name}',
+      );
+      final contract = '${entityPrefix}class_${id}__PrivateContract';
+      final trap = '${entityPrefix}class_${_hash('$id::trap')}__PrivateTrap';
+      final method = methods[member];
+      final parameters = method?.parameters?.parameters ?? <FormalParameter>[];
+      final positional = parameters
+          .where((p) => p.isPositional)
+          .map((p) => 'dynamic ${parameterName(p)}')
+          .toList();
+      final named = parameters
+          .where((p) => p.isNamed)
+          .map((p) => 'required dynamic ${parameterName(p)}')
+          .toList();
+      if (method == null && member is SetterElement)
+        positional.add('dynamic value');
+      final formals = [
+        ...positional,
+        if (named.isNotEmpty) '{${named.join(', ')}}',
+      ].join(', ');
+      final arguments = method == null
+          ? (member is SetterElement ? 'value' : '')
+          : forwardArguments(parameters);
+      final types = [
+        for (var i = 0; i < member.typeParameters.length; i++)
+          '${entityPrefix}failureType$i',
+      ];
+      final generics = types.isEmpty ? '' : '<${types.join(', ')}>';
+      final name = member.name!;
+      final declaration = member is GetterElement
+          ? 'dynamic get $name;'
+          : member is SetterElement
+          ? 'set $name($formals);'
+          : 'dynamic $name$generics($formals);';
+      final invocation = member is GetterElement
+          ? '$trap(${entityPrefix}failureReceiver).$name'
+          : member is SetterElement
+          ? '$trap(${entityPrefix}failureReceiver).$name = $arguments'
+          : '$trap(${entityPrefix}failureReceiver).$name$generics($arguments)';
+      for (final entry in {
+        contract: 'abstract class $contract { $declaration }',
+        trap:
+            'class $trap implements $contract { '
+            'final Object ${entityPrefix}failureReceiver; $trap(this.${entityPrefix}failureReceiver); '
+            'static dynamic fail$generics(Object ${entityPrefix}failureReceiver${formals.isEmpty ? '' : ', $formals'}) => $invocation; '
+            'dynamic noSuchMethod(msbEntity_sdk_core.Invocation invocation) => '
+            'throw msbEntity_sdk_core.NoSuchMethodError.withInvocation(${entityPrefix}failureReceiver, invocation); }',
+      }.entries) {
+        records[entry.key] = {
+          'library': library,
+          'name': '<private-interface-$kind-${member.name}>',
+          'entity': _hash(entry.key),
+          'kind': 'class',
+          'generated': 'private-interface-trap',
+        };
+        manifest[entry.key] = {
+          'library': library,
+          'name': records[entry.key]!['name'],
+          'source': entry.value,
+          'source_sha256': _hash(entry.value),
+        };
+        output.writeln(entry.value);
+      }
+      return trap;
+    });
     for (final owner in declarations.values) {
       final node = owner.node;
       final classParameters = node.typeParameters;
@@ -703,10 +800,27 @@ class _Classes {
       for (final (entry, stub) in [
         for (final entry in owner.bridges.entries) (entry, false),
         for (final entry in owner.bridgeStubs) (entry, true),
+        for (final entry in owner.privateInterfaceStubs.entries) (entry, true),
       ]) {
-        String implementation(String expression) => stub
-            ? "throw StateError('Invalid generated super bridge receiver')"
-            : expression;
+        String implementation(String expression) {
+          if (owner.privateInterfaceStubs.containsKey(entry.key)) {
+            final trap = privateInterfaceTrap(entry.key as ExecutableElement);
+            final declaration = methods[entry.key];
+            final typeArguments = forwardTypeArguments(
+              declaration?.typeParameters,
+            );
+            final args = declaration == null
+                ? (entry.key is SetterElement ? 'value' : '')
+                : forwardArguments(
+                    declaration.parameters?.parameters ?? <FormalParameter>[],
+                  );
+            return '$trap.fail$typeArguments(this${args.isEmpty ? '' : ', $args'})';
+          }
+          return stub
+              ? "throw StateError('Invalid generated super bridge receiver')"
+              : expression;
+        }
+
         final fieldOwner = fieldOwners[entry.key];
         if (fieldOwner != null) {
           final element = entry.key as ExecutableElement;
