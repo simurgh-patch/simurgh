@@ -85,7 +85,7 @@ bool supportedType(TypeAnnotation? type, {bool allowVoid = true}) {
       (uri) => type.importPrefix?.name.lexeme == sdkPrefix(uri),
     )) {
       return type.typeArguments?.arguments.every(
-            (argument) => supportedType(argument, allowVoid: false),
+            (argument) => supportedType(argument),
           ) ??
           true;
     }
@@ -100,7 +100,7 @@ bool supportedType(TypeAnnotation? type, {bool allowVoid = true}) {
         ((type.name.lexeme.startsWith('${entityPrefix}class_') ||
                 type.name.lexeme.startsWith('${entityPrefix}alias_')) &&
             (type.typeArguments?.arguments.every(
-                  (argument) => supportedType(argument, allowVoid: false),
+                  (argument) => supportedType(argument),
                 ) ??
                 true) &&
             type.importPrefix == null);
@@ -211,7 +211,6 @@ class Program {
           declaration.isSetter ||
           declaration.externalKeyword != null ||
           !supportedTypeParameters(fn.typeParameters) ||
-          fn.body.isGenerator ||
           fn.body is EmptyFunctionBody) {
         reject('Unsupported function kind or generic signature: $name');
       }
@@ -219,6 +218,7 @@ class Program {
         reject('Explicit primitive or function return type required: $name');
       }
       if (fn.body.isAsynchronous &&
+          !fn.body.isGenerator &&
           !isFutureType(declaration.returnType) &&
           declaration.returnType!.toSource() != 'dynamic' &&
           (entities[name] as Map?)?['async_return_supported'] != true) {
@@ -364,9 +364,8 @@ class BodyGuard extends RecursiveAstVisitor<void> {
   @override
   void visitFunctionExpression(FunctionExpression node) {
     if (!supportedTypeParameters(node.typeParameters) ||
-        node.body.isGenerator ||
         node.body is EmptyFunctionBody) {
-      reject('Unsupported generic bounds or generator closure');
+      reject('Unsupported generic bounds or empty closure');
     }
     validateParameters(node.parameters!);
     for (final param in node.parameters!.parameters) {
@@ -665,11 +664,12 @@ void baseline(Program program, Directory output) {
       generated.writeln('return ${prefix}Replacement$types($args);');
     }
     generated.writeln('}');
-    if (f.functionExpression.body.isAsynchronous) {
-      // Keep dispatch synchronous: adding another async wrapper would change
-      // Future identity and introduce an extra completion boundary.
-      // An inferred closure could narrow Future<num> to Future<int>. Keep
-      // the original declared return type on the local async function.
+    if (f.functionExpression.body.isAsynchronous ||
+        f.functionExpression.body.isGenerator) {
+      // Keep dispatch synchronous: an extra async wrapper changes Future
+      // identity/timing, while splicing a sync* body would lose lazy iteration.
+      // A typed local preserves the declared Future/Iterable/Stream result
+      // without narrowing its inferred element type or starting a generator.
       generated.writeln(
         '${f.returnType!.toSource()} ${prefix}OriginalBody() $body',
       );

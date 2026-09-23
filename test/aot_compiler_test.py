@@ -76,7 +76,7 @@ class AotCompilerTests(unittest.TestCase):
         cases = {
             'async_void': 'void main() async {}',
             'import': "import 'dart:io'; void main() {}",
-            'generator_closure': 'void main() { final g = () async* { yield 1; }; g(); }',
+            'invalid_generator_return': 'int values() sync* { yield 1; } void main() {}',
             'member': 'int f() => 1; void main() { print(1.f); }',
         }
         for name, source in cases.items():
@@ -1094,6 +1094,77 @@ class AotCompilerTests(unittest.TestCase):
         manifest = json.loads((patch / 'manifest.json').read_text())
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
+
+    def test_generators_preserve_aot_consumers_and_metadata(self):
+        base, patch, manifest = self.named_mixin_pair('generators')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Box.items', 'events', 'values'])
+
+    def test_generator_errors_cancellation_and_generic_locals(self):
+        base, patch, manifest = self.named_mixin_pair('generator_edges')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Box.stream', 'guarded', 'guardedAsync', 'replay', 'revision'])
+        self.assertNotIn('main', self.names(manifest, manifest['installed_functions']))
+
+    def test_generator_inference_closures_and_async_retention(self):
+        base, patch, manifest = self.named_mixin_pair('generator_async')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['closureEvents', 'closureValues', 'flow', 'held', 'nested', 'sequence', 'ticks'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_generator_layout_metadata_and_body_kind_relinking(self):
+        base, patch, manifest = self.named_mixin_pair('generator_relink')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Box'])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['flow', 'make', 'read', 'tagged'])
+        self.assertNotIn('describe', self.names(manifest, manifest['installed_functions']))
+        self.assertIn('transition', self.names(manifest, manifest['installed_functions']))
+        self.assertIn('reverse', self.names(manifest, manifest['installed_functions']))
+
+    def test_generator_parts_and_mixed_language_versions(self):
+        base, patch, manifest = self.named_mixin_pair('generator_multilang')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['events', 'make'])
+        self.assertEqual(self.names(manifest, manifest['added_functions']), ['extra'])
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+
+    def test_generator_invalid_returns_yields_and_entries_rejected(self):
+        cases = [
+            'int values() sync* { yield 1; } void main() {}',
+            'Future<int> values() async* { yield 1; } void main() {}',
+            "Iterable<int> values() sync* { yield 'wrong'; } void main() {}",
+            "Stream<int> values() async* { yield* Stream<String>.value('wrong'); } void main() {}",
+            'class C { int values() sync* { yield 1; } } void main() {}',
+            'Iterable<int> main() sync* { yield 1; }',
+        ]
+        for index, source in enumerate(cases):
+            with self.subTest(index=index):
+                output = self.root / f'invalid-generator-{index}'
+                result = self.command('baseline', self.source(f'generator-{index}.dart', source), output)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertFalse(output.exists())
+
+    def test_void_type_arguments_preserve_supported_type_boundaries(self):
+        source = self.source('app.dart', 'class Box<T> { const Box(); } typedef Alias<T> = Box<T>; Iterable<Alias<void>> values() sync* { yield const Alias<void>(); } Stream<void> events() async* { yield null; } Future<void> main() async { print(values().length); print(await events().length); }')
+        result = self.command('baseline', source, self.root / 'base')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text('Stream<void> values() async* { yield null; } Future<void> main() async { await for (final value in values()) { print(value); } }')
+        result = self.command('baseline', source, self.root / 'invalid')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Static source errors', result.stderr)
+
+    def test_generator_incompatible_slot_signature_rejected(self):
+        source = self.source('app.dart', 'Iterable<int> values(int x) sync* { yield x; } void main() { print(values(1).first); }')
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text('Iterable<int> values(int x, int y) sync* { yield x + y; } void main() { print(values(1, 2).first); }')
+        result = self.command('patch', source, base, self.root / 'patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Signature changed', result.stderr)
+        self.assertFalse((self.root / 'patch/module.dart').exists())
 
     def test_metadata_preserves_aot_consumers_and_pragmas(self):
         base, patch, manifest = self.named_mixin_pair('metadata')

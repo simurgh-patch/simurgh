@@ -1,0 +1,309 @@
+{
+  "recorded_at": "2026-09-23 17:41 +08:00",
+  "scope": "sync*/async* generators, cold-start entry dispatch, closures, cancellation/pause/resume, retained state across GC, void type arguments and dependency relinking on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091500Z-0y1q8s_y/build.json",
+    "generators": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091530Z-fjfa0tdi/build.json",
+    "generator_edges": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091603Z-murve356/build.json",
+    "generator_async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091634Z-47kq8dml/build.json",
+    "generator_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091706Z-iuybq8k0/build.json",
+    "generator_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091738Z-z4l3tcps/build.json",
+    "metadata": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091810Z-4wqf411g/build.json",
+    "metadata_package": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091843Z-l39e7s0l/build.json",
+    "metadata_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091917Z-xut7uyq_/build.json",
+    "metadata_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091948Z-0vtezonn/build.json",
+    "enums": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092021Z-bgkn5jt8/build.json",
+    "enum_custom": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092055Z-jtyzl56h/build.json",
+    "enum_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092134Z-a6gofo9p/build.json",
+    "enum_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092206Z-scv6cmfi/build.json",
+    "records": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092238Z-aoqub_ui/build.json",
+    "record_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092311Z-rt6kx1g9/build.json",
+    "record_shapes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092348Z-b5n49k1f/build.json",
+    "record_dynamic": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092425Z-tbszmzkf/build.json",
+    "record_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092456Z-88l_tk20/build.json",
+    "typedefs": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092528Z-ql_dxemf/build.json",
+    "typedef_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092559Z-d5_1705g/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092631Z-uktgcwqf/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092702Z-7ocj9uih/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092735Z-t0r0w272/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092806Z-uahj5zt8/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092840Z-hjqok8_z/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092913Z-kmgkowrt/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T092949Z-jggage9w/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T093024Z-uck22xu4/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T093101Z-_t_cbhho/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/report.json",
+    "verification": "output/m1-generators-verification.log",
+    "native_log": "output/m1-generators-native.log",
+    "compiler_analysis": "output/generator-mainline/final-analysis.log",
+    "format": "output/generator-mainline/final-format.log",
+    "input_hashes": "output/m1-generators-start-hashes.json",
+    "native_input_hashes": "output/m1-generators-native-start-hashes.json",
+    "process_results": "output/m1-generators-process-results.json"
+  },
+  "compiler_sha256": "e3d1892c376a39bcf2c1c87bc4be070d398116241d4c8f0de778ba7eff74e20b",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667",
+      "pkg/front_end/lib/src/source/source_enum_builder.dart": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 150,
+    "flutter_widget_tests": 7,
+    "native_checks": 279,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures_and_resolved_packages": true,
+  "packages": {
+    "meta": {
+      "name": "meta",
+      "version": "1.18.2",
+      "language_version": "3.5",
+      "pubspec_sha256": "9b89b2693e8da6750291e5ff0091c70588d5f29c0b2fe69d508171fd316c5f03"
+    }
+  },
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "generators": {
+      "baseline": "lazy:0:0\n[1, 2, 8, 9]\n[1, 2, 8, 9]\nreplay:2:2\n[2, 3, 10, 11]\n[x, x]\n[x, x]\ndone:2:3\n",
+      "patched": "lazy:0:0\n[3, 4, 8, 9]\n[3, 4, 8, 9]\nreplay:2:2\n[4, 5, 10, 11]\n[x]\n[x, x]\ndone:2:3\n"
+    },
+    "generator_edges": {
+      "baseline": "lazy:0\nfirst:true:1\nheap:31249875000\nsecond:true:2\nerror:Bad state: sync\nend:false:[sync-start, sync-final]\nasync-lazy:0\ncancel:[2, 3]:[async-start, async-final]\nasync-error:Bad state: async\nfailure:[2]:[async-start, async-final]\ngeneric:[x, x]\nmethod:[3, 3]\nrev:1\n",
+      "patched": "lazy:0\nfirst:true:3\nheap:31249875000\nsecond:true:4\nerror:Bad state: sync\nend:false:[sync-start, sync-final]\nasync-lazy:0\ncancel:[4, 5]:[async-start, async-final]\nasync-error:Bad state: async\nfailure:[4]:[async-start, async-final]\ngeneric:[x]\nmethod:[3]\nrev:2\n"
+    },
+    "generator_async": {
+      "baseline": "void:1:1\nheap:31249875000\nheld:[start, held]\ninferred:[1, 2]:[3, 4]\nclosures:[7, 8]:[9, 10]\npaused:[5]:[]\nresumed:[5, 6]:[nested-final, after-delegate, outer-final]\ncancel:5\ncancelled:[nested-final, outer-final]\n",
+      "patched": "void:1:2\nheap:31249875000\nheld:[start, patched-held]\ninferred:[11, 12]:[13, 14]\nclosures:[17, 18]:[19, 20]\npaused:[15]:[]\nresumed:[15, 16]:[nested-final, after-delegate, outer-final]\ncancel:15\ncancelled:[nested-final, outer-final]\n"
+    },
+    "generator_relink": {
+      "baseline": "3:4\n7:7:old\n",
+      "patched": "13:14\n27:7:new:payload\n"
+    },
+    "generator_multilang": {
+      "baseline": "[1, 2]:[1, 2]:[old, part]\n",
+      "patched": "[1, 2, 8, 9]:[1, 2]:[new, part]\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "generators": {
+      "baseline": {
+        "source_sha256": "28831da4a5b6e9821dcd7335f384639ed8db5f197c7af44aae17c410f6f65c15",
+        "executable_sha256": "7ccd2a0106053f1a0eb658177789a8c9d3c51f0c2a0213cf75c4843f504a31e2",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "2f53c9b4e891b26dfbe70a952e06b810d8f961335243980e21988084b2d98433"
+      },
+      "patch": {
+        "source_sha256": "2ef7c7258cbff57091e459f9cd91b6d5a4e6d50829abd63d37702b99a2c1b142",
+        "executable_sha256": "5cb778b45b1d404a59b7880eb66f2ee558c456ba344a2e47fa7dff8ebcc278dd",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "83b018cb0d823a1e8f146f7bb878efa18cfad44f080031332bbd3bf0f9befea3"
+      }
+    },
+    "generator_edges": {
+      "baseline": {
+        "source_sha256": "a56fd7ebfe73ebdbba578d592743561957bd9c127ec49e37c473f90b36b1a64a",
+        "executable_sha256": "11e60c69553ab6092653e2cd30ee80f50c21d3e5e306890dac2dccbed938a416",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "006f1e3df17273029147ba6d0346f8abf7897c466c62d6ead34d2980a5314ac2"
+      },
+      "patch": {
+        "source_sha256": "e6937e5abfc2d5146d8a54df8aa66c49c53977bca4da62fb55284ed6175df6df",
+        "executable_sha256": "d7fe6ca0ee7e7d226c0fb19ae5fcad3da99ae845c50c8a8cbf2d4a790cf136a3",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "013639663b0c0852ea70a041622db3edbed41ca2718298db3b555bdf0f6c067b"
+      }
+    },
+    "generator_async": {
+      "baseline": {
+        "source_sha256": "4ac671382f7c684d845cc92fb90bc758aafb4239e8c887b8e8466f5cd21f75a9",
+        "executable_sha256": "0eb143e3e4e0b24ba975445d2cc768dde79bde2a5343bc76868b556ec5090489",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "7f374fe9ced2db92881f30ab27a1ef9b88edd09d142625f7dcd1c2617eeb7507"
+      },
+      "patch": {
+        "source_sha256": "57fc2526188f5851449a8681da3342f6de9afa432b5a8e8c75fba1c13dc5fb95",
+        "executable_sha256": "ca73b098691d194bdd9129a69250e9cb6dbac449717b87b07246ab9fd5f7f16e",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "1d9de558d306a2ecb740e43ee6159613b5e83ed6d00c3868e8c037e3f4b5eb98"
+      }
+    },
+    "generator_relink": {
+      "baseline": {
+        "source_sha256": "5fd82eda370a79da29f0de41fc0b1079664fe6864511d9bff12b4d54a3666e34",
+        "executable_sha256": "e5e5a36e8f34cc3e36b8330fa98a0819435b66b2aba97d9040742ea634909b45",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "ee36904f5deafbf6fed8ce0536401835b1a41cdb3c0c61b7b3452dc504f168b8"
+      },
+      "patch": {
+        "source_sha256": "71928dea43033f6dee2dc92ce38f145a9e7a5bcf44c96952f6b120145fd22bed",
+        "executable_sha256": "d7426cf46f7bc10052cff49773a4985b718d51c88bbd011afa322c5fd8907429",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "3a4288c0781e14d00a3cc311f1b88c809a21221c915183aff0fab3493cb29f92"
+      }
+    },
+    "generator_multilang": {
+      "baseline": {
+        "source_sha256": "bd46d1b431065a1af2b7fb48fd07a5b15830a70e7eac9962b7ed7f1ee608e071",
+        "executable_sha256": "2facdb986f5149c591b20b1e0f759aa1ee286ea903f4202d5c1fa02531cf535c",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "4705f6ede0a5801190d6d4dd90709911aebd4790b0ad3b1856ade80013a67035"
+      },
+      "patch": {
+        "source_sha256": "d92f71737f2a162d48140e7e347d1119814c100546df89cbc8fab47511d96f37",
+        "executable_sha256": "3f64cb6ef47ef959a1d77d09e2abfca6e17ee834b002aec56f5e4ca2f213c7e9",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "eb973e2aeabd5c68877acbf498f7fe1da7b571e68d25cd771aecaddc8a0dd7b8"
+      }
+    }
+  },
+  "gc": {
+    "generator_iterator_scavenges": 198,
+    "generator_async_scavenges": 198
+  },
+  "kernel_metadata": {
+    "generators": {
+      "sites": {
+        "baseline": 4,
+        "patch": 4,
+        "baseline_helpers": 2,
+        "patch_helpers": 1
+      },
+      "kernel_sha256": {
+        "source-baseline": "c94032ae48d3f6cbecc6763865853f86e533ca1cad69b31e0a38bb863740b5ae",
+        "baseline": "1108136d3761cbbe06fb3a58e898b217a2742674f0d32cf64d1d357edd7421ea",
+        "source-patch": "85bd20bfc205e7691c7c8b327f65632d53fb4eeedef3c76e01690a35c8e40a4d",
+        "patch": "0458d50a08c8f4db124d0ce26d07562bbdb680f65541dba908195b4fa4edf9f3"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/generators-metadata-snapshots.json",
+      "snapshots_sha256": "02125922efd7ab3d32b139348dca023cfe1bb00ff2a526eba4d1b09878ec144e"
+    },
+    "generator_relink": {
+      "sites": {
+        "baseline": 2,
+        "patch": 2,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "dd0882ed58b21035aecc3aa3f300b8edb9e0ca7b4a94495860cacfe5bee56e92",
+        "baseline": "24169c512d1e23c9873806eeef84c613f2e2ad14c104bfd2fbc704294c6a3031",
+        "source-patch": "63e18ddedd9f83b7949f38ea975b59314b8d00b15eca2b25251af58f7438cb7c",
+        "patch": "02d7649041ae09799734234916deb2ef782680649cc68aff108af9e343e9fe14"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/generator_relink-metadata-snapshots.json",
+      "snapshots_sha256": "a13ff2c908d87922817fa629393b4fd09a4e85a194dd20e58d3df5aa59e4f3aa"
+    },
+    "metadata": {
+      "sites": {
+        "baseline": 24,
+        "patch": 24,
+        "baseline_helpers": 4,
+        "patch_helpers": 4
+      },
+      "kernel_sha256": {
+        "source-baseline": "bd51f4f06b5a089fd1301cf5dabbd024ff51a7f59733fbd5354387b69be1d397",
+        "baseline": "fdb49d8a80ad2a9f445e677978adc7a3506b8afb5e52c7ec9da8e2258125d0da",
+        "source-patch": "1d574e48ed7f94a19d037972707e8f163f70bf5ef1eedf6101af6035e7db85a7",
+        "patch": "b0cfa874a3b0e6e198757aecf16ae22bcd24f04d680128f70b641a7ef7be8210"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/metadata-metadata-snapshots.json",
+      "snapshots_sha256": "6555fe872039879d030a9db4af811a128b3d012df02d7141efd0955eb1ad611d"
+    },
+    "metadata_package": {
+      "sites": {
+        "baseline": 32,
+        "patch": 32,
+        "baseline_helpers": 3,
+        "patch_helpers": 1
+      },
+      "kernel_sha256": {
+        "source-baseline": "f5e06c5a2fd75f1d3a9bf64f2ac887b5b4bd7b92493bf1bde97c252a8d2fd1da",
+        "baseline": "4f986582216799a82ec37d05b1652c7ab323ff99589d34d5cd40509a1d3a4f49",
+        "source-patch": "1ab3fabdca8c4eda070b714e8a17397895684714ed877aac9de225bba82e1556",
+        "patch": "706a51358c3087af8934351eded0a9c2f73c79da97518634dcd334532ce77c73"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/metadata_package-metadata-snapshots.json",
+      "snapshots_sha256": "b77adbe15e3c9485fe7b88dbc59f3c2cf1a3f00f72ab82307a9cd6553a28a873"
+    },
+    "metadata_relink": {
+      "sites": {
+        "baseline": 5,
+        "patch": 5,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "28c88cf876c841f3951ebdf75d60418244f80ee5df26ee12ceb6ea4df34c1adf",
+        "baseline": "7a980fada533eba0f190b63aa81706232b33ede52ca2ed9ecaebfbb5daf38e91",
+        "source-patch": "ab1e03bddac5c58ed8b329f0a9f198f80a35764df80edc17189791bd2a6a2b49",
+        "patch": "f54b1179e0214b934bdd90caddd1b337c6b8afa1f151c01b561a383fa954050e"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/metadata_relink-metadata-snapshots.json",
+      "snapshots_sha256": "fd72011334d612cbdb31a555e193405d5ef89d25e81ad30ad293f29e9de2710f"
+    },
+    "metadata_multilang": {
+      "sites": {
+        "baseline": 1,
+        "patch": 2,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "af172f5b301943dbb91e8e70cfced15459445d64a22cbb16a0867e5ffc9e489e",
+        "baseline": "333ccc6c2b7a4b82c4780e24c31738ed04aad84cdeb338428efc3f82fc2fec45",
+        "source-patch": "45217d7cbcf4050e1ed45a8af6e0efa411f52561fde497d9e59c609298ea7a39",
+        "patch": "e2cd6c05832ed358016dabae168302c7c4a16d8ae60260773aa23393dcfb92bf"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T091429Z-x14blnz3/native-checks/metadata_multilang-metadata-snapshots.json",
+      "snapshots_sha256": "981d63bcfc9fb5e59601d7cdc42baa7cb6a8779b825ddd91ea0b08acdb5c9371"
+    }
+  },
+  "metadata_inspector_sha256": "8302967c2e2d5a7b5bee36a90ee2d8b04f762a2e9df141ebceea1b4ffeb1b592",
+  "metadata_verifier_sha256": "f0d812ebc6973393d4b94ca58ed3baa58fab4015daea420f25360bf29a935eec",
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4"
+  },
+  "notes": [
+    "A synchronous baseline dispatcher returns a typed local generator result. It neither splices yield into a regular body nor wraps the result in another async function.",
+    "Generator methods, local functions and closures preserve original modifiers and captures. Native cases cover lazy start, repeated traversal, yield*, exceptions/finally, await-for cancellation, subscription pause/resume and cancellation during delegation.",
+    "Old AOT consumers drive patched iterators and streams. A sync iterator suspended between moveNext calls and an async generator retaining a payload across await remain correct under actual Scavenge.",
+    "Compatible normal/generator body transitions install into retained entries. Changed class layouts and metadata relink producer signatures and callers; added payload classes are consumed through unchanged Object-typed AOT code.",
+    "Legal void type arguments in SDK/program/alias types are accepted. Original source analysis continues rejecting invalid generator returns, wrong yield types and use of void expressions as values; incompatible slot signatures remain rejected.",
+    "Five new fixture pairs and eight new Python tests were added. An existing blanket generator-closure rejection was replaced by an invalid-generator-return boundary.",
+    "Initial async-retention exploration and one targeted test rejected Completer<void> due to the old generic-argument validator. It was corrected; the failing test and added void-expression boundary passed before freezing. Failure logs remain under output/generator-mainline.",
+    "The ordinary compiler/test/fixture inputs were frozen before verify.sh. The native verifier was frozen separately before the final native build suite. All frozen inputs were rechecked.",
+    "Thirty-one selected groups were rebuilt under one current compiler. Historical full native suite was not rerun. No runtime patch changed in this round."
+  ],
+  "limitations": [
+    "Installation remains before entry execution at cold start; no live iterator, subscription or stack migration is implemented.",
+    "Complete Dart/Stream compatibility and broader SDK/package linking remain incomplete.",
+    "Full Flutter/mobile cold start, signing/rollback and physical-device performance remain incomplete. No mobile or performance acceptance is claimed."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

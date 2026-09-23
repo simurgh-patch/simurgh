@@ -344,13 +344,14 @@ class _Classes {
             );
           }
         } else if (member is MethodDeclaration) {
-          if (member.externalKeyword != null || member.body.isGenerator) {
+          if (member.externalKeyword != null) {
             _reject(
               'Unsupported instance method kind or signature: ${member.name.lexeme}',
             );
           }
           final resolvedReturn = member.declaredFragment!.element.returnType;
           if (member.body.isAsynchronous &&
+              !member.body.isGenerator &&
               resolvedReturn is! DynamicType &&
               !(resolvedReturn is InterfaceType &&
                   resolvedReturn.isDartAsyncFuture)) {

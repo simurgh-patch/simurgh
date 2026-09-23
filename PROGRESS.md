@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-23 17:02 +08:00
+最后实质更新：2026-09-23 17:41 +08:00
 
 ## 当前状态
 
@@ -9,6 +9,8 @@
 M0 基础工具已落地；用户已授权忽略空间检查，完整源码与依赖已同步成功，用户已安装Metal，宿主/Android/iOS Release源码编译已成功，独立样例双端Release接入编译和包内引擎标识核对已通过，尚未完成真机验证；M1已开始，M2–M7未开始。已实现宿主ARM64受限AOT/字节码替换实验，完整Dart/Flutter补丁编译器、移动端混合运行时、更新器、服务和控制台未完成。所有实现和独立样例均在 simurgh 项目；不修改 OA 管理端或 oa-app。
 
 ## 已实现
+
+- 最新M1生成器：支持sync*/async*函数/方法/局部函数/闭包，同步入口分派保留延迟执行及原生Iterable/Stream语义；异常/取消/pause/resume/委托、普通体切换、类/注解重连和void泛型实参已验。173项普通测试、279项专项原生检查及31组当前输入/归档/制品核对通过；独立源码AOT、两类暂停状态GC、Kernel注解及跨语言版本已验。证据docs/qa/aot-generators-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未验收。
 
 - 最新M1 metadata：保留真实常量注解、泛型/typedef/私有构造器及声明/形参/类型参数/局部位置；wrapper/helper共享已支持pragma，注解及其依赖变化触发重连。165项普通测试、227项专项原生检查与26组当前指纹/归档/制品核对通过，四组独立源码AOT及真实Kernel常量/位置对照、package:meta 1.18.2和跨语言版本通过。证据docs/qa/aot-metadata-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未验收。
 
@@ -250,3 +252,11 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 - 2026-09-23 17:02 +08:00：完成metadata主线：支持常量注解泛型/typedef实例化、私有命名构造器/const别名及声明/形参/类型参数/局部位置；推断声明物化保留metadata，方法wrapper与执行helper均保留pragma及类型/形参注解。metadata-only签名及依赖变化重连调用方、类和存储；入口需module-local时要求新基线。显式pragma四项，未知与const别名隐藏pragma拒绝，directive/external/native/generator/covariant既有边界保留。四组真实混合执行和独立原始AOT一致，Kernel直接读取常量值及位置，比较基线及有效补丁并核对helper偏移；真实package:meta解析为固定源码1.18.2并逐源码/pubspec核对。跨版本Kernel为3.0/3.4/3.12。初版NodeList API、重写区间重叠、wasm pragma及两个过时deprecated断言修复后完整验证通过，失败日志保留。完整verify.sh为16 Dart+142 Python+7 Flutter共165项，227项原生检查、编译器分析/17文件格式与26组冻结输入/源码/制品核对通过；历史原生全集未重跑。证据docs/qa/aot-metadata-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未完成，生产门禁关闭；下一步推进Flutter所需剩余声明及移动启动集成。本轮按约定提交Important Changes并推送main，实际状态以Git核对；其他设计任务修改保留。
 
   - 后续生成器预研仅在output/generator-inspection编译器副本：同步分派保留sync*/async*独立函数体，延迟执行、重复遍历、yield*、泛型/局部函数、异常/finally、await-for取消、类异步生成器与独立原始AOT一致；暂停迭代器跨实际GC仍正确，EDGES-RESULT.json记录Scavenge和当前副本/源码/制品哈希。初次副本缺相邻toolchain锁/manifest的失败已保留并补齐。ASYNC-EDGES-RESULT.json另证实推断返回、生成器闭包、pause/resume及yield*期间取消与原始AOT一致。主线仍拒绝generator，不计为当前支持；下一轮需补多库/版本、签名/metadata变化与完整回归再合入。
+
+- 2026-09-23 17:15 +08:00：生成器主线检查点：保留sync*/async*原始函数体及同步分派，支持方法/局部函数/闭包及yield*；普通体与generator体在兼容签名下可切换。五组探索混合构建全部退出0，覆盖延迟/重复遍历、异常/finally、取消/pause/resume、跨await持有payload及GC、类布局/注解重连和3.0/3.4/3.12 parts。初版暴露旧参数校验误拒绝合法Completer<void>，已允许SDK/用户类型/别名的void泛型实参；原始源码仍拒绝把void作为值使用。首轮7项定向6过1败，修复后失败项及新增void边界2项通过，失败日志保留。编译器分析/17文件格式/Python语法通过。普通输入冻结output/m1-generators-start-hashes.json，完整verify.sh session56932运行；原生验证器单独冻结output/m1-generators-native-start-hashes.json，31组最终重建/验收session90904运行。日志output/m1-generators-verification.log、output/m1-generators-native.log。尚未完整验收或commit/push；下一步核对独立源码AOT/GC/Kernel metadata及当前哈希后提交Important Changes并推送main。完整Flutter/移动冷启动/签名回退/真机性能仍未完成，其他设计任务PROGRESS修改保留。
+
+  - 2026-09-23 17:35 +08:00补充：31组重建与统一原生验收session90904退出0，279项检查全部通过；原始源码AOT对照、暂停迭代器/异步状态各198次Scavenge、generator metadata/helper pragma和实际Kernel版本均验。当前冻结输入、源码/固定package归档与制品哈希已核对。普通verify.sh session56932仍运行，尚未登记整轮通过或提交。
+
+- 2026-09-23 17:41 +08:00：完成生成器主线：sync*/async*函数/方法/局部函数/闭包保留原始函数体；基线同步分派返回带明确返回类型的局部generator结果，保留延迟执行/重复遍历/yield*及原生异常/finally、取消/pause/resume/委托语义。旧AOT消费补丁生产者；暂停同步迭代器和跨await持有payload的异步生成器分别跨198/198次Scavenge仍正确。兼容签名下普通体与generator体互换；类布局和注解变化重连生产者及调用方，新增payload由旧Object消费者读取。支持合法Completer<void>/Stream<void>/用户类及别名void实参，原始非法返回/yield/void值使用及不兼容槽签名仍拒绝。新增五组样例和8项回归；首次探索及1项定向暴露旧void实参误拒绝，修复后2项定向通过，失败日志保留。完整verify.sh为16 Dart+150 Python+7 Flutter共173项，279项原生检查、编译器分析/17文件格式和31组当前输入/归档/制品核对通过；独立原始源码AOT、实际3.0/3.4/3.12 Kernel和generator注解常量/helper位置均核验。证据docs/qa/aot-generators-20260923.json；历史原生全集未重跑，无运行时补丁更改。完整Flutter/移动冷启动/签名回退/真机性能仍未完成，生产门禁关闭；下一步继续剩余语言/SDK链接与Flutter核心接入。本轮按约定提交Important Changes并推送main，实际以Git核对；其他设计任务PROGRESS修改保留。
+
+  - 下一轮预研：固定Flutter lib声明扫描output/flutter-syntax-inspection/survey.json覆盖694文件，229处显式covariant参数、29个顶层getter/2个setter、8个extension及27个extension type，仅作优先级依据不作兼容验收。output/covariant-inspection编译器副本保留真实成员covariant并只从提升helper参数移除关键字；两组独立原始AOT对照通过，覆盖基类引用/窄化重写/命名及可选参数/tear-off/setter/index/super/泛型helper的成功路径及完整TypeError文本。RESULT.json和EDGES-RESULT.json含源码/制品证据，后者核对副本指纹。主线仍拒绝显式covariant，尚需mixin/SDK/类重连/版本/GC及完整回归后合入。

@@ -49,9 +49,9 @@ Each run generates baseline AOT and a bytecode module, then launches the same AO
 
 ## Supported boundary
 
-Currently supported: a graph of local libraries under the entry file's directory and resolved pure Dart package libraries, relative/package imports/exports and the linked SDK libraries described below, synchronous or Future/dynamic-returning async public/private top-level and supported instance methods and explicit getters/setters, resolved primitive/linked-SDK/program-class/type-parameter/function return and required/optional positional or named parameter types, new libraries/functions with recursion, unchanged retained-entry signatures, function tear-offs in accepted expression positions, synchronous/async closures and local functions with resolved parameter types, mutable captures, primitive expressions, branches, while/for loops, local pattern bindings and exceptions. Class method changes work for the checked class subset, including generic receiver types, with explicit or inferred instance fields, generative/body-factory/redirecting constructors and single inheritance. Resolved local bindings may shadow ordinary program names. Dispatch slots preserve required named markers and optional parameter groups without putting default expressions in function types. Wrappers forward named arguments by name; methods, super bridges, constructors and closures retain their original defaults. Default-value changes unrelated to dependency relocation are rejected as signature changes because unchanged AOT callers can bake them in. A default that captures a relocated function moves with that function and its callers. Existing function references retain baseline wrapper identity, while new functions refer to module-local entities. Returned bytecode closures can be called by unchanged AOT functions, including across GC and exception boundaries. Function body changes are installed before the user's `main` runs.
+Currently supported: a graph of local libraries under the entry file's directory and resolved pure Dart package libraries, relative/package imports/exports and the linked SDK libraries described below, synchronous, Future/dynamic-returning async, or sync*/async* generator public/private top-level and supported instance methods and explicit getters/setters, resolved primitive/linked-SDK/program-class/type-parameter/function return and required/optional positional or named parameter types, new libraries/functions with recursion, unchanged retained-entry signatures, function tear-offs in accepted expression positions, synchronous/async/generator closures and local functions with resolved parameter types, mutable captures, primitive expressions, branches, while/for loops, local pattern bindings and exceptions. Class method changes work for the checked class subset, including generic receiver types, with explicit or inferred instance fields, generative/body-factory/redirecting constructors and single inheritance. Resolved local bindings may shadow ordinary program names. Dispatch slots preserve required named markers and optional parameter groups without putting default expressions in function types. Wrappers forward named arguments by name; methods, super bridges, constructors and closures retain their original defaults. Default-value changes unrelated to dependency relocation are rejected as signature changes because unchanged AOT callers can bake them in. A default that captures a relocated function moves with that function and its callers. Existing function references retain baseline wrapper identity, while new functions refer to module-local entities. Returned bytecode closures can be called by unchanged AOT functions, including across GC and exception boundaries. Function body changes are installed before the user's `main` runs.
 
-Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, conditional/deferred imports, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, generators and void-async top-level/method declarations, external/annotated constructors, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
+Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, conditional/deferred imports, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, void-async top-level/method declarations, external constructors, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
 
 The generated installer checks the baseline fingerprint and all replacement types before mutating slots. The fingerprint binds the complete original source graph, toolchain lock and all three compiler source files. Logical identities are independent of the checkout's absolute location. Baseline and patch archives contain `source_graph.json` with original sources, dependencies and logical-to-generated symbol mappings; archived-source tampering is rejected. Class-shape hashes record the frozen structural baseline. **This is compatibility binding, not authentication:** bytecode is trusted local experimental input. No signature parser, untrusted-bytecode hardening, rollback, mobile startup hook, network service or published update is implemented.
 
@@ -772,7 +772,7 @@ The explicit compiler-pragma subset is `vm:never-inline`, `vm:prefer-inline`,
 `package:meta` dependency; this does not claim WebAssembly support. Unknown
 pragmas, including ones hidden behind constant aliases, are rejected. Directive
 metadata on libraries, imports, exports and parts remains unsupported; existing
-external/native/generator/covariant restrictions still apply. No runtime
+external/native/covariant restrictions still apply. No runtime
 reflection facility is added.
 
 The four `aot_metadata*` fixture pairs exercise declaration sites, real
@@ -783,3 +783,37 @@ compiled original-source AOT. `inspect_kernel_metadata.dart` and
 and declaration locations in independently compiled source Kernel, generated
 baseline Kernel and effective patched Kernel, including helper signatures.
 These are host ARM64 checks; full Flutter/mobile activation remains incomplete.
+
+
+### Synchronous and asynchronous generators
+
+Supported `sync*` and `async*` declarations retain their native lazy Iterable
+and Stream behavior. Baseline dispatch stays synchronous and returns a typed
+local generator's result; it neither starts iteration nor introduces another
+async completion boundary. A replacement is selected before creating that
+result. Generator methods use the existing method helper path, and nested/local
+generators and generator closures retain their captures and original modifiers.
+This is cold-start installation, not migration of live iterators/subscriptions.
+
+The five `aot_generators`, `aot_generator_edges`, `aot_generator_async`,
+`aot_generator_relink` and `aot_generator_multilang` fixture pairs cover repeated
+iteration, `yield*`, exceptions and finally cleanup, await-for cancellation,
+subscription pause/resume, generic and inferred returns, generator closures,
+class methods and original AOT consumers. A suspended iterator and an async
+producer retaining a payload across await are checked under actual Scavenge.
+Normal and generator bodies can replace each other when their entry signatures
+stay compatible. Class-layout and annotation changes use dependency relinking;
+incompatible entry signatures still require a new baseline.
+
+Legal `void` generic arguments, including `Completer<void>`, `Stream<void>` and
+program-class/type-alias instantiations, are preserved. This does not permit
+using a void expression as a value: original source analysis continues to reject
+invalid returns, yields and uses. Entry functions retain their supported return
+contract rather than becoming implicit iterator/stream consumers.
+
+Native verification compares both sides with independent original-source AOT,
+checks retained/installed function sets and real GC, reads mixed library versions
+from actual Kernel, and compares declaration/helper annotation constants for the
+annotated generator and metadata-relink samples. These are host ARM64 cases;
+complete Stream compatibility, Flutter/mobile startup and device-performance
+acceptance remain outstanding.
