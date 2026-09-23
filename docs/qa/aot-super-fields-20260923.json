@@ -1,0 +1,89 @@
+{
+  "recorded_at": "2026-09-23 12:36 +08:00",
+  "scope": "User superclass fields and genuine generic storage bridges on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041558Z-vr5ohhsw/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041629Z-chwmf7bk/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041700Z-ch8oop0e/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041732Z-gni2da6n/build.json",
+    "sdk_mixin_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041809Z-_3i63e64/build.json",
+    "sdk_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041842Z-1rtz5tdc/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041918Z-syk74ucy/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041948Z-u54zzk3o/build.json",
+    "parts": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T042021Z-pn2pvyax/build.json",
+    "late_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T042054Z-je49fx05/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T042134Z-yuwg6g38/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T041558Z-vr5ohhsw/native-checks/report.json",
+    "verification": "output/m1-super-fields-verification.log",
+    "native_log": "output/m1-super-fields-final-native.log",
+    "compiler_analysis": "output/m1-super-fields-analysis.log",
+    "format": "output/m1-super-fields-format.log",
+    "input_hashes": "output/m1-super-fields-start-hashes.json",
+    "process_results": "output/m1-super-fields-process-results.json"
+  },
+  "compiler_sha256": "4b66c4f9618d02d830fbaab7572927f03f5053f922c17276ccf67f85251bb1bb",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 107,
+    "flutter_widget_tests": 7,
+    "native_checks": 71,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "super_fields": {
+      "baseline": "update:12:7:1000\nfirst:1000\nfinal:7\nlate:21\nrepeat:true:20\noptional:4:4:1\nasync:10:2\naccessors:105:205\nprivate:6\nmock:77\nimplemented:6:5\ngc:10:10\n",
+      "patched": "update:32:17:1000\nfirst:17\nfinal:7\nlate:21\nrepeat:true:20\noptional:4:4:1\nasync:20:2\naccessors:105:205\nprivate:15\nmock:77\nimplemented:6:5\ngc:30:30\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "super_fields": {
+      "baseline": {
+        "source_sha256": "b1b49e5effaddd20e3bca7c8d33e64c57045573eb6f9e1c3c90c70c5f73c5499",
+        "executable_sha256": "0be5aafeaf903265d310a015fd8b63076987a72135601a1db96e1c5e76efaff5",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "343b577d6a9cc11b5f2e643cbb5b3ef13d074041c73ffb18064e7b1783dd5351"
+      },
+      "patch": {
+        "source_sha256": "f9cae50850e8a7aaae49c5b0b4307049c9eba823f126afb05e30215fa3a05c2f",
+        "executable_sha256": "f9289dd4321971074e0540c28202b30e39b7c87d6bfbad2f58ea5376b3d40bef",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "4f8085b3a196776984d71cde1a8f3d7762efd50a9435f30e01a50858a4eeb87a"
+      }
+    }
+  },
+  "super_field_scavenges": 16,
+  "notes": [
+    "User field synthetic accessors share real super bridges with SDK fields, preserving generic types and native storage.",
+    "Parent/child same-name fields, independently overridden getter/setter, late-final repeated writes, nullable short-circuit, awaited updates, private access and noSuchMethod match original-source AOT.",
+    "First super call in a patch keeps original storage class and AOT consumers. Added payload survives actual GC and is read through the inherited field.",
+    "Initial targeted invocation failed Python module discovery; corrected PYTHONPATH invocation passed.",
+    "Initial ordinary and native runs were cancelled after finding a missing setter stub for explicit implements. Getter/setter stub deduplication now includes accessor kind; final fixtures exercise explicit field implementation.",
+    "Historical full native suite was not rerun; this report covers eleven rebuilt groups."
+  ],
+  "limitations": [
+    "Full Flutter and mobile cold start, signing/rollback and physical-device performance are incomplete.",
+    "Covariant fields, broad part/private-field combinations and live migration are not accepted.",
+    "Known general issue: cross-library implements of a descendant with inaccessible private ancestor fields adds artificial obligations after public mangling. Original-source success and generated-kernel failure are retained under output/super-field-interface-probe."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

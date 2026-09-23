@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-23 12:33 +08:00
+最后实质更新：2026-09-23 12:36 +08:00
 
 ## 当前状态
 
@@ -9,6 +9,8 @@
 M0 基础工具已落地；用户已授权忽略空间检查，完整源码与依赖已同步成功，用户已安装Metal，宿主/Android/iOS Release源码编译已成功，独立样例双端Release接入编译和包内引擎标识核对已通过，尚未完成真机验证；M1已开始，M2–M7未开始。已实现宿主ARM64受限AOT/字节码替换实验，完整Dart/Flutter补丁编译器、移动端混合运行时、更新器、服务和控制台未完成。所有实现和独立样例均在 simurgh 项目；不修改 OA 管理端或 oa-app。
 
 ## 已实现
+
+- 最新M1用户super字段：复用真实父字段访问器桥接，保持泛型、父子同名存储、独立getter/setter、late/final及异步复合赋值语义。130项普通测试、71项专项原生检查及11组当前指纹/源码/制品核对通过，原始源码AOT对照及GC通过。证据docs/qa/aot-super-fields-20260923.json。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
 - 最新M1 SDK混入：支持已链接SDK公开可混入类型/别名、SDK私有混入祖先及直接SDK on约束；按真实源码生成抽象super桥接，保持泛型/索引/字段访问器/方法tear-off及业务noSuchMethod。128项普通测试、96项专项原生检查及15组当前指纹/源码/制品核对通过，原始源码AOT对照及GC通过。证据docs/qa/aot-sdk-mixins-20260923.json。用户super字段、完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
@@ -186,3 +188,9 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
   - 12:29补充：用户指定https://github.com/simurgh-patch/simurgh.git，授权每轮完成验证后commit，提交正文包含Important Changes，并推送main。已配置origin并fetch，接续远程bcb5195初始许可证提交，保留工作区源码及Apache 2.0 LICENSE，同步中英README许可证说明与AGENTS协作规则。当前回归未结束，尚未创建本轮提交或推送。
 
 - 2026-09-23 12:33 +08:00：按用户要求交付代码至 GitHub simurgh-patch/simurgh 的 main；接续远程 bcb5195 许可证历史，不强推。已检查358个暂存文件，排除引擎工作区、工具缓存、构建产物、签名和密钥；暂存差异空白检查通过。最新冻结源码完整verify.sh通过16 Dart + 107 Python + 7 Flutter共130项，Dart/Flutter静态分析通过，已核对冻结输入与工作区/暂存哈希一致；71项原生检查沿用本轮已完成记录。不修改业务实现，跨库私有接口义务问题和移动/真机/性能缺口保持未解决。提交正文包含Important Changes；提交标识与远端同步状态以Git main/origin/main记录为准。
+
+- 2026-09-23 12:36 +08:00：接续中断前用户super字段实现，用户实例字段synthetic getter/setter纳入既有字段桥接表，使用实例化泛型的真实super访问，保留原生存储。补丁首次super读取复用旧类；父子同名字段、独立getter/setter、复合/前后自增、await、nullable短路、late-final重复赋值、同库私有字段和noSuchMethod与原始源码独立AOT一致。新增Payload子类经实际Scavenge后由旧AOT读取，GC次数见QA。新增2项编译器回归含非法final写入/类型/跨库私有访问，首次定向命令因Python模块发现失败，修正PYTHONPATH后通过。最终verify.sh通过16 Dart+107 Python+7 Flutter共130项，71项原生检查、编译器分析/格式通过；基础/GC/super字段/SDK混入及重连/SDK父类/用户混入/接口/parts/late字段/布局11组当前编译器和运行时指纹、源码归档与制品哈希已核对，未重跑历史原生全集。证据docs/qa/aot-super-fields-20260923.json。广泛covariant/part私有字段组合未验收；另发现既有跨库implements私有祖先字段被公开名称改写后增加接口义务的问题，原始成功和生成失败记录output/super-field-interface-probe/KNOWN-PRIVATE-INTERFACE.md，尚未修复；下一步优先修复该问题，再继续命名混入应用与真实Flutter所需语义，完整Flutter/移动冷启动/签名回退/性能真机仍未完成，生产门禁关闭。无OA改动、提交或发布。
+
+  - 12:36交付补充：主线完整回归退出0，16 Dart+107 Python+7 Flutter共130项普通测试，71项专项原生检查与11组当前指纹/源码/制品核对通过，QA已生成。首次GitHub代码提交将包含当前独立项目全部源码、文档与历史QA，接续远程许可证历史；output原型、构建和设备缓存不提交。私有接口副本尚不合入：异常类型虽匹配，但公开Invocation造成错误文本不同；使用Dart自动noSuchMethod转发产生原生调用信息的独立探测已恢复原始错误文本，证据output/private-interface-mirror，下一轮继续。
+
+  - 12:37仓库核对：另一任务已提交并推送8c35207（feat: add simurgh toolchain and experimental AOT patching），包含本轮冻结源码与Important Changes；已通过git ls-remote确认远程main。当前任务保留该历史，仅追加最终super字段QA和进度记录，提交结果以main日志为准。
