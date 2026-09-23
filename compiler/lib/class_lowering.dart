@@ -39,13 +39,10 @@ class _Classes {
   final manifest = <String, Object?>{};
 
   void register(_Library library, CompilationUnitMember node) {
-    if ((node is ClassDeclaration &&
-            (node.namePart is! NameWithTypeParameters ||
-                node.nativeClause != null)) ||
-        node.metadata.isNotEmpty) {
-      _reject(
-        'Annotated/native classes or primary constructors are not implemented',
-      );
+    if (node is ClassDeclaration &&
+        (node.namePart is! NameWithTypeParameters ||
+            node.nativeClause != null)) {
+      _reject('Native classes or primary constructors are not implemented');
     }
     final element = node.typeElement;
     final name = node.typeName.lexeme;
@@ -292,8 +289,6 @@ class _Classes {
       }
       if (owner.node is EnumDeclaration) {
         for (final constant in (owner.node as EnumDeclaration).body.constants) {
-          if (constant.metadata.isNotEmpty)
-            _reject('Annotated enum constants are not implemented');
           final field = constant.declaredFragment!.element;
           final name = _privateMember(
             owner.library.ownerUri,
@@ -305,10 +300,9 @@ class _Classes {
       }
       for (final member in owner.node.members) {
         if (member is FieldDeclaration) {
-          if (member.metadata.isNotEmpty ||
-              member.externalKeyword != null ||
+          if (member.externalKeyword != null ||
               member.covariantKeyword != null) {
-            _reject('Annotated/external/covariant fields are not supported');
+            _reject('External/covariant fields are not supported');
           }
           for (final variable in member.fields.variables) {
             final field = owner.element.getField(variable.name.lexeme)!;
@@ -324,8 +318,8 @@ class _Classes {
             }
           }
         } else if (member is ConstructorDeclaration) {
-          if (member.externalKeyword != null || member.metadata.isNotEmpty) {
-            _reject('External or annotated constructors are not implemented');
+          if (member.externalKeyword != null) {
+            _reject('External constructors are not implemented');
           }
           for (final formal in member.parameters.parameters) {
             final param = unwrapParameter(formal);
@@ -350,11 +344,7 @@ class _Classes {
             );
           }
         } else if (member is MethodDeclaration) {
-          if (member.externalKeyword != null ||
-              member.body.isGenerator ||
-              member.metadata.any(
-                (a) => a.name.toSource() != 'override' || a.arguments != null,
-              )) {
+          if (member.externalKeyword != null || member.body.isGenerator) {
             _reject(
               'Unsupported instance method kind or signature: ${member.name.lexeme}',
             );
@@ -370,7 +360,6 @@ class _Classes {
               in member.parameters?.parameters ?? <FormalParameter>[]) {
             final param = unwrapParameter(formal);
             if (param is! SimpleFormalParameter ||
-                param.metadata.isNotEmpty ||
                 param.covariantKeyword != null) {
               _reject('Only explicitly typed method parameters supported');
             }
@@ -761,7 +750,11 @@ class _Classes {
           final args = forwardArguments(
             member.parameters?.parameters ?? <FormalParameter>[],
           );
+          final annotations = member.metadata
+              .map((a) => text(owner, a))
+              .join('\n');
           final signature =
+              '$annotations\n' +
               '${member.isStatic ? 'static ' : ''}' +
               (member.isGetter
                   ? '$returnType get $name'
@@ -793,7 +786,7 @@ class _Classes {
             if (inner.isNotEmpty) inner,
           ].join(', ');
           lifted.writeln(
-            '$returnType $helper$helperTypeParameters($helperFormals) $body',
+            '$annotations\n$returnType $helper$helperTypeParameters($helperFormals) $body',
           );
         } else {
           final extra = <_Edit>[];
@@ -810,7 +803,7 @@ class _Classes {
                 ],
               );
               classBody.writeln(
-                '${member.isStatic ? 'static ' : ''}${member.fields.lateKeyword != null ? 'late ' : ''}${member.fields.isConst
+                '${member.metadata.map((a) => text(owner, a)).join('\n')}\n${member.isStatic ? 'static ' : ''}${member.fields.lateKeyword != null ? 'late ' : ''}${member.fields.isConst
                     ? 'const '
                     : member.fields.isFinal
                     ? 'final '
@@ -1025,6 +1018,9 @@ class _Classes {
       // Preserve modifiers and superclass, but replace methods with stable
       // wrappers. Constructor/field/hierarchy changes are checked by the backend.
       final headerRefs = visitor(owner);
+      for (final annotation in node.metadata) {
+        annotation.accept(headerRefs);
+      }
       node.extendsClause?.accept(headerRefs);
       if (node is ClassTypeAlias) node.superclass.accept(headerRefs);
       node.withClause?.accept(headerRefs);

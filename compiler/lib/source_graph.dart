@@ -348,6 +348,23 @@ class _References extends RecursiveAstVisitor<void> {
   }
 
   @override
+  void visitAnnotation(Annotation node) {
+    super.visitAnnotation(node);
+    final element = node.element;
+    if (element is ConstructorElement && node.arguments != null) {
+      final name = classes?.memberSymbols[element.baseElement] ?? element.name;
+      final type = classes!.typeText(element.returnType, names: entities);
+      final end = node.arguments!.offset;
+      // Annotation.name may include the named constructor in non-generic form.
+      // Render the resolved constructor type to retain typedef instantiation.
+      edits.removeWhere(
+        (edit) => edit.start >= node.name.offset && edit.end <= end,
+      );
+      replace(node.name.offset, end, '$type${name == 'new' ? '' : '.$name'}');
+    }
+  }
+
+  @override
   void visitEnumConstantDeclaration(EnumConstantDeclaration node) {
     super.visitEnumConstantDeclaration(node);
     // The selector identifier itself may be unresolved; the enum constant
@@ -461,6 +478,9 @@ class _References extends RecursiveAstVisitor<void> {
   void visitTypeParameter(TypeParameter node) {
     final symbol = entities[node.declaredFragment?.element];
     if (symbol != null) replace(node.name.offset, node.name.end, symbol);
+    for (final annotation in node.metadata) {
+      annotation.accept(this);
+    }
     node.bound?.accept(this);
   }
 
@@ -507,6 +527,9 @@ class _References extends RecursiveAstVisitor<void> {
         : _privateMember(libraryUri!, node.name.lexeme);
     if (symbol != node.name.lexeme)
       replace(node.name.offset, node.name.end, symbol);
+    for (final annotation in node.metadata) {
+      annotation.accept(this);
+    }
     node.type?.accept(this);
   }
 }
@@ -523,6 +546,32 @@ String _rewrite(String source, AstNode node, List<_Edit> edits) {
     previous = edit.start;
   }
   return text;
+}
+
+// Resolve all metadata before lowering, including const aliases of pragmas.
+// Unknown VM/backend pragmas must not acquire accidental semantics on wrappers.
+class _MetadataGuard extends RecursiveAstVisitor<void> {
+  @override
+  void visitAnnotation(Annotation node) {
+    final value = node.elementAnnotation?.computeConstantValue();
+    if (value == null)
+      _reject('Annotation must resolve to a constant: ${node.toSource()}');
+    final type = value.type;
+    if (type is InterfaceType &&
+        type.element.name == 'pragma' &&
+        type.element.library.uri.toString() == 'dart:core') {
+      final name = value.getField('name')?.toStringValue();
+      if (!{
+        'vm:never-inline',
+        'vm:prefer-inline',
+        'vm:entry-point',
+        'wasm:entry-point',
+      }.contains(name)) {
+        _reject('Unsupported compiler pragma: $name');
+      }
+    }
+    super.visitAnnotation(node);
+  }
 }
 
 // Collect actual record shapes in the resolved source, including inferred SDK
@@ -897,6 +946,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     final recordSelectors = _RecordSelectors();
     for (final unit in resolved.values) {
       unit.unit.accept(recordSelectors);
+      unit.unit.accept(_MetadataGuard());
     }
     final entities = <Element, String>{};
     for (final unit in resolved.values) {
@@ -952,8 +1002,6 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         if (declaration is! GenericTypeAlias &&
             declaration is! FunctionTypeAlias)
           continue;
-        if (declaration.metadata.isNotEmpty)
-          _reject('Annotated type aliases are not implemented');
         final element =
             declaration.declaredFragment!.element as TypeAliasElement;
         final id = _hash('${library.ownerUri}::typedef::${element.name}');
@@ -1028,13 +1076,25 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         classes: classes,
         libraryUri: library.ownerUri,
       );
+      for (final annotation in declaration.metadata) {
+        annotation.accept(visitor);
+      }
       final parameters = declaration.typeParameters;
       parameters?.accept(visitor);
       final generics = parameters == null
           ? ''
-          : _rewrite(library.source, parameters, visitor.edits);
+          : _rewrite(
+              library.source,
+              parameters,
+              visitor.edits
+                  .where(
+                    (e) =>
+                        e.start >= parameters.offset && e.end <= parameters.end,
+                  )
+                  .toList(),
+            );
       source.writeln(
-        'typedef ${entities[element]}$generics = ${classes.typeText(element.aliasedType)};',
+        '${declaration.metadata.map((a) => _rewrite(library.source, a, visitor.edits.where((e) => e.start >= a.offset && e.end <= a.end).toList())).join('\n')}\ntypedef ${entities[element]}$generics = ${classes.typeText(element.aliasedType)};',
       );
     }
 
@@ -1056,6 +1116,9 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
           );
         } else {
           declaration.returnType?.accept(visitor);
+        }
+        for (final annotation in declaration.metadata) {
+          annotation.accept(visitor);
         }
         declaration.functionExpression.accept(visitor);
         final edits = [
@@ -1088,9 +1151,8 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
           records[symbol]!['references'] = visitor.references.toList()..sort();
         }
         if (declaration.variables.type == null) {
-          if (declaration.metadata.isNotEmpty ||
-              declaration.externalKeyword != null) {
-            _reject('Annotated or external globals are not implemented');
+          if (declaration.externalKeyword != null) {
+            _reject('External globals are not implemented');
           }
           final variables = declaration.variables;
           final modifiers =
@@ -1106,7 +1168,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
             final symbol = entities[element]!;
             records[symbol]!['inferred_type'] = inferred;
             source.writeln(
-              '$modifiers$inferred ${_rewrite(library.source, variable, edits.where((e) => e.start >= variable.offset && e.end <= variable.end).toList())};',
+              '${declaration.metadata.map((a) => _rewrite(library.source, a, edits.where((e) => e.start >= a.offset && e.end <= a.end).toList())).join('\n')}\n$modifiers$inferred ${_rewrite(library.source, variable, edits.where((e) => e.start >= variable.offset && e.end <= variable.end).toList())};',
             );
           }
         } else {

@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-23 15:57 +08:00
+最后实质更新：2026-09-23 17:02 +08:00
 
 ## 当前状态
 
@@ -9,6 +9,8 @@
 M0 基础工具已落地；用户已授权忽略空间检查，完整源码与依赖已同步成功，用户已安装Metal，宿主/Android/iOS Release源码编译已成功，独立样例双端Release接入编译和包内引擎标识核对已通过，尚未完成真机验证；M1已开始，M2–M7未开始。已实现宿主ARM64受限AOT/字节码替换实验，完整Dart/Flutter补丁编译器、移动端混合运行时、更新器、服务和控制台未完成。所有实现和独立样例均在 simurgh 项目；不修改 OA 管理端或 oa-app。
 
 ## 已实现
+
+- 最新M1 metadata：保留真实常量注解、泛型/typedef/私有构造器及声明/形参/类型参数/局部位置；wrapper/helper共享已支持pragma，注解及其依赖变化触发重连。165项普通测试、227项专项原生检查与26组当前指纹/归档/制品核对通过，四组独立源码AOT及真实Kernel常量/位置对照、package:meta 1.18.2和跨语言版本通过。证据docs/qa/aot-metadata-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未验收。
 
 - 最新M1枚举：真实枚举声明与常量身份、增强泛型/成员/mixin/interface及私有值别名；CFE按生成库/编码边界恢复默认显示，保留custom/mixin/super行为。值集合变化重连类型与存储。158项普通测试、168项专项原生检查及22组当前指纹/源码/制品核对通过，独立原始AOT、GC与实际3.0/3.4/3.12 Kernel已验。证据docs/qa/aot-enums-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未验收。
 
@@ -240,3 +242,11 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 - 2026-09-23 15:57 +08:00：完成枚举声明和混合执行接入：保留原生普通/增强泛型枚举、值名/index/values/穷尽switch/常量身份、字段/私有命名构造器/静态状态/mixin/interface。私有值保留原始名字，引用跨生成库用public const别名；构造器选择器基于真实constructorElement重命名。新增固定CFE补丁，仅在simurgh_generated_v1及合法64位十六进制编码下恢复_enumToString前缀，不替换用户方法；custom/mixin/super.toString及用户name getter/EnumName与原始AOT一致。新增枚举由旧Enum消费者读取，方法补丁保持类身份；值增删/重排/实参改变重连State/Holder/stored及typed/make，旧read仍AOT。枚举不放入可扩展契约，源非法构造/继承/实现/可变字段/index/泛型/隐私和metadata负例通过。实际GC为16/16；parts及3.0/3.4/3.12 Kernel通过。初版analyzer API、私有构造器选择器和整套补丁部分应用保护失败均保留日志并修正；新补丁单独check/apply后精确核对，宿主构建溯源更新，历史制品归档保留。完整verify.sh为16 Dart+135 Python+7 Flutter共158项，168项原生检查、编译器分析/格式与22组当前输入/源码/制品核对通过；未重跑历史原生全集。证据docs/qa/aot-enums-20260923.json。未验收完整Flutter/移动冷启动/签名回退/性能真机，移动引擎仍需重建；下一步继续Flutter所需声明语义和启动接入。按约定提交Important Changes并推送main，实际交付以Git核对；其他设计任务修改保留。
 
   - 补充验证output/enum-constructor-inspection/RESULT.json：增强泛型枚举的私有/重定向构造器、缓存factory及私有枚举类型显示与独立原始AOT一致，只替换Choice.read；源码归档及制品哈希已核对，不并入原生主统计。后续metadata预研仅在output/metadata-inspection：原始常量泛型/命名构造注解及vm:never-inline源码AOT通过；analyzer已解析实际实例化构造器，Kernel检查读回类/枚举值/字段/函数/形参的真实注解常量及类型参数。初次Kernel探针未过滤SDK URI失败，修复file scheme判断后通过。主线仍明确拒绝这些注解，未计作支持；NOTES.md记录下一步元数据引用重写、wrapper/helper保留、依赖重连及pragma语义边界。
+
+- 2026-09-23 16:36 +08:00：metadata主线检查点：支持解析常量注解、泛型/typedef/私有命名构造器、声明/形参/类型参数/局部位置及wrapper/helper保留；签名注解变化参与依赖重连，入口metadata需新基线。显式支持四个pragma名称，未知及const别名隐藏pragma仍拒绝。四组探索原生与独立Kernel常量/位置对照通过；真实package:meta来自固定Dart源码1.18.2。初版NodeList API、typedef重写区间重叠、package:meta wasm pragma及两个过时测试断言均已修复并保留日志。最终17文件格式、编译器分析及Python语法检查通过；冻结output/m1-metadata-start-hashes.json，完整verify.sh在session42856，26组原生重建/验收在session39915，日志output/m1-metadata-verification.log与output/m1-metadata-native.log。尚未登记最终验收或提交；下一步核对最终当前指纹/归档/制品及Kernel证据，再提交Important Changes并推送main。其他设计任务PROGRESS修改保留；完整Flutter/移动冷启动/签名回退/真机性能仍未完成。
+
+  - 2026-09-23 16:55 +08:00补充：26组最终重建和统一原生验收session39915已退出0，227项原生检查全部通过；四组Kernel metadata常量/位置/helper偏移及有效补丁对照通过，归档源码/固定package:meta pubspec/编译器和制品哈希已核对。普通verify.sh session42856仍运行，尚未提交或推送。
+
+- 2026-09-23 17:02 +08:00：完成metadata主线：支持常量注解泛型/typedef实例化、私有命名构造器/const别名及声明/形参/类型参数/局部位置；推断声明物化保留metadata，方法wrapper与执行helper均保留pragma及类型/形参注解。metadata-only签名及依赖变化重连调用方、类和存储；入口需module-local时要求新基线。显式pragma四项，未知与const别名隐藏pragma拒绝，directive/external/native/generator/covariant既有边界保留。四组真实混合执行和独立原始AOT一致，Kernel直接读取常量值及位置，比较基线及有效补丁并核对helper偏移；真实package:meta解析为固定源码1.18.2并逐源码/pubspec核对。跨版本Kernel为3.0/3.4/3.12。初版NodeList API、重写区间重叠、wasm pragma及两个过时deprecated断言修复后完整验证通过，失败日志保留。完整verify.sh为16 Dart+142 Python+7 Flutter共165项，227项原生检查、编译器分析/17文件格式与26组冻结输入/源码/制品核对通过；历史原生全集未重跑。证据docs/qa/aot-metadata-20260923.json。完整Flutter/移动冷启动/签名回退/真机性能仍未完成，生产门禁关闭；下一步推进Flutter所需剩余声明及移动启动集成。本轮按约定提交Important Changes并推送main，实际状态以Git核对；其他设计任务修改保留。
+
+  - 后续生成器预研仅在output/generator-inspection编译器副本：同步分派保留sync*/async*独立函数体，延迟执行、重复遍历、yield*、泛型/局部函数、异常/finally、await-for取消、类异步生成器与独立原始AOT一致；暂停迭代器跨实际GC仍正确，EDGES-RESULT.json记录Scavenge和当前副本/源码/制品哈希。初次副本缺相邻toolchain锁/manifest的失败已保留并补齐。ASYNC-EDGES-RESULT.json另证实推断返回、生成器闭包、pause/resume及yield*期间取消与原始AOT一致。主线仍拒绝generator，不计为当前支持；下一轮需补多库/版本、签名/metadata变化与完整回归再合入。

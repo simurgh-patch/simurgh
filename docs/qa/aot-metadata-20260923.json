@@ -1,0 +1,248 @@
+{
+  "recorded_at": "2026-09-23 17:02 +08:00",
+  "scope": "Resolved declaration metadata, helper pragmas, annotation dependency relinking and independent Kernel comparison on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083524Z-wbtw8r_h/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083555Z-d31_vn0j/build.json",
+    "metadata": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083627Z-famq2rp9/build.json",
+    "metadata_package": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083659Z-k1o2dwh5/build.json",
+    "metadata_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083733Z-5mt0y0uv/build.json",
+    "metadata_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083804Z-lto10154/build.json",
+    "enums": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083837Z-_a7qi00v/build.json",
+    "enum_custom": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083908Z-demcgq_i/build.json",
+    "enum_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083940Z-d9mj4_31/build.json",
+    "enum_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084015Z-607pzonr/build.json",
+    "records": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084047Z-4pz822jw/build.json",
+    "record_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084121Z-ixdccg7h/build.json",
+    "record_shapes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084153Z-_3fsj60k/build.json",
+    "record_dynamic": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084231Z-nxi5nk4y/build.json",
+    "record_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084303Z-ixzx9btx/build.json",
+    "typedefs": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084347Z-twfsnoow/build.json",
+    "typedef_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084421Z-hxrc5n6t/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084455Z-t39ppscb/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084527Z-m6fuq5sq/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084612Z-kd5fbw3v/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084644Z-d_xeu4to/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084718Z-ui0s9mkl/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084751Z-2bfhc4ey/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084826Z-qxoucj21/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084859Z-yu0by6ox/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T084932Z-p667cdos/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083524Z-wbtw8r_h/native-checks/report.json",
+    "verification": "output/m1-metadata-verification.log",
+    "native_log": "output/m1-metadata-native.log",
+    "compiler_analysis": "output/metadata-inspection/final-analysis.log",
+    "format": "output/metadata-inspection/final-format.log",
+    "input_hashes": "output/m1-metadata-start-hashes.json",
+    "process_results": "output/m1-metadata-process-results.json"
+  },
+  "compiler_sha256": "5d04889c68eae2219025012ba76446eafaf6f134a8b919caa8d15fa60b9a9b1a",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667",
+      "pkg/front_end/lib/src/source/source_enum_builder.dart": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 142,
+    "flutter_widget_tests": 7,
+    "native_checks": 227,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures_and_resolved_packages": true,
+  "packages": {
+    "meta": {
+      "name": "meta",
+      "version": "1.18.2",
+      "language_version": "3.5",
+      "pubspec_sha256": "9b89b2693e8da6750291e5ff0091c70588d5f29c0b2fe69d508171fd316c5f03"
+    }
+  },
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "metadata": {
+      "baseline": "4:5:4:x:Flag.on:on:5:6:10\n",
+      "patched": "14:15:patched:4:x:Flag.on:on:5:6:30\n"
+    },
+    "metadata_package": {
+      "baseline": "4\n",
+      "patched": "14\n"
+    },
+    "metadata_relink": {
+      "baseline": "5:3:ready:Status.ready\n",
+      "patched": "5:3:ready:Status.ready\n"
+    },
+    "metadata_multilang": {
+      "baseline": "4:4\n",
+      "patched": "14:4\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "metadata": {
+      "baseline": {
+        "source_sha256": "1f107eb558a942aa5c939b0af5b995e4321523dd906a29b80b9d023d2582acb2",
+        "executable_sha256": "a68e7b2999d062c3e8abf46971c18a513e511db01a1c6d4a67ed92315fa61fdd",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "5ca3ad34b7a59ee6ab9b6a20b855bae486ce526d29b38e0ceb7916670ebb8af7"
+      },
+      "patch": {
+        "source_sha256": "a7a0c59b7d68e44fc4cfc28a81ca684b10b2dc7c48b418f61041e17a41018cbd",
+        "executable_sha256": "3555962cea6b9d7335b68b25aa8bac6b5dd7ef24abfe7aba719230607a82032c",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "199bdc747cfd6a093e8c7118fc74dee5c1fe820c9521c6944b42d672ce718e13"
+      }
+    },
+    "metadata_package": {
+      "baseline": {
+        "source_sha256": "41909cfd842287cbd6d18457a89c07afa63a7876dde7164ab61eaabf43cf182d",
+        "executable_sha256": "f48b68b25d88ca71e4d6b459778674fa69b422c09202add0f900dd7e0a0c0256",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "0bde805c9a999af9c35c32aa11d99f243a75069df13eb3bd738b912152fe3581"
+      },
+      "patch": {
+        "source_sha256": "7f8ddec6226858592161b73942051e7b16e4bb2b4e04233f29aed3681f856863",
+        "executable_sha256": "d59f9e3db8fb48d99296dcad1cfdb79aac6dd1d69f8cc9e5fa0391c86635f0ed",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "d7fac984aa3b27ffb465a303e7e8a2077a41795cf7e7c0120b406446ce122a5f"
+      }
+    },
+    "metadata_relink": {
+      "baseline": {
+        "source_sha256": "bc1bfd9de94120d08893d34594200fd045109ca4290549abf0d450a6ba5bf28a",
+        "executable_sha256": "b72c58d545c3fc405c85294d93400bdcdd6aa728484198973711cd01b42b3819",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "3c24af9026496532c31cfae8217c3811b5564179595a4ee80a115c14c27a2b92"
+      },
+      "patch": {
+        "source_sha256": "bef33826498db315a901c0a649c1092014217d9d5f2605e8f7f391e8b623f801",
+        "executable_sha256": "03426e01de8fe056a049f8f4b4ea832c70fbb36c6dc2b512a933980df63522b3",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "1f8243ca7f6916525efdb698949110f566d177ad23ebbe606ee9d78a54238b80"
+      }
+    },
+    "metadata_multilang": {
+      "baseline": {
+        "source_sha256": "479da3aff49983a71de949f8028afec6bf224494c59ab98cf3634598ffccd007",
+        "executable_sha256": "4450281c0556142841ff520aef87ad701de5f7ed636f7e9b8c19a020c6d8b9e6",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "aede1fcb56387c6ea7daf2fa63a613061ab4bacbea4871b98c91a9a8c5a6929d"
+      },
+      "patch": {
+        "source_sha256": "98b2df9ea2951d9ba40e28b91e41ae8a6b70c5240297f7d1681168651e2613f8",
+        "executable_sha256": "7284c1de38841778cd1e7660e40626a74e01acda8607401d697ae479153ef0f1",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "9a0c525aaebbf0d492c6f37a0379e49852d0a90279aaa2f3c886e69fd2fac31d"
+      }
+    }
+  },
+  "kernel_metadata": {
+    "metadata": {
+      "sites": {
+        "baseline": 24,
+        "patch": 24,
+        "baseline_helpers": 4,
+        "patch_helpers": 4
+      },
+      "kernel_sha256": {
+        "source-baseline": "157cb9fbc21b197880cdb9dfacc8396e46edc9b9241c21080e2429a1f0d8faed",
+        "baseline": "e5d5f53969529b6f69269fb973c8503debc82b891b001b78132d32b25c485b1a",
+        "source-patch": "7bd85750eb8fa0096c1ce5dac5a72fc07ec8361b4fe299e84730baa5ead62974",
+        "patch": "e8e9f65e72eb571533d07d2734965d5088b7f970e251f3fd6072ad7cec7d4161"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083524Z-wbtw8r_h/native-checks/metadata-metadata-snapshots.json",
+      "snapshots_sha256": "6555fe872039879d030a9db4af811a128b3d012df02d7141efd0955eb1ad611d"
+    },
+    "metadata_package": {
+      "sites": {
+        "baseline": 32,
+        "patch": 32,
+        "baseline_helpers": 3,
+        "patch_helpers": 1
+      },
+      "kernel_sha256": {
+        "source-baseline": "f5e4d9fe346b82778b8328b0ea5cf7696e2ca67386f60770348e9def931dedfd",
+        "baseline": "5c9dc640465cb40e930de466bd0462a7cae6033fa745b7b109e5429af3f636e1",
+        "source-patch": "32a3fd03e7487ea7cb4f72997c87197dd0a6a0158f687c9681b944869582591e",
+        "patch": "66a3ad127912b3376587d56b6bf63d9675d84f7c66d0aea71a8249e516538122"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083524Z-wbtw8r_h/native-checks/metadata_package-metadata-snapshots.json",
+      "snapshots_sha256": "b77adbe15e3c9485fe7b88dbc59f3c2cf1a3f00f72ab82307a9cd6553a28a873"
+    },
+    "metadata_relink": {
+      "sites": {
+        "baseline": 5,
+        "patch": 5,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "dcdfdb191ed29b7c8cc2c864f15f5453dc5aae503f2c7b0e55c3d4c28ea3fdde",
+        "baseline": "2f2eeb5958fdfd2d1d497f430e583d61549ac6977d9faad5e8f07222ead5f220",
+        "source-patch": "907587bbc8afb5b204845c17e20c70f9fe6b9a33b737cfeedeacf2c3e50b8825",
+        "patch": "ccf6325ff51fd2c32ed2b0c8894e829d3ed2b54e87ab5dd1ddb33ef3d72e5788"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083524Z-wbtw8r_h/native-checks/metadata_relink-metadata-snapshots.json",
+      "snapshots_sha256": "fd72011334d612cbdb31a555e193405d5ef89d25e81ad30ad293f29e9de2710f"
+    },
+    "metadata_multilang": {
+      "sites": {
+        "baseline": 1,
+        "patch": 2,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "4525db6a5676f7ef89037edd7048091bde659eb28c8b238325456e99371754ea",
+        "baseline": "7905caa79162bec5e8353a039a150e506a09d5f87cbea27b9c1c552f8114776a",
+        "source-patch": "ddaeb2ff82b075690810bae28ed7ddb308aca9c9dd632de13e03c067ef617b19",
+        "patch": "13012bf772db6e98b5afc5b683757460bc519ff191365cd41cff36ed5f442869"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T083524Z-wbtw8r_h/native-checks/metadata_multilang-metadata-snapshots.json",
+      "snapshots_sha256": "981d63bcfc9fb5e59601d7cdc42baa7cb6a8779b825ddd91ea0b08acdb5c9371"
+    }
+  },
+  "metadata_inspector_sha256": "8302967c2e2d5a7b5bee36a90ee2d8b04f762a2e9df141ebceea1b4ffeb1b592",
+  "metadata_verifier_sha256": "f0d812ebc6973393d4b94ca58ed3baa58fab4015daea420f25360bf29a935eec",
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4"
+  },
+  "notes": [
+    "Preserve evaluated constant annotations on declarations, generic/formal parameters and body-local declarations. Rewrite generic/typedef/private named annotation constructors using resolved elements.",
+    "Method annotations are copied to retained wrappers and executing helpers, including annotated class/method type parameters and formal offsets.",
+    "Metadata-only function signature changes and annotation dependencies cause module-local relinking and caller invalidation. Entry metadata requiring module-local main is rejected.",
+    "Explicit pragma subset: vm:never-inline, vm:prefer-inline, vm:entry-point and wasm:entry-point. Unknown pragmas, including const aliases, fail closed. Preserving wasm:entry-point does not claim Wasm execution support.",
+    "Kernel verification compares actual evaluated constants and sites with independently compiled original source, and computes effective metadata after replaced declarations and method bodies are removed.",
+    "Real package:meta resolves to pinned Dart source version 1.18.2, not root pub-cache 1.18.3. Package sources and pubspec hashes are verified against compiler package resolution.",
+    "Initial NodeList.toSource API misuse and alias edit-range overlap were corrected. Initial real-package rejection of wasm:entry-point was corrected by the explicit allowlist; two deprecated-name test expectations were corrected without compiler changes. Failure logs remain in output/metadata-inspection.",
+    "All 26 selected groups were rebuilt under the current frozen compiler. Historical full native suite was not rerun. No runtime patch changed this round."
+  ],
+  "limitations": [
+    "Library/import/export/part directive metadata, unknown pragmas and existing external/native/generator/covariant boundaries remain rejected. No runtime reflection facility is added.",
+    "Kernel inspection is a verification oracle for the covered constant forms and fixtures, not proof of complete Dart metadata compatibility.",
+    "Full Flutter/mobile cold start, signing/rollback and physical-device performance remain incomplete. No mobile acceptance is claimed."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

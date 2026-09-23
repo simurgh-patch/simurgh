@@ -743,9 +743,43 @@ the enum and dependent classes, storage and typed functions at cold start.
 Enums are excluded from the generated extendable-class contract. Original source
 analysis still rejects illegal enum construction, extension/implementation,
 mutable fields, forbidden members, private access and invalid type arguments;
-annotated enum constants remain outside this supported subset.
+enum constant metadata follows the supported annotation rules below.
 
 The `aot_enums`, `aot_enum_custom`, `aot_enum_relink` and `aot_enum_multilang`
 fixtures cover these cases, GC, source-AOT output comparisons and actual
 3.0/3.4/3.12 library versions. This is host mixed-execution support, not complete
 Flutter/mobile startup or performance acceptance.
+
+
+### Declaration metadata
+
+Resolved constant annotations are preserved on supported classes, enums and
+values, constructors, fields, typedefs, functions, formal/type parameters and
+body-local declarations. Generic annotation constructors, typedef instantiation,
+private named constructors and constant aliases use resolved element identities.
+Inferred declarations retain metadata when their types are materialized. Method
+metadata is emitted on both the retained wrapper and the executing helper;
+annotated class and method type parameters retain their helper offsets.
+
+Metadata-only signature changes and changed annotation dependencies trigger
+module-local relinking of the declaration and its callers. Class/storage metadata
+changes use the existing replacement dependency closure. Changes requiring the
+entry function itself to become module-local are rejected with `Entry metadata
+changes require a new baseline`.
+
+The explicit compiler-pragma subset is `vm:never-inline`, `vm:prefer-inline`,
+`vm:entry-point` and `wasm:entry-point`. The last is preserved for the real
+`package:meta` dependency; this does not claim WebAssembly support. Unknown
+pragmas, including ones hidden behind constant aliases, are rejected. Directive
+metadata on libraries, imports, exports and parts remains unsupported; existing
+external/native/generator/covariant restrictions still apply. No runtime
+reflection facility is added.
+
+The four `aot_metadata*` fixture pairs exercise declaration sites, real
+`package:meta`, metadata-only dependency changes, private/generic aliases and
+mixed language versions. Native checks compare outputs with independently
+compiled original-source AOT. `inspect_kernel_metadata.dart` and
+`verify_kernel_metadata.py` additionally compare evaluated annotation constants
+and declaration locations in independently compiled source Kernel, generated
+baseline Kernel and effective patched Kernel, including helper signatures.
+These are host ARM64 checks; full Flutter/mobile activation remains incomplete.

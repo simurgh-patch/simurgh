@@ -306,13 +306,12 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(entities[self.symbol(manifest, 'choose')]['inferred_type'], 'T Function<T>(T, T)')
         self.assertIn('defaultArg', self.names(manifest, manifest['module_only_functions']))
 
-    def test_inference_does_not_drop_metadata_or_external_boundary(self):
-        for index, source in enumerate([
-            "@deprecated final value = 1; void main() {}",
-            'external int value; void main() {}',
-        ]):
-            result = self.command('baseline', self.source(f'inference-invalid-{index}.dart', source), self.root / f'inference-invalid-{index}')
-            self.assertEqual(result.returncode, 2, result.stdout)
+    def test_inferred_metadata_preserved_and_external_boundary_rejected(self):
+        result = self.command('baseline', self.source('metadata.dart', '@deprecated final value = 1; void main() {}'), self.root / 'metadata')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('@deprecated', (self.root / 'metadata/app.dart').read_text())
+        result = self.command('baseline', self.source('external.dart', 'external int value; void main() {}'), self.root / 'external')
+        self.assertEqual(result.returncode, 2, result.stdout)
 
     def test_late_final_uses_shared_baseline_storage(self):
         base = self.root / 'late-final-base'
@@ -1096,6 +1095,68 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
 
+    def test_metadata_preserves_aot_consumers_and_pragmas(self):
+        base, patch, manifest = self.named_mixin_pair('metadata')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Box.label', 'add', 'entry', 'fast'])
+
+    def test_metadata_real_meta_package_remains_shared(self):
+        base, patch, manifest = self.named_mixin_pair('metadata_package')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Child.read'])
+        graph = json.loads((base / 'source_graph.json').read_text())
+        self.assertIn('meta', graph['packages'])
+        self.assertIn('package:meta/meta.dart', graph['libraries'])
+
+    def test_metadata_changes_relink_annotated_dependencies(self):
+        base, patch, manifest = self.named_mixin_pair('metadata_relink')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Box', 'Status'])
+        self.assertEqual(self.names(manifest, manifest['replaced_globals']), ['note'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['caller', 'main'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['consume', 'make', 'state', 'tagged'])
+
+    def test_metadata_alias_private_constructor_parts_and_versions(self):
+        base, patch, manifest = self.named_mixin_pair('metadata_multilang')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(self.names(manifest, manifest['added_functions']), ['extra'])
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+
+    def test_parameter_only_metadata_changes_relocate_function(self):
+        prefix = 'class Tag { final String value; const Tag(this.value); } '
+        text = prefix + "int read(@Tag('old') int value) => value; void main() { print(read(3)); }"
+        source = self.source('app.dart', text)
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text(text.replace("'old'", "'new'"))
+        result = self.command('patch', source, base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['read'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main'])
+
+    def test_unknown_pragma_cannot_hide_behind_const_alias(self):
+        for index, annotation in enumerate(["@pragma('vm:external-name', 'hidden')", '@unsafe']):
+            source = self.source(f'pragma-{index}.dart', "const unsafe = pragma('vm:external-name', 'hidden'); " + annotation + ' int read() => 3; void main() { print(read()); }')
+            result = self.command('baseline', source, self.root / f'pragma-{index}')
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('Unsupported compiler pragma', result.stderr)
+            self.assertFalse((self.root / f'pragma-{index}').exists())
+
+    def test_entry_metadata_change_requires_new_baseline(self):
+        source = self.source('app.dart', 'void main() {}')
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text("@pragma('vm:never-inline') void main() {}")
+        result = self.command('patch', source, base, self.root / 'patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Entry metadata changes require a new baseline', result.stderr)
+
     def test_enums_preserve_identity_and_aot_consumers(self):
         base, patch, manifest = self.named_mixin_pair('enums')
         self.assertEqual(manifest['replaced_classes'], [])
@@ -1145,10 +1206,10 @@ class AotCompilerTests(unittest.TestCase):
                 self.assertIn('Static source errors', result.stderr)
                 self.assertFalse(dest.exists())
 
-    def test_enum_metadata_and_cross_library_privacy_rejected(self):
+    def test_enum_metadata_preserved_and_cross_library_privacy_rejected(self):
         result = self.command('baseline', self.source('metadata.dart', 'enum E { @deprecated value } void main() {}'), self.root / 'metadata')
-        self.assertEqual(result.returncode, 2, result.stdout)
-        self.assertIn('Annotated enum constants', result.stderr)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('@deprecated', (self.root / 'metadata/app.dart').read_text())
         self.source('private.dart', 'enum E { _value }')
         result = self.command('baseline', self.source('app.dart', "import 'private.dart'; void main() { print(E._value); }"), self.root / 'private')
         self.assertEqual(result.returncode, 2, result.stdout)

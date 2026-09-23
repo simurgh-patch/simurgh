@@ -72,7 +72,7 @@ bool isTypeParameter(NamedType type) {
 bool supportedTypeParameters(TypeParameterList? parameters) =>
     parameters == null ||
     parameters.typeParameters.every(
-      (p) => p.metadata.isEmpty && (p.bound == null || supportedType(p.bound)),
+      (p) => p.bound == null || supportedType(p.bound),
     );
 
 bool supportedType(TypeAnnotation? type, {bool allowVoid = true}) {
@@ -127,7 +127,6 @@ bool isFutureType(TypeAnnotation? type) =>
 bool supportedParameter(FormalParameter param) {
   final base = unwrapParameter(param);
   return base is SimpleFormalParameter &&
-      base.metadata.isEmpty &&
       base.covariantKeyword == null &&
       supportedType(base.type, allowVoid: false);
 }
@@ -138,6 +137,24 @@ void validateParameters(FormalParameterList parameters) {
       reject('Only explicitly typed supported parameters allowed');
     }
   }
+}
+
+class _SignatureMetadata extends RecursiveAstVisitor<void> {
+  final values = <String>[];
+  @override
+  void visitAnnotation(Annotation node) {
+    values.add(node.toSource());
+  }
+}
+
+String signatureMetadata(FunctionDeclaration function) {
+  final visitor = _SignatureMetadata();
+  for (final annotation in function.metadata) {
+    annotation.accept(visitor);
+  }
+  function.functionExpression.typeParameters?.accept(visitor);
+  function.functionExpression.parameters?.accept(visitor);
+  return visitor.values.join('\n');
 }
 
 class Program {
@@ -167,11 +184,10 @@ class Program {
         continue;
       }
       if (declaration is TopLevelVariableDeclaration) {
-        if (declaration.metadata.isNotEmpty ||
-            declaration.externalKeyword != null ||
+        if (declaration.externalKeyword != null ||
             !supportedType(declaration.variables.type)) {
           reject(
-            'Globals require an explicit supported type without annotations',
+            'Globals require a supported type and no external declaration',
           );
         }
         for (final variable in declaration.variables.variables) {
@@ -194,13 +210,10 @@ class Program {
       if (declaration.isGetter ||
           declaration.isSetter ||
           declaration.externalKeyword != null ||
-          declaration.metadata.isNotEmpty ||
           !supportedTypeParameters(fn.typeParameters) ||
           fn.body.isGenerator ||
           fn.body is EmptyFunctionBody) {
-        reject(
-          'Unsupported function kind, annotation or generic signature: $name',
-        );
+        reject('Unsupported function kind or generic signature: $name');
       }
       if (!supportedType(declaration.returnType)) {
         reject('Explicit primitive or function return type required: $name');
@@ -371,7 +384,7 @@ class BodyGuard extends RecursiveAstVisitor<void> {
         node.name.lexeme.startsWith(prefix)) {
       reject('Local function shadows a program or generated entity');
     }
-    if (node.metadata.isNotEmpty || !supportedType(node.returnType)) {
+    if (!supportedType(node.returnType)) {
       reject('Local functions require a supported explicit return type');
     }
     super.visitFunctionDeclaration(node);
@@ -642,6 +655,7 @@ void baseline(Program program, Directory output) {
     final args = forwardArguments(f.functionExpression.parameters!.parameters);
     final types = forwardTypeArguments(f.functionExpression.typeParameters);
     final body = bodyText(program, f);
+    generated.writeln(f.metadata.map((a) => a.toSource()).join('\n'));
     generated.writeln('${program.signature(f)} {');
     generated.writeln('final ${prefix}Replacement = ${prefix}Slot$index;');
     generated.writeln('if (${prefix}Replacement != null) {');
@@ -766,6 +780,9 @@ Set<String> signatureReferences(
   Set<String> names,
 ) {
   final visitor = EntityReferences(names);
+  for (final annotation in function.metadata) {
+    annotation.accept(visitor);
+  }
   function.returnType?.accept(visitor);
   function.functionExpression.typeParameters?.accept(visitor);
   function.functionExpression.parameters?.accept(visitor);
@@ -860,7 +877,12 @@ Future<void> patch(Program program, Directory base, Directory output) async {
         name,
   };
 
-  final moduleOnly = <String>{};
+  final moduleOnly = <String>{
+    for (final name in before.intersection(program.functions.keys.toSet()))
+      if (signatureMetadata(original.functions[name]!) !=
+          signatureMetadata(program.functions[name]!))
+        name,
+  };
   final invalidated = <String>{};
   // A changed class gets a fresh module-local identity. Rebind every typed
   // dependency; never install a new-layout function into an old-layout slot.
@@ -979,6 +1001,8 @@ Future<void> patch(Program program, Directory base, Directory output) async {
             moduleOnly.length +
             invalidated.length;
   }
+  if (moduleOnly.contains('main'))
+    reject('Entry metadata changes require a new baseline');
   final baselineClasses = originalClasses.difference(replacedClasses);
   final baselineGlobals = originalGlobals.difference(replacedGlobals);
   final addedGlobals = program.globals.keys.toSet().difference(originalGlobals);
@@ -1081,6 +1105,17 @@ Future<void> patch(Program program, Directory base, Directory output) async {
   }
   for (final name in [...changed, ...added]) {
     final f = program.functions[name]!;
+    for (final annotation in f.metadata) {
+      source.writeln(
+        nodeText(
+          program,
+          annotation,
+          baselineNames: baselineFunctions,
+          baselineClasses: baselineClasses,
+          baselineGlobals: baselineGlobals,
+        ),
+      );
+    }
     source.writeln(
       '${nodeText(program, f.returnType!, baselineNames: baselineFunctions, baselineClasses: baselineClasses, baselineGlobals: baselineGlobals)} ${prefix}Patch_$name'
       '${f.functionExpression.typeParameters == null ? '' : nodeText(program, f.functionExpression.typeParameters!, baselineNames: baselineFunctions, baselineClasses: baselineClasses, baselineGlobals: baselineGlobals)}'
