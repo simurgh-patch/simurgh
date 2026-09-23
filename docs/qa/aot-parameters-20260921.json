@@ -1,0 +1,76 @@
+{
+  "checked_at": "2026-09-21 16:57 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host; not mobile runtime or performance acceptance",
+  "implemented": [
+    "Required and optional named parameters and optional positional parameters",
+    "Typed dispatch slots preserve named requiredness and optional groups",
+    "Named argument forwarding in wrappers and super bridges",
+    "Named/optional constructor parameters and bytecode named calls to baseline constructors",
+    "Named closure parameters and function-type signatures",
+    "Default callback tear-off linkage to baseline entry",
+    "Changed defaults and requiredness rejected",
+    "Incompatible named signature rejected without partial slot mutation"
+  ],
+  "compiler_sha256": "ca70b2a7866dfc7bfb8c522643c03349d4364565a5c32fa42f389fd66f058b2c",
+  "compiler_components": {
+    "compiler/bin/aot_patch.dart": "34408b1734420279ca6c9d741efd9d659ea14baa5a9803c22309b010e234469d",
+    "compiler/lib/source_graph.dart": "ea21be87a675c4d801fd41bea86da30e281265172a77ea57596f17a1326fc76b",
+    "compiler/lib/class_lowering.dart": "0df507ec3d5a53d36b14003f8537a534513d946e51d50adf4c5a60e6e051aaa5"
+  },
+  "evidence": {
+    "parameters": "output/m1-aot-20260921T084906Z-pp0db3ne/build.json",
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085013Z-bdubidt_/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085032Z-_n404v3q/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085049Z-g98vd4wd/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085108Z-iofffx8u/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085124Z-4nzupi5f/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085143Z-uvb5gywl/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085200Z-z1s38kj2/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085219Z-9xbvad54/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T085013Z-bdubidt_/native-checks/report.json",
+    "verification": "output/m1-parameters-verification.log"
+  },
+  "parameter_outputs": {
+    "baseline": "named=11\nexplicit=19\noptional=8\npositional=12\nmethod=20\nmethodExplicit=28\nclosure=9\nclosureExplicit=12\ncallback=11\ntearoff=11\n",
+    "patched": "named=111\nexplicit=119\noptional=16\npositional=24\nmethod=165\nmethodExplicit=173\nclosure=27\nclosureExplicit=36\ncallback=111\ntearoff=111\n"
+  },
+  "native_checks_passed": 27,
+  "baseline_aot_unchanged": true,
+  "optimizer_evidence": {
+    "name": "classes-optimizer-evidence",
+    "method_wrapper_inlined": true,
+    "optimized_main_calls_replaceable_entry_directly": true,
+    "passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "parameter_source_archives_match": true,
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 46,
+    "flutter_widget_tests": 7,
+    "native_checks": 27
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Existing class layout, constructor and member-set changes",
+    "Changed parameter defaults require AOT dependency invalidation",
+    "Operators, static members, inferred and nullable types",
+    "General Kernel and package/SDK linking",
+    "General optimization dependencies",
+    "Generics, async, isolates",
+    "Android/iOS mixed runtime integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ],
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "class_scavenges": 16,
+  "new_class_scavenges": 16,
+  "accessor_scavenges": 1
+}

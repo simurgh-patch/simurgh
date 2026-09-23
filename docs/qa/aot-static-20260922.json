@@ -1,0 +1,121 @@
+{
+  "recorded_at": "2026-09-22 15:22 +08:00",
+  "scope": "Static methods, accessors and fields in host ARM64 AOT/bytecode; class-owned helper relocation",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T070853Z-b0anhfe5/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T070920Z-itdktgr4/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T070947Z-tpa5dwde/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071014Z-ruytdvh0/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071042Z-ym3qplym/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071108Z-kjsjgzsy/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071136Z-3jwvz9hv/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071204Z-s0shfgg4/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071234Z-0whz4tnt/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071304Z-3qoyyxw_/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071334Z-9jk3jmk1/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071405Z-e_9najo5/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071434Z-xqp_hjnk/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071503Z-06qnh1b0/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071531Z-m3ie30gu/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071600Z-n1d34gl_/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071629Z-ru2tni8n/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071657Z-nkjqugh3/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071726Z-0p_hf2az/build.json",
+    "packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071754Z-7dqe7h5p/build.json",
+    "multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071823Z-1hs7yolo/build.json",
+    "multilang_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071853Z-v0gacp3k/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071923Z-f3ff1qgz/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T071952Z-xulrea3y/build.json",
+    "super_parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T072017Z-3_rreabt/build.json",
+    "static": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T072041Z-m72pfd8d/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T070853Z-b0anhfe5/native-checks/report.json",
+    "verification": "output/m1-static-verification.log",
+    "compiler_analysis": "output/m1-static-analysis.log",
+    "format": "output/m1-static-format.log",
+    "native_log": "output/m1-static-native-suite.log"
+  },
+  "compiler_sha256": "f6777b641abf1cce50491ea20a65ade93f4b7825fe1d4a5f7846d7538ab80855",
+  "verification_script_sha256": "6309f1e867929837f9bc7d402bc523673e316f1e9f31fb1498d915f3e2adff7a",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 83,
+    "flutter_widget_tests": 7,
+    "native_checks": 144,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "add:5:3\nget:3\nset:5\ncompound:6:6\ntearoff:14\ntearoffIdentity:true\ngeneric:4:s\ngenericIdentity:true\nasync:12\nclosure:19\ninstance:20\nlazy:10:10:1\nlate:true:true:9\nfresh:skipped\nconfig:3:v3\ndefaults:3:3\nchanging:2\nprivate:3:8\ntoken:true\ncaught:Bad state: static-baseline\ninherited:21\ngc:24\n",
+    "patched": "add:15:13\nget:113\nset:10\ncompound:111:222\ntearoff:240\ntearoffIdentity:true\ngeneric:4:s\ngenericIdentity:true\nasync:338\nclosure:256\ninstance:267\nlazy:20:20:1\nlate:true:true:9\nfresh:17\nconfig:7:v7\ndefaults:7:7\nchanging:text\nprivate:3:8\ntoken:true\ncaught:Bad state: static-patch\ninherited:278\ngc:292\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "7ff2f14a7daada6a0f7cfb96e50900276f61c22c729f7a4c8e0079bea6e7b437",
+      "executable_sha256": "bd6694e5035802dbbac0a05ad98c02edf4fc084a057de8b62cc2fa8dc6f4f1cb",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "772a640c9e609619823d94f8e51027f632a10be368a71ba70d1de9f54e62203e"
+    },
+    "patch": {
+      "source_sha256": "dae3454590a94ccc93f7fb98bcfb38786cd5d8907a0b019fcd62d3f9d08ecfc3",
+      "executable_sha256": "083f9d592f15a6916033aced249af5a09fe439c812fb049bcc9aa4e32f323f0d",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "6862eade278b882a4c0a639b5033522350a33cc5ee1398ab1b421707c4e588f4"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [
+      "Changing",
+      "Config",
+      "Settings"
+    ],
+    "module_only_functions": [
+      "Changing.read",
+      "fromDefault"
+    ],
+    "installed_functions": [
+      "Counter.add",
+      "Counter.callback",
+      "Counter.current",
+      "Counter.current",
+      "Counter.fail",
+      "Counter.initialize",
+      "main"
+    ]
+  },
+  "static_scavenges": 16,
+  "notes": [
+    "Counter and AOT readers, exception consumer, tear-off consumer and GC loop remain in the baseline; its static storage is shared with changed bytecode helpers.",
+    "Changing, Config and Settings are relocated; a changed static return signature and const-dependent defaults remain module-local and are never installed into incompatible old slots.",
+    "Native outputs are compared with independently compiled original-source AOT. Checks include private static names across libraries, generic shadowing, async, compound accessor evaluation, lazy once, late-final errors, patch-first late-final assignment, function identities and an interpreted closure held across observed GC.",
+    "This is a source-graph class-version mechanism, not live state/heap migration; class fields retain Dart storage/initialization semantics."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Interfaces/mixins/operators/factories, late instance fields and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

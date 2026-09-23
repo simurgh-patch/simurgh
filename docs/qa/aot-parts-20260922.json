@@ -1,0 +1,148 @@
+{
+  "recorded_at": "2026-09-22 18:25 +08:00",
+  "scope": "Local/package part discovery, shared library identity and language preservation in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101018Z-x9fcre23/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101046Z-__na52ay/build.json",
+    "parts": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101117Z-1me1reev/build.json",
+    "parts_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101146Z-tnbz5j03/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101217Z-rgziawja/build.json",
+    "operators": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101246Z-iphcq7tp/build.json",
+    "parts_private": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T102051Z-fpof9nay/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T101018Z-x9fcre23/native-checks/report.json",
+    "verification": "output/m1-parts-verification.log",
+    "compiler_analysis": "output/m1-parts-analysis.log",
+    "format": "output/m1-parts-format.log",
+    "native_log": "output/m1-parts-native-final.log"
+  },
+  "compiler_sha256": "630cc5145495f30d13ac41c4973a6990d4648dd1bf4edc0627700112b48cc6ee",
+  "verification_script_sha256": "de82e0deaf45f10b0a39216148597b4f1727ed29874b5ba1bf56a4cd3b2a015b",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 98,
+    "flutter_widget_tests": 7,
+    "native_checks": 43,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "package_manifests_match": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "parts": {
+      "baseline": "private:5:3\nstate:1\nclosure:4\nnew:3\nidentity:true\nisolation:false\nother:9\n",
+      "patched": "private:8:3\nstate:10\nclosure:23\nnew:104\nidentity:true\nisolation:false\nother:9\n"
+    },
+    "parts_packages": {
+      "baseline": "read:4\nlegacy:5:7\ntype:_Box\nprivate:8\n",
+      "patched": "read:115\nlegacy:6:7\ntype:Added\nprivate:8\n"
+    },
+    "parts_private": {
+      "baseline": "read:3\nfield:3\nprivate:true:true\n",
+      "patched": "read:13\nfield:3\nprivate:true:true\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "parts": {
+      "baseline": {
+        "source_sha256": "85048839ba0ec43a92a4dfd29b9bf188674f8ed7b7067e02712cc4406479bec7",
+        "executable_sha256": "e2b46faf90d970ae44d6d0d2c7894bd33abee1aa27e5538d8db2bbf69368b59f",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "2e0996eb45b370e77ec4002df966ea564f6dbc69053a1bc9b8e05c59c4df3efe"
+      },
+      "patch": {
+        "source_sha256": "a650bc0fdf7449fb0d6759ece03de4710ac4048be94811a6b5c5fbad0ebdd921",
+        "executable_sha256": "8deaf26bd2c7f9f62e8db0363cbe2d72c7607e1c6cfb47b0cc15ed6acc7d8523",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "0aba9f936571eee05f6ecb0866b7cd380aec6a8917815f13544ca000066c96dd"
+      }
+    },
+    "parts_packages": {
+      "baseline": {
+        "source_sha256": "5433855c00b528be9755ad193da8769aa888a7b63ed73b81892d1d8cdfe70ba2",
+        "executable_sha256": "b222d256090d368318650f2c86270e204e175e8d58876c02ddf5135b3d35ee01",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "b807610636b30a626b6e2699e7703d7cae9e6a47508cfe12d26c4adb714f2cd3"
+      },
+      "patch": {
+        "source_sha256": "5433855c00b528be9755ad193da8769aa888a7b63ed73b81892d1d8cdfe70ba2",
+        "executable_sha256": "0283cdbb9fea6bca9d8af0dcacffe2108509a6518e3dfa2f285cd9cabf0fee0d",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "706f4bea5f3088f69308636584264361612de4cb4719e8970f315d74761c5089"
+      }
+    },
+    "parts_private": {
+      "baseline": {
+        "source_sha256": "3aa98986eb339d7071a4c04c5b94ae4d96efd0f0422f1862b723dbdf5f99491e",
+        "executable_sha256": "7e77127897d1368a9a0481d20adc45da2d95c525376dbe121792e0aa09d17ddf",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "f743b7fd8786a122a48b39e99113308707e4a750acede8bf0605f0d47a77c5d0"
+      },
+      "patch": {
+        "source_sha256": "3aa98986eb339d7071a4c04c5b94ae4d96efd0f0422f1862b723dbdf5f99491e",
+        "executable_sha256": "766a757d68408a770fdf5d2774b2a78ed9150ed07acaa695a12233157c8252b5",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "dbb6bf7ae72dc23c44d7b363b07048b109f3b37c15abd374fcec34eeaf95e9de"
+      }
+    }
+  },
+  "parts_package_kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_9324799736b5596b3c1b78e2787897badbb441d35a36ff7c4d85827ceaba8de4.dart": "3.0",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12"
+  },
+  "dependency_closure": {
+    "replaced_classes": [],
+    "added_classes": [
+      "Added"
+    ],
+    "module_only_functions": [],
+    "installed_functions": [
+      "_bonus",
+      "bump",
+      "callback",
+      "make"
+    ]
+  },
+  "parts_scavenges": 16,
+  "notes": [
+    "Every physical source file retains an archive URI/hash; all declarations and private members from a part use its owning library URI for link identities.",
+    "Moving Base and _bonus between part files preserves identities and retained AOT main/invoke/stableRead/churn. Added and its private inherited field access execute from a new part in patch bytecode.",
+    "Entry main resides in a part. Named and URI part-of declarations, private constructors/super calls, mutable state, const identity and private classes in distinct owners match original AOT.",
+    "Package parts retain owner language 3.0 while the entry remains 3.12. Actual CFE Kernel library versions and legacy underscore binding were checked; part files do not become standalone emitted libraries.",
+    "Dynamic private method/field selectors are shared within one owner across part files but remain inaccessible to another owner with identical private source names. Existing dynamic AOT callers observe only the patched owner method.",
+    "Wrong/missing ownership, imported/orphan parts, two owning libraries, illegal private access, language mismatch and escaping paths are rejected before output generation.",
+    "An initial owner URI lookup incorrectly sent a file URI to PackageConfig.resolve; corrected dispatch resolves only package URIs through that API. Failure evidence is preserved in output/m1-aot-20260922T095850Z-i21ourm4.",
+    "The original Dart toolchain independently rejected sharing one named part between two libraries; this is not an added semantic restriction.",
+    "This increment rebuilt normal, GC, parts, parts-packages, dynamic-private-parts, mixed-version-packages and operators. Historical full native suites were not relabeled as current."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Conditional/deferred imports, unsupported declarations/annotations and experimental enhanced parts",
+    "SDK superclass/interface/mixin lowering and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

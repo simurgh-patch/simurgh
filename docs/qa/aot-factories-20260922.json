@@ -1,0 +1,92 @@
+{
+  "recorded_at": "2026-09-22 16:47 +08:00",
+  "scope": "User-class factory and redirecting constructors in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T083556Z-wnglmqkw/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T083624Z-7_y82a4j/build.json",
+    "factories": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T083651Z-tt5ivghh/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T083556Z-wnglmqkw/native-checks/report.json",
+    "verification": "output/m1-factories-verification.log",
+    "compiler_analysis": "output/m1-factories-analysis.log",
+    "format": "output/m1-factories-format.log",
+    "native_log": "output/m1-factories-native-suite.log"
+  },
+  "compiler_sha256": "1a18d0e48eca8d4c3fb9481a99eb081b21095abedbfa087983a1d84449d136b1",
+  "verification_script_sha256": "ac8c92b787e9fc603534bee5800b2f808173c2440233aed036eda52101b84c99",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 89,
+    "flutter_widget_tests": 7,
+    "native_checks": 14,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "factory:2\nredirect:3\ngenerative:4\nconst:true\ncache:3:true\nchoice:4\ntearoff:5\nredirectTearoff:5\ncaught:true\ngc:6\n",
+    "patched": "factory:2\nredirect:3\ngenerative:4\nconst:true\ncache:7:true\nchoice:14\ntearoff:5\nredirectTearoff:5\ncaught:true\ngc:16\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "aa661ad0f286d3efec1237fdb1700dab05a57327694a5e9f6e93b8f88227d4e7",
+      "executable_sha256": "29a35595139c82d8aff344573744059c7d9b39edbe050bd52baa607755fba638",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "c59f54a084c4ead056cdf99cbbd11b3355d6c72250e663135fe60d6d3ca8d891"
+    },
+    "patch": {
+      "source_sha256": "82254df04da9bdd46f62843cc5f5fe4eaa462abec08f3a3e462facfdd4886338",
+      "executable_sha256": "c69d77579da76daa544599ea6cc03a8d66c5737bef1ea03ee7455cee9fc10eec",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "f06788bac83ff3f93766b15a1e8a90d96194ef9454b4f233d069bd81c156a2fe"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [
+      "Cached",
+      "Choice",
+      "Original"
+    ],
+    "module_only_functions": [],
+    "installed_functions": [
+      "main",
+      "make"
+    ]
+  },
+  "factory_scavenges": 16,
+  "notes": [
+    "Constructors remain actual CFE/VM constructors; generic bodies, private named targets, const and generative redirects retain Dart semantics.",
+    "Cached/Choice/Original relocate on constructor/storage changes; Added is a new factory target. Box/read/build/caught/churn retain baseline AOT.",
+    "An unchanged AOT consumer holds a patch factory tear-off across GC and calls it to obtain the new subtype.",
+    "Invalid return targets, parameter mismatches, non-const targets of const factories and factory this references are rejected before emission.",
+    "This increment rebuilt only normal, GC and factory native fixtures. Earlier 28-fixture evidence belongs to the preceding compiler fingerprint and was not relabeled as current."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Cross-library private-constructor and broad SDK-factory combinations not established",
+    "SDK interfaces/mixins, named application aliases, operators, late instance fields and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

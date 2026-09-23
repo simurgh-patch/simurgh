@@ -1,0 +1,197 @@
+{
+  "recorded_at": "2026-09-23 11:31 +08:00",
+  "scope": "Public SDK superclass lowering and exact super bridges in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032149Z-ckml_915/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032221Z-zpc4y9dk/build.json",
+    "sdk_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032255Z-fgd75jau/build.json",
+    "sdk_super_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032330Z-6vrgy99u/build.json",
+    "sdk_super_gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032402Z-amp1ig3x/build.json",
+    "sdk_super_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032433Z-r_3dt4h_/build.json",
+    "sdk_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032505Z-witl2nv2/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032540Z-816zwgfx/build.json",
+    "operators": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032612Z-k_a1_f3_/build.json",
+    "operator_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032645Z-unveqrm6/build.json",
+    "super_parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032720Z-asnanmgt/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032753Z-ei_jc504/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032829Z-rbu_hxiu/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T032149Z-ckml_915/native-checks/report.json",
+    "verification": "output/simurgh-rename-verification.log",
+    "compiler_analysis": "output/m1-sdk-super-simurgh-analysis.log",
+    "format": "output/m1-sdk-super-simurgh-format.log",
+    "native_log": "output/m1-sdk-super-simurgh-native.log"
+  },
+  "shared_verification_inputs": "output/sdk-super-shared-verification-inputs.json",
+  "compiler_sha256": "54c8ceb01855d807427d6e26c749965ae364cdd822a46bb4751d38675e4f1084",
+  "verification_script_sha256": "366a079b04b6e324753a81ce1f5a21205acb43dd4b6bdf2660d4336e92e3105c",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 103,
+    "flutter_widget_tests": 7,
+    "native_checks": 82,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "sdk_super": {
+      "baseline": "fields:2\nmixed:1:2\nrender:3,1,2:a,b\nfront:3\ncopy:3,1,2:v3,v1,v2\ndefault:ab:false\nsetter:z\nsort:1,2,3\nview:4:4:5:7:7:6\nlvalue:4:8:8\nchain:3\nerror:detail:failure:old:Assertion failed: \"failure\":true:true\nnew:1:true\ngc:1:3,1,2\n",
+      "patched": "fields:11\nmixed:1:2\nrender:13|11|12:a|b\nfront:13\ncopy:13,11,12:v13,v11,v12\ndefault:ab:false\nsetter:z\nsort:11,12,13\nview:8:8:9:7:7:14\nlvalue:4:8:8\nchain:9\nerror:detail:failure:new:Assertion failed: \"failure\":true:true\nnew:9:true\ngc:11:13|11|12\n"
+    },
+    "sdk_super_checks": {
+      "baseline": "error:true:false:i\n",
+      "patched": "error:true:true:ir\n"
+    },
+    "sdk_super_gc": {
+      "baseline": "map:3\nstack:true:true\nerror:Bad state: old\n",
+      "patched": "map:30\nstack:true:true\nerror:fresh error\n"
+    },
+    "sdk_super_interfaces": {
+      "baseline": "direct:one\nimplemented:own\nupdated:written\nmock:mock\nidentity:true\n",
+      "patched": "direct:two\nimplemented:own\nupdated:written\nmock:mock\nidentity:true\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "sdk_super": {
+      "baseline": {
+        "source_sha256": "2b3687d604a85fc6f8cd09325b1b9113b9763c7275d02f0814c465305cea6899",
+        "executable_sha256": "b06317bd5dd95b21fff660c1e7350315f6d33366e845de7c99d9ef8bb1309b9e",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "123e7725d60d141488379d2f1d7ee0c0621fa6dd7b2a9d08cddd2c9f7bd229f4"
+      },
+      "patch": {
+        "source_sha256": "bdf7e34bc26fbba730b5c1da9917aa8e542267d414b539da330f95cf756685e5",
+        "executable_sha256": "1da4435dbea5f1992ab408d5e24d5c77b90746770e7148aec9b42511fe5b3c58",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "d852a15744c8fa189b4c713b3ce43284f984330fa6b4b4c960ea15505f900a1d"
+      }
+    },
+    "sdk_super_checks": {
+      "baseline": {
+        "source_sha256": "81ea286b2647aa48366be84828dd746d0ee829804c4f45f9faf2fe3eb06ff7bb",
+        "executable_sha256": "9e44a778778af445dd2f49282d2ac77b7badff6fd6fd4423bc860a466c0a9fb5",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "610073da241028040d541fc141d86c46bfce2a1f8aee84b1ce7ae29cfd339ee4"
+      },
+      "patch": {
+        "source_sha256": "56475dbf335fbc591fd9f1a77c7ecf19be6793e397f63f6dfe64dd501236fe3b",
+        "executable_sha256": "f99d609d87a6d496bbed6c11cdc7b286e34c4c24a5571cd29fe5278e0d41ff4e",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "97135f041cfc75e1183902fb406808ef3562f983eb4fa2f80855b067a9ef04a5"
+      }
+    },
+    "sdk_super_gc": {
+      "baseline": {
+        "source_sha256": "22fb5c1d1963fac96c38ddfcb09db74076ece78569de983594563877caf4e1e7",
+        "executable_sha256": "5e71c947ee23be3c2be5d930362b1971d38e30cb417fbde0804200ab61e3df88",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "8385582ad13b9f2b2ba77a8f2e9517c16605a6ec9b4165e65a69df547c5f3176"
+      },
+      "patch": {
+        "source_sha256": "59f16a95d98ad4795febc91c193f4949c26eeb11491f7ab154cefec43f9106d1",
+        "executable_sha256": "a3c1230a35f9ee5becd7a52d9a5734b91b2ff94ca9b73198172d9b74638377bd",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "e0e30d9cfa45b9cc141a0cd3319c74b61ba4a240575e4348ead339edbf071edc"
+      }
+    },
+    "sdk_super_interfaces": {
+      "baseline": {
+        "source_sha256": "d90a51a678abb3900c0d89c656d3b62db9f078a04d4f7c0a74cf4a130c003385",
+        "executable_sha256": "0b775a2a1592f07c22f49488bdbc4b82fab80577905f7e4ec99b2a2bba79e2e3",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "5248e41ccaabd86d9b9705ce3a8e4cc20011341c0eb7e448a35f848c89fbf14c"
+      },
+      "patch": {
+        "source_sha256": "d90a51a678abb3900c0d89c656d3b62db9f078a04d4f7c0a74cf4a130c003385",
+        "executable_sha256": "69ba608c85f9cb89364644251feec143515da9aa5fb88af33b9f2ab9a2032a4c",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "c1121b9d33ead706e050047b66f02ac4dd3aac09931a99ef912db0f79ab771c3"
+      }
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [],
+    "added_classes": [
+      "AddedError",
+      "FreshMap",
+      "Node"
+    ],
+    "module_only_functions": [],
+    "installed_functions": [
+      "Bag.front",
+      "Bag.render",
+      "Bounds.nudge",
+      "Failure.toString",
+      "IntBag.[]",
+      "IntBag.[]=",
+      "View.step",
+      "View.viaUpdate",
+      "chain",
+      "makeError",
+      "makeMap"
+    ]
+  },
+  "sdk_super_scavenges": 16,
+  "new_sdk_object_scavenges": 16,
+  "notes": [
+    "All 13 native groups were rebuilt after the authorized simurgh rename, against the renamed compiler and rebuilt host runtime. The pre-rename 82 checks are retained under output/sdk-super-before-simurgh and are not reused as current acceptance. Ordinary verification reuses the complete post-rename run; compiler/test/verifier hashes remained unchanged during this native rebuild.",
+    "Public externally extendable SDK classes from linked libraries are allowed; original analyzer constructor/interface/base/final/sealed rules remain authoritative. SDK mixin applications remain rejected.",
+    "SDK ancestor AST signatures and public field accessors generate genuine super calls with instantiated type parameters, defaults, getters/setters/operators, and rewritten explicit type arguments. SDK implementation/storage are not copied into user code.",
+    "The baseline retains both SDK implementation and extension contracts, including LinkedListEntry (extendable but not externally implementable). A patch can first add SDK subclasses without rewriting SDK libraries.",
+    "Existing AOT consumers observe patched ListBase indexing through SDK sort and iterator/map methods. Defaults, first SDK super call, MutableRectangle field mutation, MapView index writes and AssertionError/Error field values and stack trace presence/identity match original-source AOT.",
+    "The SDK super index fixture retains distinct Object? read keys and int write keys. An invalid key fails before RHS evaluation; a valid key proceeds to the String value check. Compound/postfix/null-aware indexing also passed.",
+    "Original AOT holds a patch-only MapBase object through an SDK values view and a patch-only Error with a native inherited stack trace across GC. It reads 30 and preserves nonnull stack trace identity after collection.",
+    "Business mixin on-constraints traverse the business superclass SDK ancestry. Internal bridge signatures on implicit interfaces are satisfied only for generated members; original source members/noSuchMethod remain unchanged, and actual inheritance retains real bridge bodies.",
+    "The initial native mixin regression revealed missing generated-interface members. Its failure is retained; the concurrent incomplete ordinary run was intentionally stopped before compiler edits and is not counted as passing. Final full verification was restarted after the fix.",
+    "A full ordinary run exposed external pub regeneration of a deliberately incomplete temporary package configuration. Before/after snapshots captured the restored dependency. Test copies now omit only root pubspec/lock files for hand-written configurations while retaining dependency manifests; missing-package, relocation and language-change checks passed after isolation, followed by a full ordinary rerun.",
+    "Only these 13 current-compiler native groups were rebuilt, not the full historical native suite. Eager bridge/retention costs and mobile performance have not been measured."
+  ],
+  "preserved_failures": [
+    "output/m1-sdk-super-concurrent-rename.txt",
+    "output/m1-sdk-super-isolated-verification.log",
+    "output/m1-aot-20260923T021722Z-e6i5ydtt/generate-baseline.log",
+    "output/m1-aot-20260923T023038Z-kl7yclfl/kernel-no-aot.log",
+    "output/m1-sdk-super-verification-cancelled.txt",
+    "output/m1-sdk-super-verification.log",
+    "output/m1-sdk-super-final-verification.log",
+    "output/m1-sdk-super-package-recheck.log",
+    "output/sdk-package-trace/1-1-before.json",
+    "output/sdk-package-trace/1-1-after.json"
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "SDK mixin applications and SDK mixin ancestry, direct super access to user-declared fields, and broader SDK/signature coverage",
+    "Other unsupported Dart declarations and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ],
+  "shared_verification_process": {
+    "thread_id": "01a0cc35-18e8-7e70-81f3-d428a7234bd2",
+    "command": "./scripts/verify.sh > output/simurgh-rename-verification.log 2>&1",
+    "exit_code": 0,
+    "duration_ms": 1069347,
+    "confirmation": "Completed command status read from the task that owned the verification process."
+  }
+}

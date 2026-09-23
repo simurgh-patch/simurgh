@@ -1,0 +1,125 @@
+{
+  "recorded_at": "2026-09-22 16:23 +08:00",
+  "scope": "User-defined mixins, constrained generic super dispatch and application layout relinking in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080642Z-9n_qw8_m/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080709Z-5b1d4yt5/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080737Z-ovh59q7v/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080805Z-l3_3nu6b/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080834Z-rlthpk2m/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080904Z-bqjghyx0/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080932Z-3nd1iidf/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081000Z-21x8dj4m/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081032Z-f4hh4dbj/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081101Z-y5vuy7h1/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081130Z-ll8gr7ck/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081200Z-uld524ff/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081231Z-zzjzs1cy/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081300Z-vjdnp_xa/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081330Z-05rb09dz/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081359Z-ucyf5qip/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081431Z-z8vg_igh/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081502Z-dtqhm8hn/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081532Z-sarih1f7/build.json",
+    "packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081604Z-hw89loz4/build.json",
+    "multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081632Z-dxohhcwd/build.json",
+    "multilang_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081700Z-jp133s88/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081727Z-mcp4h3uf/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081755Z-p4cera8d/build.json",
+    "super_parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081822Z-c4r2r5hc/build.json",
+    "static": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081849Z-4_0xekdq/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081914Z-_x9kq2xy/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T081937Z-fxh0q4_u/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T080642Z-9n_qw8_m/native-checks/report.json",
+    "verification": "output/m1-mixins-verification.log",
+    "compiler_analysis": "output/m1-mixins-analysis.log",
+    "format": "output/m1-mixins-format.log",
+    "native_log": "output/m1-mixins-native-suite.log"
+  },
+  "compiler_sha256": "2ec724c1dfa44bfe098015951f56b003de348ebb3282d93b09559b503e25d63a",
+  "verification_script_sha256": "4fd193e7f452c6bb69c53b47bd0237c2e7bee1116e7d66a8432b7ea9da5c6a79",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 87,
+    "flutter_widget_tests": 7,
+    "native_checks": 158,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "combined:29\ncount:1\nchoose:3\nlabel:old\nnew:29\ntype:true:true\nchooseNew:4\naccessors:6:4\ngc:33\nshape:2\nfresh:3\ninterface:tag\nbaseMixin:1\nmixinClass:old\n",
+    "patched": "combined:49\ncount:1\nchoose:3\nlabel:new\nnew:23\ntype:true:true\nchooseNew:8\naccessors:8:4\ngc:55\nshape:4\nfresh:203\ninterface:tag\nbaseMixin:2\nmixinClass:new\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "1177cecfd6cc3fe93ad03f434d70cadc07c36eb592bd06320fbe22ab5569b6e3",
+      "executable_sha256": "984f760c16454cc42bb54fa7a933759cd59a7c0382dc2f3d55756a59aea8d294",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "3d65a74acf604c2543f63c4ecb7faf1146616217be05e4275c6d11f86229ffeb"
+    },
+    "patch": {
+      "source_sha256": "d4f39b2b140b1ac2240295ac55873771b320c44ca9e287f131872291cfa28480",
+      "executable_sha256": "199e23f8ff546f00c2121062b4022da91240a87bb878bdeea99fb7e1589faa54",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "c54da7ebdd3f10db34dbae0bc1ed3751601ad43a5d4c3923f1b422f5b500b334"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [
+      "Shape",
+      "Shaped"
+    ],
+    "module_only_functions": [
+      "Shape.size",
+      "shape"
+    ],
+    "installed_functions": [
+      "First.callback",
+      "First.current",
+      "First.run",
+      "Label.label",
+      "LockedMixin.locked",
+      "fresh",
+      "main",
+      "make"
+    ]
+  },
+  "mixin_scavenges": 16,
+  "notes": [
+    "Plain mixins and mixin classes retain actual CFE/VM application classes and field storage. Ordered super bridges resolve mixins from right to left and then superclass/constraint members.",
+    "Baseline AOT invoke/choose/churn consumers operate on patched/new mixin instances. A changed bytecode closure is retained across observed GC.",
+    "Changing Shape storage recreates Shape/Shaped and typed consumers. Added/Fresh/Freshly exist only in the patch.",
+    "An initial unconstrained-mixin probe was rejected because analyzer reports an implicit Object constraint; the corrected check accepts that implicit constraint. A negative test initially expected an analyzer error where the parser correctly rejected a mixin constructor; both error stages remain rejection.",
+    "One exploratory candidate was edited after its patch generation step; that run is not final acceptance evidence. All final fixture archives are checked against frozen source.",
+    "Named mixin application aliases, SDK mixins and broad multiple-on constraints are not established."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "SDK interfaces/mixins, named application aliases, operators/factories, late instance fields and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

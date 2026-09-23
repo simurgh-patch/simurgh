@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-09-21 16:20 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host AOT; not mobile mixed engine or performance acceptance",
+  "implemented": [
+    "Typed instance method dispatch on real baseline objects",
+    "Native inheritance, virtual calls and method tear-offs",
+    "Library-scoped private field and method identity",
+    "Compound assignment read/write element handling",
+    "Generated super-call bridges",
+    "Program-class parameter/return types and bytecode calls to baseline constructors",
+    "Explicit frozen class-shape checks"
+  ],
+  "compiler_sha256": "b313b4e8eb8b381e508d86d54a594903e895629a76d2f9376b1814c8fba6ba18",
+  "compiler_components": {
+    "compiler/bin/aot_patch.dart": "9a05058a9690c07eb19b3a179dfc2326f07977bb6d827fc608cc88ccfaf54e39",
+    "compiler/lib/source_graph.dart": "02733161d1a2d9b02e15c647fe406bf5abb4ec5b5c3c39f7896927bef4375bf7",
+    "compiler/lib/class_lowering.dart": "b0520878233ee3922e50a7f9bc853b45d21334d516a6c81ab24f2e363de28611"
+  },
+  "evidence": {
+    "normal": "output/m1-aot-20260921T081412Z-5x5a2df4/build.json",
+    "gc": "output/m1-aot-20260921T081425Z-d38p2x07/build.json",
+    "entities": "output/m1-aot-20260921T081438Z-dqpeo3yf/build.json",
+    "closures": "output/m1-aot-20260921T081452Z-dph_c97e/build.json",
+    "libraries": "output/m1-aot-20260921T081508Z-pd1a01_7/build.json",
+    "classes": "output/m1-aot-20260921T081457Z-0au0hxab/build.json",
+    "native_checks": "output/m1-aot-20260921T081412Z-5x5a2df4/native-checks/report.json",
+    "optimizer_trace": "output/m1-aot-20260921T081412Z-5x5a2df4/native-checks/classes-optimizer.log",
+    "final_layout_regression": "output/m1-class-layout-final.log",
+    "verification": "output/m1-classes-verification.log"
+  },
+  "outputs": {
+    "normal": {
+      "baseline": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+      "patched": "calculate=407\ncaller=408\ncaught=Bad state: patched\n"
+    },
+    "gc": {
+      "baseline": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+      "patched": "calculate=407\ncaller=408\ncaught=Bad state: patched\n"
+    },
+    "entities": {
+      "baseline": "calculate=207\nreference=208\nidentity=true\nbinding=true\n",
+      "patched": "calculate=407\nreference=408\nidentity=true\nbinding=false\n"
+    },
+    "closures": {
+      "baseline": "closure=12\ncapture=15\ngc=16\nexception=Bad state: baseline callback\n",
+      "patched": "closure=14\ncapture=20\ngc=22\nexception=Bad state: patched callback\n"
+    },
+    "libraries": {
+      "baseline": "value=11\nreference=11\nprivate=12\ncycle=1\nselected=100\n",
+      "patched": "value=118\nreference=118\nprivate=12\ncycle=101\nselected=200\n"
+    },
+    "classes": {
+      "baseline": "base=14\nvirtual=24\ndirect=24\ntearoff=26\ncaptured=18\ncreated=24\ncaught=Bad state: baseline member\nself=true\nassignments=16\nmethodIdentity=true\n",
+      "patched": "base=21\nvirtual=121\ndirect=121\ntearoff=124\ncaptured=30\ncreated=124\ncaught=Bad state: patched member\nself=true\nassignments=27\nmethodIdentity=true\n"
+    }
+  },
+  "native_checks_passed": 19,
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "class_scavenges": 16,
+  "optimizer_evidence": {
+    "name": "classes-optimizer-evidence",
+    "method_wrapper_inlined": true,
+    "optimized_main_calls_replaceable_entry_directly": true,
+    "passed": true
+  },
+  "baseline_aot_unchanged": true,
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Class layout, constructor and method-set changes",
+    "Getters/setters, static members and full class semantics",
+    "General Kernel and package/SDK linking",
+    "General optimization assumption invalidation",
+    "Generics, async and isolates",
+    "Android/iOS mixed runtime integration",
+    "Signing and rollback",
+    "Performance and physical device acceptance"
+  ],
+  "checks": {
+    "static_analysis": "passed",
+    "dart_tests": 16,
+    "python_tests": 40,
+    "flutter_widget_tests": 7,
+    "native_checks": 19,
+    "final_class_structure_regression": "passed"
+  }
+}

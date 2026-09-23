@@ -1,0 +1,108 @@
+{
+  "recorded_at": "2026-09-21 18:25 +08:00",
+  "scope": "Host ARM64 cold-start explicit top-level state and constant dependency experiment",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101736Z-9e2x7ce3/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101750Z-bzgv0bi_/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101804Z-s8_aqbwt/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101818Z-whfifqyv/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101832Z-iiix4245/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101846Z-vjxhjo3z/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101900Z-evznz6ks/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101915Z-nqeh1eb8/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101932Z-pe5g_on1/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101949Z-txrfkia4/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T102005Z-q8z26wqo/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T102021Z-2eqa1unn/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T102038Z-lbv1oaxz/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T102054Z-sfgxm_3o/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T101736Z-9e2x7ce3/native-checks/report.json",
+    "verification": "output/m1-globals-verification.log"
+  },
+  "compiler_sha256": "4b76e6ce6948b7ed4c5a54338543282796440a5cf0fcd84c016d79d5a3cf4a03",
+  "outputs": {
+    "baseline": "unready=-1\nheld=12\nshared=3:3\nvalue=11\ndefault=3\nlazy=10:10:1\nlate=5:8\n",
+    "patched": "unready=-1\nheld=7\nshared=6:6\nvalue=23\ndefault=7\nlazy=20:20:1\nlate=5:8\n"
+  },
+  "global_dependency_closure": {
+    "changed_globals": [
+      "held",
+      "seed"
+    ],
+    "replaced_globals": [
+      "derived",
+      "held",
+      "initialized",
+      "seed"
+    ],
+    "added_globals": [],
+    "replaced_classes": [
+      "Box"
+    ],
+    "invalidated_functions": [
+      "Box.read",
+      "main",
+      "readHeld",
+      "readValue",
+      "withDefault"
+    ],
+    "module_only_functions": [
+      "Box.read",
+      "withDefault"
+    ],
+    "installed_functions": [
+      "changeShared",
+      "initialize",
+      "main",
+      "readHeld",
+      "readValue"
+    ]
+  },
+  "retained_aot_functions": [
+    "readShared",
+    "unready"
+  ],
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 56,
+    "flutter_widget_tests": 7,
+    "native_checks": 61
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "baseline_aot_unchanged": true,
+  "globals_source_aot_reference_matches": true,
+  "globals_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "1e68b860155579078db2d43c27f73ff2725cbf83b5f482a4676f9d1a0c83ba92",
+      "executable_sha256": "67a1a4ddaae05a97a3bdd2c16f15efc97c8a02973ae1030e388b7b99b5e7d5a1",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "98ef028c2d232a551840530ec14e1c14f21186b37e348897973b104a01094c9e",
+      "executable_sha256": "2f7ee8dabdcba26f36fe0c263e14211390ad944e57a5742ac7537379917c1af5",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "known_failure": {
+    "feature": "top-level late final",
+    "state": "explicitly rejected during source compilation",
+    "evidence": "output/m1-aot-20260921T101157Z-vr8dgurz/patched-run.log",
+    "observed": "Native loader aborts resolving baseline setter; underlying runtime support remains unfinished"
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Top-level late final setter retention and inferred global declarations",
+    "General Flutter/Kernel and optimization dependency proof",
+    "Broader language and SDK/package linking",
+    "Android/iOS mixed runtime integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ]
+}

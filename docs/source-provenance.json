@@ -1,0 +1,41 @@
+{
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "files": [
+    {
+      "path": "DEPS",
+      "sha256": "85e14be7df123f835953d9c44cc8c4424c6157f68fe1b449987b8f81dc12b4c3",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/DEPS"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "a598db94b6290ffbe10b5ecf911057b6a943351c727fdda9e5f2891d68700a20",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/LICENSE"
+    },
+    {
+      "path": "engine/src/flutter/runtime/dart_isolate.cc",
+      "sha256": "214666611887b4a702812e223b84c4d087ca4efed92eab99f909d0d01520e2be",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/engine/src/flutter/runtime/dart_isolate.cc"
+    },
+    {
+      "path": "engine/src/flutter/runtime/dart_vm.cc",
+      "sha256": "6a068b9981af8ae1b6aec8b30ae2a82069c497efba20bcbc9d7ff297529962f8",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/engine/src/flutter/runtime/dart_vm.cc"
+    },
+    {
+      "path": "engine/src/flutter/shell/common/shell.cc",
+      "sha256": "b08d2a6b6646936c7b4f6f89eb1b453a753b62427847989fe4d0776605064e12",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/engine/src/flutter/shell/common/shell.cc"
+    },
+    {
+      "path": "engine/src/flutter/ci/builders/mac_ios_engine.json",
+      "sha256": "ca546c7e277894623c9c712b12f4e36ff145d5e74059f50dee5a96c1631538ef",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/engine/src/flutter/ci/builders/mac_ios_engine.json"
+    },
+    {
+      "path": "engine/src/flutter/ci/builders/mac_android_aot_engine.json",
+      "sha256": "9a616a4066f383b2aa2f607870951566bb9d9fe06839d8020b7cb6fb1e5696f6",
+      "source": "https://github.com/flutter/flutter/blob/0cd610717bde95fd88343c64f81c11ba4e5c0010/engine/src/flutter/ci/builders/mac_android_aot_engine.json"
+    }
+  ],
+  "scope": "Read-only M0 source inspection; no custom engine build or runtime modification"
+}

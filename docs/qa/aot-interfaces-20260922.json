@@ -1,0 +1,139 @@
+{
+  "recorded_at": "2026-09-22 15:56 +08:00",
+  "scope": "User-defined generic interfaces and complete closed-family relinking in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074129Z-n33oxf0l/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074157Z-9b25y11q/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074228Z-0yhq7he5/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074257Z-0q6ufofu/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074326Z-j6luexw2/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074357Z-sbpphs8o/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074426Z-ohbnqwtt/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074456Z-_0vyhm_1/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074526Z-4q3arpv9/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074557Z-d074zora/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074626Z-_gm9j5lg/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074655Z-xio6u2sk/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074727Z-4u_qp1mk/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074758Z-8g2gsm_r/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074828Z-huu8bdjo/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074858Z-0hcn1rsm/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074928Z-_lh632ad/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074958Z-mjx_u0vq/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075027Z-j5rwb829/build.json",
+    "packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075056Z-etg1xt17/build.json",
+    "multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075124Z-j8aay7s5/build.json",
+    "multilang_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075153Z-t0ekknfn/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075221Z-j5acrcss/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075248Z-ltvlfw2h/build.json",
+    "super_parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075315Z-_s68esy5/build.json",
+    "static": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075341Z-3qdl3ycg/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T075406Z-7o0rezkv/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T074129Z-n33oxf0l/native-checks/report.json",
+    "verification": "output/m1-interfaces-verification.log",
+    "compiler_analysis": "output/m1-interfaces-analysis.log",
+    "format": "output/m1-interfaces-format.log",
+    "native_log": "output/m1-interfaces-native-suite.log"
+  },
+  "compiler_sha256": "c407c1f8f481e9631aa3cb1a541ec817912c5c174fc662d1e5bcb21fba37e832",
+  "verification_script_sha256": "afaafdd3f9c2eab456a9cfd5bb90fec2609c8fd8557a8edba9ed8434423b4b68",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 85,
+    "flutter_widget_tests": 7,
+    "native_checks": 151,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "existing:3:2\nnew:4:3\nupdate:5\nlabel:box\ninterfaces:true\ncovariance:true\ntearoff:2:true\ngc:6\nclosed:1:variant\ngrowing:1\nbase:4\nfinal:6\n",
+    "patched": "existing:12:7\nnew:108:7\nupdate:10\nlabel:added\ninterfaces:true\ncovariance:true\ntearoff:101:true\ngc:110\nclosed:2:other\ngrowing:3\nbase:5\nfinal:7\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "2fb960c0ca75dfb67d7e514cf407d8e85b097b1809171e8c9a2ce5cf16a24c19",
+      "executable_sha256": "0cc660ef4184a343950f4c20b5a8e70f16480984f526f61bda03f570e4ab21a7",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "784c1625085cd4db1017079b6fc0176feac5d96c075eb3ac31908b07db7c6046"
+    },
+    "patch": {
+      "source_sha256": "6b2e86644ca0080be8c2be59177fcfca48b20477f58121a46c8fadb42ca93379",
+      "executable_sha256": "cb548a94ce924096a866dd7fabd58c20c783ff226640e320493db22d7bc61b0b",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "9ad6adc29f47f009494308d710cfcd7a24f0da33fb129bc7b79bc8f16db569a3"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [
+      "BaseFamily",
+      "BaseImpl",
+      "Closed",
+      "FinalFamily",
+      "FinalImpl",
+      "Growing",
+      "GrowingImpl",
+      "Variant"
+    ],
+    "module_only_functions": [
+      "BaseFamily.read",
+      "BaseImpl.read",
+      "FinalFamily.read",
+      "FinalImpl.read",
+      "GrowingImpl.extra",
+      "GrowingImpl.read",
+      "Variant.read",
+      "baseFamily",
+      "closed",
+      "closedTag",
+      "finalFamily",
+      "growing",
+      "readBase",
+      "readClosed",
+      "readFinal",
+      "readGrowing"
+    ],
+    "installed_functions": [
+      "Box.choose",
+      "Box.measure",
+      "main",
+      "make"
+    ]
+  },
+  "interface_scavenges": 16,
+  "notes": [
+    "Retained AOT consumers dispatch to a new bytecode implementation through generic/multiple interfaces, read/write fields and reject incompatible covariant writes.",
+    "Existing implementations retain identity when only bodies change. Changed interface members recreate the interface, implementations and typed consumers.",
+    "New implementations of final/base/sealed classes permitted by original Dart library rules recreate the closed family, including exhaustive switch consumers. Original-source illegal implementations and missing members remain rejected.",
+    "An initial probe used identical on repeated interface tear-offs, which is not the required Dart equality contract; final tests use == and compare independently compiled source AOT.",
+    "SDK interfaces, mixins, Flutter and mobile acceptance are not established."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "SDK interfaces, mixins/operators/factories, late instance fields and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "recorded_at": "2026-09-23 10:09 +08:00",
+  "scope": "Public externally implementable SDK interfaces in host ARM64 AOT/bytecode",
+  "evidence": {
+    "sdk_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015223Z-gsqk3778/build.json",
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015456Z-80a8vmyq/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015523Z-l842a_4o/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015551Z-2lf16exq/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015622Z-_dfjadnn/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015653Z-di2qxdn0/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T015456Z-80a8vmyq/native-checks/report.json",
+    "verification": "output/m1-sdk-interfaces-verification.log",
+    "compiler_analysis": "output/m1-sdk-interfaces-analysis.log",
+    "format": "output/m1-sdk-interfaces-format.log",
+    "native_log": "output/m1-sdk-interfaces-native.log"
+  },
+  "compiler_sha256": "93634fcd5a814934d96e9ed8809c0f5d65461f6282b1a998b458e94c78ddba6d",
+  "verification_script_sha256": "d1131f9e6656a7b8e4af8e8aea3ee36358b6477eaaf2623ae2489b853b541468",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 100,
+    "flutter_widget_tests": 7,
+    "native_checks": 34,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "sort:1,2,3\ncompare:1\nreject:true\nsink:[1,2]:true\niterator:7\ncaught:FormatException: old\ngc:2\n",
+    "patched": "sort:3,2,1\ncompare:-3\nreject:true\nsink:patched:[patched:1patched:,patched:2patched:]:true\niterator:60\ncaught:new failure\ngc:-7\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "003ecda0d0677a40762a5bc769a133ddd98ba533881ce23e27fe58235ebdac7c",
+      "executable_sha256": "94c673b56fa8cbfb29841038457e3723660822380d692aa57be8effbcfdb527b",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "4224d692d06a0dfc97463ad9ac96ee43f8b58db949de50e71c12700d9984ba63"
+    },
+    "patch": {
+      "source_sha256": "3e5a77043b1c94d48fed26238a178d1098ea1dac25db3d3a1a219253cdc7fa38",
+      "executable_sha256": "eee4b5fb6f302ff3ff6d7a7f0ed670c8810c6d2219d4ac98316c701c782dd0fd",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "c0d7c4d4e9eec896fa879c80033be3662d193802b3719899f5a17b3773798da8"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [],
+    "added_classes": [
+      "AddedRank",
+      "Numbers",
+      "Trouble"
+    ],
+    "module_only_functions": [],
+    "installed_functions": [
+      "Rank.compareTo",
+      "TextSink.add",
+      "failure",
+      "iterator",
+      "make"
+    ]
+  },
+  "sdk_interface_scavenges": 16,
+  "notes": [
+    "Only public resolved SDK classes that the pinned analyzer marks externally implementable are accepted in implements clauses. Original static type/member/base/final/sealed restrictions remain enforced.",
+    "All eligible SDK interfaces and public overridable members are retained even when first implemented by a patch. The set is archived as sdk_interfaces and bound into source graph/compiler/baseline fingerprints.",
+    "Baseline AOT main/ordered/encoded/compare/consume/caught/rejects/churn remain unchanged. SDK sort calls patched Rank.compareTo, and SDK JSON encoding calls patched TextSink.add.",
+    "Patch-only AddedRank/Numbers/Trouble objects cross existing AOT/SDK interfaces. Iterator and Exception first implementations exercise pre-retained SDK contracts. Wrong dynamic compareTo arguments still throw TypeError.",
+    "The new object and its bytecode method tear-off survive GC and are consumed by existing AOT. Generated baseline/patch outputs equal independent archived original-source AOT outputs.",
+    "Full ordinary verification and six current-compiler native fixture groups (normal, GC, SDK linking, SDK interfaces, user interfaces, mixins) passed. The historical full native suite was not rerun.",
+    "SDK superclass and SDK mixin lowering remain fail closed. Conservative SDK contract retention costs have not been measured."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "SDK superclass/mixin lowering and super bridges",
+    "Other unsupported Dart declarations and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

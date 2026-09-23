@@ -1,0 +1,61 @@
+{
+  "time": "2026-09-23 11:32 +08:00",
+  "project": "simurgh",
+  "scope": "Project naming and bilingual README; no new hot-update capabilities",
+  "ordinary_tests": {
+    "dart": 16,
+    "python": 103,
+    "flutter": 7,
+    "passed": true,
+    "log": "output/simurgh-rename-verification.log"
+  },
+  "static_analysis": {
+    "dart": true,
+    "flutter": true,
+    "compiler": true
+  },
+  "compiler_sha256": "54c8ceb01855d807427d6e26c749965ae364cdd822a46bb4751d38675e4f1084",
+  "runtime_identity": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    }
+  },
+  "native_runs": {
+    "baseline": "output/m1-aot-20260923T031204Z-5g_w3vyz",
+    "gc": "output/m1-aot-20260923T031441Z-kydg1_vb",
+    "type_names": "output/m1-aot-20260923T031441Z-6o3z9m87"
+  },
+  "native_checks": {
+    "passed": 19,
+    "report": "output/m1-aot-20260923T031204Z-5g_w3vyz/native-checks/report.json"
+  },
+  "cli_checks": [
+    "help",
+    "status",
+    "verify-toolchain",
+    "patch rejects with exit 3"
+  ],
+  "documentation_checks": [
+    "language links",
+    "local paths",
+    "heading anchors",
+    "CLI paths",
+    "no old names outside historical evidence"
+  ],
+  "unchanged_historical_evidence": true,
+  "physical_directory_renamed": false,
+  "not_verified": [
+    "mobile engine rebuild after naming migration",
+    "physical devices",
+    "performance",
+    "full native regression suite"
+  ],
+  "m0_passed": false,
+  "m1_passed": false
+}

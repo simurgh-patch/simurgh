@@ -1,0 +1,8 @@
+name: engine_logic
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <3.13.0'
+dependencies:
+  utility:
+    path: ../utility

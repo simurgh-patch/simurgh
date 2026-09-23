@@ -1,0 +1,105 @@
+{
+  "recorded_at": "2026-09-22 14:32 +08:00",
+  "scope": "Original class display names in host ARM64 AOT/bytecode and mixed-language generated libraries",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061253Z-ge30t5c0/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061325Z-zefbsocm/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061355Z-jw0tju7v/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061425Z-ho0rl0u6/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061453Z-qic2w32g/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061521Z-3o_kpkv2/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061550Z-t_nmavot/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061625Z-lhfhyh0g/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061658Z-uawffdw7/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061728Z-bvilpfav/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061802Z-i3hur6l2/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061842Z-h31wg6lm/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061922Z-87yi3p7i/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061954Z-3yskdl4d/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062025Z-7x2czao3/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062055Z-yzbw7rpt/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062123Z-hw7l17f4/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062152Z-5361e5ox/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062221Z-9c81bl8e/build.json",
+    "packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062245Z-2ckgcm83/build.json",
+    "multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062309Z-5tzvp5wa/build.json",
+    "multilang_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062334Z-p5qu_nr_/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062400Z-ct9wy08i/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T062425Z-e31c_j6w/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T061253Z-ge30t5c0/native-checks/report.json",
+    "verification": "output/m1-type-names-verification.log",
+    "final_prefix_recheck": "output/m1-type-names-final-prefix-retry.log",
+    "compiler_analysis": "output/m1-type-names-compiler-analysis.log",
+    "format": "output/m1-type-names-format.log",
+    "before_fix_proof": "output/m1-aot-20260922T061024Z-z6za5t5b/before-fix-proof.json",
+    "native_final_log": "output/m1-type-names-native-final-retry.log"
+  },
+  "compiler_sha256": "1810633a2b646aa5c43277e49e8acdcbb0b2ae8ef72ffebf12b7ec4e33636ab9",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 79,
+    "flutter_widget_tests": 7,
+    "final_source_prefix_recheck": 10,
+    "native_checks": 131,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "box:Box<int>|Instance of 'Box<int>'\nnested:Box<Box<int>>\nlocal:_Local|Instance of '_Local'\nleft:_Hidden|Instance of '_Hidden'\nright:_Hidden|Instance of '_Hidden'\nprivateDifferent:true\npublicNames:Same|Same\npublicDifferent:true\nsameType:true\ndifferentType:true\nisBox:true\nlayout:Layout|Instance of 'Layout'\nadded:Box<int>|Instance of 'Box<int>'\nrevision:1\nsdk:int|String\n",
+    "patched": "box:Box<int>|Instance of 'Box<int>'\nnested:Box<Box<int>>\nlocal:_Local|Instance of '_Local'\nleft:_Hidden|Instance of '_Hidden'\nright:_Hidden|Instance of '_Hidden'\nprivateDifferent:true\npublicNames:Same|Same\npublicDifferent:true\nsameType:true\ndifferentType:true\nisBox:true\nlayout:Layout|Instance of 'Layout'\nadded:Added<int>|Instance of 'Added<int>'\nrevision:2\nsdk:int|String\n"
+  },
+  "type_names_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "2c07bb6e58c24cb16c1e6458e88d2a67531aef7f970dd6c0a035ada10ce50ec8",
+      "executable_sha256": "35f5ed0a913b757234e9bc87ab30162b35ebb7cf0ab745276c3138a357f3089a",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "a1fdb9cb74dfe92ff2caf8d0aec3f5b5e2c0513ef6e7d45543837950d1d0a2fb"
+    },
+    "patch": {
+      "source_sha256": "5039171fbfa0c222297469c87897f5e2bcb567d9b8cb5681e313c7870a97f3b0",
+      "executable_sha256": "7e787ade164ce2b236236d94a115506a1d0c112eb6d38ea515fe530c772d2ea1",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "32732c49872634b39480b640dabf1bad930d1e5010c205b69fbb482212c5e8f4"
+    }
+  },
+  "display_caller_retains_aot": true,
+  "display_name_guards_passed": true,
+  "notes": [
+    "Ordinary libraries and malformed/legacy encodings remain unchanged; marked dollar-sign class spelling tested.",
+    "Initial direct use of an archived runtime with a new snapshot was correctly rejected by the VM version check. Recompiling the same Kernel with its paired archived snapshot compiler reproduced the old hash-name output.",
+    "Full verification began before the final library-marker edit; the first ten compiler tests were repeated against frozen final source and passed. The later tests and native suite used final implementation.",
+    "An added non-ASCII identifier probe was rejected by Dart before runtime; the failed native-checks directory is retained, and the corrected legal dollar-sign identifier probe is part of final native acceptance.",
+    "Optimizer trace headings now show original class names; acceptance was updated to require that heading plus the exact internal regular-function graph and inlining success. The initial matcher failure is preserved.",
+    "Initial targeted prefix recheck used a Python module path conflicting with the standard library test package; corrected PYTHONPATH invocation passed; both logs retained."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "General Flutter class/Kernel semantics, including static members, mixins and interfaces",
+    "Method/stack-frame names and obfuscated builds",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device and performance acceptance"
+  ],
+  "verification_script_sha256": "237c64de03624361c3777eab08ea433b0eb52f2c68818f1fc107fd2241c04570"
+}

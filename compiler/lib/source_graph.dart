@@ -1,0 +1,991 @@
+// Resolves a local Dart library graph before lowering its top-level functions.
+// Library identity and privacy are checked on the original, unmodified sources.
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
+import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/analysis/session.dart';
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:analyzer/dart/ast/token.dart';
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
+import 'package:analyzer/diagnostic/diagnostic.dart';
+import 'package:crypto/crypto.dart';
+import 'package:package_config/package_config.dart';
+import 'package:yaml/yaml.dart';
+
+part 'class_lowering.dart';
+
+// Shared class/mixin declaration view, preserving original resolved nodes.
+extension ProgramTypeDeclaration on CompilationUnitMember {
+  Token get typeName => switch (this) {
+    ClassDeclaration c => c.namePart.typeName,
+    MixinDeclaration m => m.name,
+    _ => throw StateError('Not a class/mixin'),
+  };
+  TypeParameterList? get typeParameters => switch (this) {
+    ClassDeclaration c => c.namePart.typeParameters,
+    MixinDeclaration m => m.typeParameters,
+    _ => null,
+  };
+  ClassBody get body => switch (this) {
+    ClassDeclaration c => c.body,
+    MixinDeclaration m => m.body,
+    _ => throw StateError('Not a class/mixin'),
+  };
+  InterfaceElement get typeElement => switch (this) {
+    ClassDeclaration c => c.declaredFragment!.element,
+    MixinDeclaration m => m.declaredFragment!.element,
+    _ => throw StateError('Not a class/mixin'),
+  };
+  ExtendsClause? get extendsClause => this is ClassDeclaration
+      ? (this as ClassDeclaration).extendsClause
+      : null;
+  WithClause? get withClause =>
+      this is ClassDeclaration ? (this as ClassDeclaration).withClause : null;
+  MixinOnClause? get onClause =>
+      this is MixinDeclaration ? (this as MixinDeclaration).onClause : null;
+  ImplementsClause? get implementsClause => switch (this) {
+    ClassDeclaration c => c.implementsClause,
+    MixinDeclaration m => m.implementsClause,
+    _ => null,
+  };
+  Token? get finalKeyword =>
+      this is ClassDeclaration ? (this as ClassDeclaration).finalKeyword : null;
+  Token? get sealedKeyword => this is ClassDeclaration
+      ? (this as ClassDeclaration).sealedKeyword
+      : null;
+  Token? get interfaceKeyword => this is ClassDeclaration
+      ? (this as ClassDeclaration).interfaceKeyword
+      : null;
+  Token? get baseKeyword => switch (this) {
+    ClassDeclaration c => c.baseKeyword,
+    MixinDeclaration m => m.baseKeyword,
+    _ => null,
+  };
+}
+
+const entityPrefix = 'msbEntity_';
+const linkedSdkLibraries = {
+  'dart:core',
+  'dart:async',
+  'dart:collection',
+  'dart:math',
+  'dart:convert',
+  'dart:typed_data',
+};
+String sdkPrefix(String uri) => '${entityPrefix}sdk_${uri.substring(5)}';
+String get sdkImports =>
+    "import 'dart:core';\n" +
+    linkedSdkLibraries
+        .map((uri) => "import '$uri' as ${sdkPrefix(uri)};")
+        .join('\n');
+
+String _hash(String text) => sha256.convert(utf8.encode(text)).toString();
+Never _reject(String message) => throw FormatException(message);
+
+// Shared by class lowering and the typed AOT dispatch emitter.
+FormalParameter unwrapParameter(FormalParameter parameter) =>
+    parameter is DefaultFormalParameter ? parameter.parameter : parameter;
+
+String parameterName(FormalParameter parameter) {
+  final base = unwrapParameter(parameter);
+  if (base is SimpleFormalParameter && base.name?.lexeme == '_') {
+    final list = base.thisOrAncestorOfType<FormalParameterList>()!;
+    final index = list.parameters.indexWhere((p) => unwrapParameter(p) == base);
+    return '${entityPrefix}ignored_$index';
+  }
+  return parameter.name!.lexeme;
+}
+
+class _ParameterSymbols extends RecursiveAstVisitor<void> {
+  _ParameterSymbols(this.entities);
+  final Map<Element, String> entities;
+  @override
+  void visitSimpleFormalParameter(SimpleFormalParameter node) {
+    if (node.name?.lexeme == '_' && node.declaredFragment != null) {
+      entities[node.declaredFragment!.element] = parameterName(node);
+    }
+    super.visitSimpleFormalParameter(node);
+  }
+}
+
+String forwardTypeArguments(TypeParameterList? parameters) => parameters == null
+    ? ''
+    : '<${parameters.typeParameters.map((p) => p.name.lexeme).join(', ')}>';
+
+String forwardArguments(Iterable<FormalParameter> parameters) => parameters
+    .map(
+      (parameter) => parameter.isNamed
+          ? '${parameter.name!.lexeme}: ${parameterName(parameter)}'
+          : parameterName(parameter),
+    )
+    .join(', ');
+
+String dispatchParameterTypes(Iterable<FormalParameter> parameters) {
+  final required = <String>[];
+  final positional = <String>[];
+  final named = <String>[];
+  for (final parameter in parameters) {
+    final base = unwrapParameter(parameter) as SimpleFormalParameter;
+    final type = base.type!.toSource();
+    if (parameter.isNamed) {
+      named.add(
+        '${parameter.isRequiredNamed ? 'required ' : ''}$type ${parameter.name!.lexeme}',
+      );
+    } else if (parameter.isOptionalPositional) {
+      positional.add(type);
+    } else {
+      required.add(type);
+    }
+  }
+  return [
+    ...required,
+    if (positional.isNotEmpty) '[${positional.join(', ')}]',
+    if (named.isNotEmpty) '{${named.join(', ')}}',
+  ].join(', ');
+}
+
+class SourceGraph {
+  SourceGraph(this.source, this.manifest);
+  final String source;
+  final Map<String, Object?> manifest;
+  String get identity => jsonEncode(manifest);
+}
+
+class _Library {
+  _Library(this.file, this.uri, this.source, this.unit);
+  final File file;
+  final String uri;
+  // Physical files are archived separately; parts share their owner's identity.
+  late String ownerUri = uri;
+  final String source;
+  final CompilationUnit unit;
+  final dependencies = <String>[];
+  final parts = <String>[];
+}
+
+class _Edit {
+  _Edit(this.start, this.end, this.text);
+  final int start;
+  final int end;
+  final String text;
+}
+
+class _References extends RecursiveAstVisitor<void> {
+  _References(
+    this.entities, {
+    this.classes,
+    this.libraryUri,
+    this.receiver,
+    this.owner,
+  });
+  final Map<Element, String> entities;
+  final _Classes? classes;
+  final String? libraryUri;
+  final String? receiver;
+  final InterfaceElement? owner;
+  final edits = <_Edit>[];
+  final references = <String>{};
+
+  @override
+  void visitSimpleFormalParameter(SimpleFormalParameter node) {
+    if (node.name != null && classes != null) {
+      var text = entities[node.declaredFragment?.element] ?? node.name!.lexeme;
+      if (node.type == null) {
+        final type = node.declaredFragment!.element.type;
+        text = '${classes!.typeText(type, names: entities)} $text';
+      }
+      if (text != node.name!.lexeme) {
+        edits.add(_Edit(node.name!.offset, node.name!.end, text));
+      }
+    }
+    super.visitSimpleFormalParameter(node);
+  }
+
+  @override
+  void visitFunctionDeclaration(FunctionDeclaration node) {
+    if (node.returnType == null && classes != null) {
+      edits.add(
+        _Edit(
+          node.name.offset,
+          node.name.offset,
+          '${classes!.typeText(node.declaredFragment!.element.returnType, names: entities)} ',
+        ),
+      );
+    }
+    super.visitFunctionDeclaration(node);
+  }
+
+  Element? referencedElement(SimpleIdentifier node) {
+    AstNode target = node;
+    final parent = node.parent;
+    if (parent is PrefixedIdentifier && parent.identifier == node)
+      target = parent;
+    if (parent is PropertyAccess && parent.propertyName == node)
+      target = parent;
+    final assignment = target.parent;
+    if ((assignment is AssignmentExpression &&
+            assignment.leftHandSide == target) ||
+        (assignment is PrefixExpression && assignment.operand == target) ||
+        (assignment is PostfixExpression && assignment.operand == target)) {
+      if (assignment is CompoundAssignmentExpression) {
+        return assignment.writeElement ??
+            assignment.readElement ??
+            node.element;
+      }
+    }
+    return node.element;
+  }
+
+  void replace(int start, int end, String symbol) {
+    edits.add(_Edit(start, end, symbol));
+    references.add(symbol);
+  }
+
+  void replaceIdentifier(SimpleIdentifier node, String symbol) {
+    final parent = node.parent;
+    // A lifted implicit member (or a qualified SDK entity) is an expression,
+    // not a single identifier: $field must become ${receiver.field}.
+    final interpolation =
+        parent is InterpolationExpression && parent.rightBracket == null;
+    edits.add(
+      _Edit(node.offset, node.end, interpolation ? '{$symbol}' : symbol),
+    );
+    references.add(symbol);
+  }
+
+  @override
+  void visitBinaryExpression(BinaryExpression node) {
+    if (receiver != null && node.leftOperand is SuperExpression) {
+      final bridge = classes?.superBridge(owner!, node.element);
+      if (bridge == null)
+        _reject('Unsupported super operator: ${node.toSource()}');
+      final negate = node.operator.lexeme == '!=';
+      replace(
+        node.offset,
+        node.operator.end,
+        '${negate ? '!' : ''}$receiver.$bridge(',
+      );
+      node.rightOperand.accept(this);
+      edits.add(_Edit(node.end, node.end, ')'));
+      return;
+    }
+    super.visitBinaryExpression(node);
+  }
+
+  @override
+  void visitPrefixExpression(PrefixExpression node) {
+    if (receiver != null && node.operand is SuperExpression) {
+      final bridge = classes?.superBridge(owner!, node.element);
+      if (bridge == null)
+        _reject('Unsupported super unary operator: ${node.toSource()}');
+      replace(node.offset, node.end, '$receiver.$bridge()');
+      return;
+    }
+    super.visitPrefixExpression(node);
+  }
+
+  @override
+  void visitIndexExpression(IndexExpression node) {
+    if (receiver != null && node.target is SuperExpression) {
+      final write = node.inSetterContext();
+      final bridge = write
+          ? classes?.declarations[owner]?.indexCellBridge
+          : classes?.superBridge(owner!, node.element);
+      if (bridge == null)
+        _reject('Unsupported super index: ${node.toSource()}');
+      if (write) {
+        // Keep []/[]= syntax and the instantiated index/value parameter types:
+        // a bad dynamic index must fail before evaluating the RHS.
+        replace(node.target!.offset, node.target!.end, '$receiver.$bridge');
+      } else {
+        replace(node.offset, node.leftBracket.end, '$receiver.$bridge(');
+        edits.add(_Edit(node.rightBracket.offset, node.end, ')'));
+      }
+      node.index.accept(this);
+      return;
+    }
+    super.visitIndexExpression(node);
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if (receiver != null && node.target is SuperExpression) {
+      final bridge = classes?.superBridge(owner!, node.methodName.element);
+      if (bridge == null)
+        _reject('Unsupported super invocation: ${node.toSource()}');
+      replace(node.target!.offset, node.methodName.end, '$receiver.$bridge');
+      node.typeArguments?.accept(this);
+      node.argumentList.accept(this);
+      return;
+    }
+    final symbol = entities[node.methodName.element];
+    if (symbol != null && node.target != null) {
+      // A resolved top-level function with a target must use an import prefix.
+      final target = node.target;
+      if (target is! SimpleIdentifier ||
+          target.element is! PrefixElement ||
+          node.isNullAware ||
+          node.isCascaded) {
+        _reject(
+          'Unsupported qualified top-level invocation: ${node.toSource()}',
+        );
+      }
+      replace(target.offset, node.methodName.end, symbol);
+      node.typeArguments?.accept(this);
+      node.argumentList.accept(this);
+      return;
+    }
+    super.visitMethodInvocation(node);
+  }
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) {
+    if (receiver != null && node.target is SuperExpression) {
+      final bridge = classes?.superBridge(
+        owner!,
+        referencedElement(node.propertyName),
+      );
+      if (bridge == null)
+        _reject('Unsupported super property: ${node.toSource()}');
+      replace(node.offset, node.end, '$receiver.$bridge');
+      return;
+    }
+    super.visitPropertyAccess(node);
+  }
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    final symbol = entities[referencedElement(node.identifier)];
+    if (symbol != null && node.prefix.element is PrefixElement) {
+      replace(node.offset, node.end, symbol);
+      return;
+    }
+    super.visitPrefixedIdentifier(node);
+  }
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    final element = referencedElement(node);
+    final symbol = entities[element];
+    if (symbol != null) {
+      replaceIdentifier(node, symbol);
+    } else {
+      var member = classes?.memberSymbols[element?.baseElement];
+      if (member == null &&
+          libraryUri != null &&
+          node.name.startsWith('_') &&
+          node.isQualified &&
+          element == null) {
+        member = _privateMember(libraryUri!, node.name);
+      }
+      final implicit =
+          receiver != null &&
+          !node.isQualified &&
+          element is ExecutableElement &&
+          element is! ConstructorElement &&
+          !element.isStatic &&
+          element.enclosingElement is InterfaceElement;
+      final declaring = element?.enclosingElement;
+      final staticOwner = declaring is InterfaceElement
+          ? classes?.declarations[declaring]
+          : null;
+      if (!node.isQualified &&
+          element is ExecutableElement &&
+          element is! ConstructorElement &&
+          element.isStatic &&
+          staticOwner != null) {
+        replaceIdentifier(node, '${staticOwner.symbol}.${member ?? node.name}');
+      } else if (implicit) {
+        replaceIdentifier(node, '$receiver.${member ?? node.name}');
+      } else if (member != null && member != node.name) {
+        replaceIdentifier(node, member);
+      }
+    }
+    super.visitSimpleIdentifier(node);
+  }
+
+  @override
+  void visitTypeParameter(TypeParameter node) {
+    final symbol = entities[node.declaredFragment?.element];
+    if (symbol != null) replace(node.name.offset, node.name.end, symbol);
+    node.bound?.accept(this);
+  }
+
+  @override
+  void visitNamedType(NamedType node) {
+    final symbol = entities[node.element];
+    if (symbol != null) replace(node.offset, node.name.end, symbol);
+    node.typeArguments?.accept(this);
+  }
+
+  @override
+  void visitThisExpression(ThisExpression node) {
+    if (receiver != null) replace(node.offset, node.end, receiver!);
+  }
+
+  @override
+  void visitSuperExpression(SuperExpression node) {
+    if (receiver != null)
+      _reject('Only direct super method calls are currently supported');
+  }
+
+  @override
+  void visitFieldFormalParameter(FieldFormalParameter node) {
+    final symbol = libraryUri == null
+        ? node.name.lexeme
+        : _privateMember(libraryUri!, node.name.lexeme);
+    if (symbol != node.name.lexeme)
+      replace(node.name.offset, node.name.end, symbol);
+    node.type?.accept(this);
+  }
+}
+
+String _rewrite(String source, AstNode node, List<_Edit> edits) {
+  edits.sort((a, b) => b.start.compareTo(a.start));
+  var text = source.substring(node.offset, node.end);
+  var previous = node.end;
+  for (final edit in edits) {
+    if (edit.end > previous || edit.start < node.offset)
+      _reject('Overlapping entity rewrites');
+    text =
+        '${text.substring(0, edit.start - node.offset)}${edit.text}${text.substring(edit.end - node.offset)}';
+    previous = edit.start;
+  }
+  return text;
+}
+
+// Each root is callable from the dynamic interface, so optimization must retain
+// its selector and the native dynamic argument-checking paths. These functions
+// are generated infrastructure and are never executed during application boot.
+List<Map<String, String>> _dynamicRetentionRoots(
+  _Classes classes,
+  Iterable<LibraryElement> sdkLibraries,
+) {
+  final roots = <String, Map<String, String>>{};
+  void add(String selector, String expression, int count) {
+    final parameters = [
+      'dynamic receiver',
+      for (var i = 0; i < count; i++) 'dynamic a$i',
+    ].join(', ');
+    roots['$selector|$expression|$parameters'] = {
+      'selector': selector,
+      'expression': expression,
+      'parameters': parameters,
+    };
+  }
+
+  void members(InterfaceElement element, bool user) {
+    String name(ExecutableElement member) =>
+        user ? (classes.memberSymbols[member] ?? member.name!) : member.name!;
+    for (final getter in element.getters) {
+      if (getter.isStatic || (!user && getter.isPrivate)) continue;
+      final key = name(getter);
+      add('get:$key', 'receiver.$key', 0);
+      // Invocation through a getter must retain the getter's dynamic path too.
+      if (getter.returnType is FunctionType ||
+          getter.returnType is DynamicType) {
+        add('invoke:$key', 'receiver.$key()', 0);
+      }
+    }
+    for (final setter in element.setters) {
+      if (setter.isStatic || (!user && setter.isPrivate)) continue;
+      final key = name(setter).replaceFirst(RegExp(r'=$'), '');
+      add('set:$key', 'receiver.$key = a0', 1);
+    }
+    for (final method in element.methods) {
+      if (method.isStatic || (!user && method.isPrivate)) continue;
+      final key =
+          method.isOperator &&
+              method.name == '-' &&
+              method.formalParameters.isEmpty
+          ? 'unary-'
+          : name(method);
+      if (method.isOperator) {
+        final expression = switch (key) {
+          'unary-' => '-receiver',
+          '~' => '~receiver',
+          '[]' => 'receiver[a0]',
+          '[]=' => 'receiver[a0] = a1',
+          _ => 'receiver $key a0',
+        };
+        add('invoke:$key', expression, method.formalParameters.length);
+        continue;
+      }
+      add('get:$key', 'receiver.$key', 0);
+      final arguments = <String>[];
+      var count = 0;
+      for (final parameter in method.formalParameters) {
+        if (parameter.isRequiredNamed) {
+          arguments.add('${parameter.name}: a${count++}');
+        } else if (parameter.isRequiredPositional) {
+          arguments.add('a${count++}');
+        }
+      }
+      final types = method.typeParameters.isEmpty
+          ? ''
+          : '<${List.filled(method.typeParameters.length, 'dynamic').join(', ')}>';
+      add('invoke:$key', 'receiver.$key$types(${arguments.join(', ')})', count);
+    }
+  }
+
+  add('invoke:call', 'receiver.call()', 0);
+  for (final library in sdkLibraries) {
+    for (final element in [
+      ...library.classes,
+      ...library.enums,
+      ...library.mixins,
+    ]) {
+      members(element, false);
+    }
+  }
+  for (final owner in classes.declarations.values) {
+    members(owner.element, true);
+  }
+  final keys = roots.keys.toList()..sort();
+  return [for (final key in keys) roots[key]!];
+}
+
+Future<SourceGraph> loadSourceGraph(File entryFile) async {
+  final entry = File(entryFile.resolveSymbolicLinksSync());
+  final root = entry.parent.uri;
+  final libraries = <String, _Library>{};
+  final partOwners = <String, _Library>{};
+  final foundConfig = await findPackageConfigAndFile(entry.parent);
+  final configText = foundConfig?.file.readAsStringSync();
+  final packageConfig = foundConfig == null
+      ? PackageConfig.empty
+      : PackageConfig.parseString(configText!, foundConfig.file.uri);
+  final packageRecords = <String, Map<String, Object?>>{};
+  final packageInputs = <File, String>{};
+  final packageHooks = <File>[];
+
+  void recordPackage(Package package) {
+    if (packageRecords.containsKey(package.name)) return;
+    if (package.root.scheme != 'file')
+      _reject('Only local resolved packages are supported');
+    final pubspec = File.fromUri(package.root.resolve('pubspec.yaml'));
+    final text = pubspec.readAsStringSync();
+    final data = loadYaml(text);
+    if (data is! Map || data['name'] != package.name) {
+      _reject('Package manifest name mismatch: ${package.name}');
+    }
+    final flutter = data['flutter'];
+    final hook = File.fromUri(package.root.resolve('hook/build.dart'));
+    packageHooks.add(hook);
+    if ((flutter is Map && flutter['plugin'] != null) || hook.existsSync()) {
+      _reject(
+        'Native plugin or build hook package is not supported: ${package.name}',
+      );
+    }
+    packageInputs[pubspec] = text;
+    packageRecords[package.name] = {
+      'name': package.name,
+      'version': data['version']?.toString(),
+      'language_version': package.languageVersion?.toString(),
+      'pubspec_sha256': _hash(text),
+    };
+  }
+
+  final entryPackage = packageConfig.packageOf(entry.uri);
+  if (entryPackage != null && packageConfig.toPackageUri(entry.uri) != null) {
+    recordPackage(entryPackage);
+  }
+
+  String logicalUri(File file) {
+    if (file.path == entry.path) return 'app:entry';
+    final uri = file.uri.toString();
+    final packageUri = packageConfig.toPackageUri(file.uri);
+    if (packageUri != null) {
+      recordPackage(packageConfig[packageUri.pathSegments.first]!);
+      return packageUri.toString();
+    }
+    if (uri.startsWith(root.toString())) {
+      return 'app:${uri.substring(root.toString().length)}';
+    }
+    _reject(
+      'Library escapes entry source root or configured package libraries: ${file.path}',
+    );
+  }
+
+  void discover(File file, {_Library? partOwner}) {
+    file = File(file.resolveSymbolicLinksSync());
+    if (partOwner != null) {
+      final previous = partOwners[file.path];
+      if (previous != null && previous.file.path != partOwner.file.path) {
+        _reject('Part file is included by multiple owners: ${file.path}');
+      }
+      partOwners[file.path] = partOwner;
+    }
+    if (libraries.containsKey(file.path)) return;
+    final uri = logicalUri(file);
+    final source = file.readAsStringSync();
+    final parsed = parseString(content: source, throwIfDiagnostics: false);
+    if (parsed.errors.isNotEmpty)
+      _reject('Invalid Dart source in $uri: ${parsed.errors}');
+    final library = _Library(file, uri, source, parsed.unit);
+    libraries[file.path] = library; // Insert before traversal to handle cycles.
+    for (
+      var token = parsed.unit.beginToken;
+      !token.isEof;
+      token = token.next!
+    ) {
+      if (token.lexeme.startsWith(entityPrefix) ||
+          token.lexeme.startsWith('simurgh')) {
+        _reject('Reserved generated identifier in $uri: ${token.lexeme}');
+      }
+    }
+    for (final declaration in parsed.unit.declarations) {
+      if (declaration is! FunctionDeclaration &&
+          declaration is! ClassDeclaration &&
+          declaration is! MixinDeclaration &&
+          declaration is! TopLevelVariableDeclaration) {
+        _reject(
+          'Library $uri: classes, fields and extensions require layout/dependency support',
+        );
+      }
+    }
+    for (final directive in parsed.unit.directives) {
+      if (directive is LibraryDirective && directive.metadata.isEmpty) continue;
+      if (directive is PartOfDirective && directive.metadata.isEmpty) {
+        if (!partOwners.containsKey(file.path)) {
+          _reject('Part cannot be an entrypoint or imported library: $uri');
+        }
+        continue;
+      }
+      if (directive is! ImportDirective &&
+          directive is! ExportDirective &&
+          directive is! PartDirective) {
+        _reject('Unsupported library directive in $uri');
+      }
+      final isPart = directive is PartDirective;
+      if (directive.metadata.isNotEmpty ||
+          (directive is NamespaceDirective &&
+              directive.configurations.isNotEmpty) ||
+          (directive is ImportDirective && directive.deferredKeyword != null)) {
+        _reject(
+          'Conditional, annotated or deferred imports/exports are not implemented: $uri',
+        );
+      }
+      final target = (directive as UriBasedDirective).uri.stringValue;
+      if (linkedSdkLibraries.contains(target)) {
+        if (isPart)
+          _reject('Part must resolve to a local Dart source file: $target');
+        library.dependencies.add(target!);
+        continue;
+      }
+      final parsedUri = target == null ? null : Uri.tryParse(target);
+      if (parsedUri?.scheme == 'package') {
+        final resolved = packageConfig.resolve(parsedUri!);
+        if (resolved == null || resolved.scheme != 'file') {
+          _reject('Unresolved local package import: $target');
+        }
+        final dependency = File(
+          File.fromUri(resolved).resolveSymbolicLinksSync(),
+        );
+        if (packageConfig.toPackageUri(dependency.uri) != parsedUri) {
+          _reject(
+            'Package import escapes or aliases its configured library root: $target',
+          );
+        }
+        recordPackage(packageConfig[parsedUri.pathSegments.first]!);
+        (isPart ? library.parts : library.dependencies).add(
+          logicalUri(dependency),
+        );
+        discover(dependency, partOwner: isPart ? library : null);
+        continue;
+      }
+      if (parsedUri == null ||
+          parsedUri.hasScheme ||
+          parsedUri.hasAuthority ||
+          parsedUri.hasQuery ||
+          parsedUri.hasFragment ||
+          parsedUri.path.startsWith('/') ||
+          !parsedUri.path.endsWith('.dart')) {
+        _reject('Only local relative Dart imports/exports supported: $target');
+      }
+      final dependency = File.fromUri(file.uri.resolveUri(parsedUri));
+      final canonical = File(dependency.resolveSymbolicLinksSync());
+      (isPart ? library.parts : library.dependencies).add(
+        logicalUri(canonical),
+      );
+      discover(canonical, partOwner: isPart ? library : null);
+    }
+  }
+
+  discover(entry);
+  final sorted = libraries.values.toList()
+    ..sort((a, b) => a.uri.compareTo(b.uri));
+  final collection = AnalysisContextCollection(includedPaths: [entry.path]);
+  try {
+    final session = collection.contexts.single.currentSession;
+    final resolved = <String, ResolvedUnitResult>{};
+    for (final library in sorted) {
+      final result = await session.getResolvedUnit(library.file.path);
+      if (result is! ResolvedUnitResult || result.content != library.source) {
+        _reject(
+          'Source resolution failed or changed during analysis: ${library.uri}',
+        );
+      }
+      final errors = result.diagnostics.where(
+        (d) => d.severity == Severity.error,
+      );
+      if (errors.isNotEmpty)
+        _reject('Static source errors in ${library.uri}: ${errors.join('; ')}');
+      final ownerUri = result.libraryElement.uri;
+      final ownerFileUri = ownerUri.scheme == 'package'
+          ? packageConfig.resolve(ownerUri) ?? ownerUri
+          : ownerUri;
+      if (ownerFileUri.scheme != 'file')
+        _reject('Unsupported part owner: $ownerUri');
+      final ownerPath = File.fromUri(ownerFileUri).resolveSymbolicLinksSync();
+      final owner = libraries[ownerPath];
+      if (owner == null)
+        _reject('Part owner is outside the discovered source graph: $ownerUri');
+      library.ownerUri = owner.uri;
+      resolved[library.uri] = result;
+    }
+    final languageVersions = <String, String>{};
+    final versionNumbers = <int>[];
+    for (final library in sorted) {
+      final declaredOwner = partOwners[library.file.path];
+      if (declaredOwner == null
+          ? library.ownerUri != library.uri
+          : library.ownerUri != declaredOwner.ownerUri ||
+                library.ownerUri == library.uri) {
+        _reject(
+          'Part ownership does not match analyzer resolution: ${library.uri}',
+        );
+      }
+      final v = resolved[library.uri]!.libraryElement.languageVersion.effective;
+      languageVersions[library.ownerUri] = '${v.major}.${v.minor}';
+      versionNumbers.add(v.major * 1000 + v.minor);
+    }
+    versionNumbers.sort();
+    final latest = versionNumbers.last;
+    final languageVersion = '${latest ~/ 1000}.${latest % 1000}';
+    final entities = <Element, String>{};
+    for (final unit in resolved.values) {
+      unit.unit.accept(_ParameterSymbols(entities));
+    }
+    final sdkLibraries = <LibraryElement>[];
+    for (final uri in linkedSdkLibraries) {
+      final result = await session.getLibraryByUri(uri);
+      if (result is! LibraryElementResult)
+        _reject('Cannot resolve SDK library: $uri');
+      final library = result.element;
+      sdkLibraries.add(library);
+      for (final entry in library.exportNamespace.definedNames2.entries) {
+        final element = entry.value;
+        final name = entry.key.replaceFirst(RegExp(r'=$'), '');
+        // Preserve existing primitive/Future spellings and implicit core calls.
+        final bare =
+            (uri == 'dart:core' &&
+                (element is! InterfaceElement ||
+                    const {
+                      'int',
+                      'double',
+                      'num',
+                      'bool',
+                      'String',
+                      'Object',
+                      'Null',
+                    }.contains(name))) ||
+            (name == 'Future' &&
+                element.library?.uri.toString() == 'dart:async');
+        entities.putIfAbsent(
+          element,
+          () => bare ? name : '${sdkPrefix(uri)}.$name',
+        );
+      }
+    }
+    final records = <String, Map<String, Object?>>{};
+    final classes = _Classes(entities, records);
+    for (final library in sorted) {
+      for (final declaration in resolved[library.uri]!.unit.declarations.where(
+        (node) => node is ClassDeclaration || node is MixinDeclaration,
+      )) {
+        classes.register(library, declaration);
+      }
+    }
+    for (final library in sorted) {
+      for (final declaration
+          in resolved[library.uri]!.unit.declarations
+              .whereType<FunctionDeclaration>()) {
+        final name = declaration.name.lexeme;
+        final id = _hash('${library.ownerUri}::function::$name');
+        final symbol = library.ownerUri == 'app:entry' && name == 'main'
+            ? 'main'
+            : '$entityPrefix$id';
+        final element = declaration.declaredFragment?.element;
+        if (element == null || records.containsKey(symbol))
+          _reject('Invalid or duplicate entity in ${library.uri}: $name');
+        entities[element] = symbol;
+        records[symbol] = {
+          'library': library.ownerUri,
+          'name': name,
+          'entity': id,
+        };
+      }
+    }
+    for (final library in sorted) {
+      for (final declaration
+          in resolved[library.uri]!.unit.declarations
+              .whereType<TopLevelVariableDeclaration>()) {
+        for (final variable in declaration.variables.variables) {
+          final element =
+              variable.declaredFragment!.element as TopLevelVariableElement;
+          final name = variable.name.lexeme;
+          final id = _hash('${library.ownerUri}::global::$name');
+          final symbol = '${entityPrefix}global_$id';
+          entities[element] = symbol;
+          if (element.getter != null) entities[element.getter!] = symbol;
+          if (element.setter != null) entities[element.setter!] = symbol;
+          records[symbol] = {
+            'library': library.ownerUri,
+            'name': name,
+            'entity': id,
+            'kind': 'global',
+          };
+        }
+      }
+    }
+    await classes.loadSdkAncestors(session);
+    classes.prepare();
+    classes.prepareInterfaceBridges();
+    final source = StringBuffer('// @dart=$languageVersion\n$sdkImports\n');
+    for (final library in sorted) {
+      for (final declaration
+          in resolved[library.uri]!.unit.declarations
+              .whereType<FunctionDeclaration>()) {
+        final symbol = entities[declaration.declaredFragment!.element]!;
+        final visitor = _References(
+          entities,
+          classes: classes,
+          libraryUri: library.ownerUri,
+        );
+        declaration.returnType?.accept(visitor);
+        declaration.functionExpression.accept(visitor);
+        final edits = [
+          ...visitor.edits,
+          _Edit(
+            declaration.name.offset,
+            declaration.name.end,
+            '${declaration.returnType == null ? '${classes.typeText(declaration.declaredFragment!.element.returnType)} ' : ''}$symbol',
+          ),
+        ];
+        final text = _rewrite(library.source, declaration, edits);
+        records[symbol]!['references'] = visitor.references.toList()..sort();
+        source.writeln(text);
+      }
+    }
+    for (final library in sorted) {
+      for (final declaration
+          in resolved[library.uri]!.unit.declarations
+              .whereType<TopLevelVariableDeclaration>()) {
+        final visitor = _References(
+          entities,
+          classes: classes,
+          libraryUri: library.ownerUri,
+        );
+        declaration.accept(visitor);
+        final edits = [...visitor.edits];
+        for (final variable in declaration.variables.variables) {
+          final symbol = entities[variable.declaredFragment!.element]!;
+          edits.add(_Edit(variable.name.offset, variable.name.end, symbol));
+          records[symbol]!['references'] = visitor.references.toList()..sort();
+        }
+        if (declaration.variables.type == null) {
+          if (declaration.metadata.isNotEmpty ||
+              declaration.externalKeyword != null) {
+            _reject('Annotated or external globals are not implemented');
+          }
+          final variables = declaration.variables;
+          final modifiers =
+              '${variables.isLate ? 'late ' : ''}'
+              '${variables.isConst
+                  ? 'const '
+                  : variables.isFinal
+                  ? 'final '
+                  : ''}';
+          for (final variable in variables.variables) {
+            final element = variable.declaredFragment!.element;
+            final inferred = classes.typeText(element.type);
+            final symbol = entities[element]!;
+            records[symbol]!['inferred_type'] = inferred;
+            source.writeln(
+              '$modifiers$inferred ${_rewrite(library.source, variable, edits.where((e) => e.start >= variable.offset && e.end <= variable.end).toList())};',
+            );
+          }
+        } else {
+          source.writeln(_rewrite(library.source, declaration, edits));
+        }
+      }
+    }
+    source.write(classes.lower());
+    // A coherent graph is required: don't bind mixed versions of source files.
+    for (final library in sorted) {
+      if (library.file.readAsStringSync() != library.source)
+        _reject('Source graph changed during compilation');
+    }
+    if (foundConfig != null &&
+        foundConfig.file.readAsStringSync() != configText) {
+      _reject('Package configuration changed during compilation');
+    }
+    for (final input in packageInputs.entries) {
+      if (input.key.readAsStringSync() != input.value) {
+        _reject('Package manifest changed during compilation');
+      }
+    }
+    if (packageHooks.any((hook) => hook.existsSync())) {
+      _reject('Native build hook appeared during compilation');
+    }
+    final packageNames = packageRecords.keys.toList()..sort();
+    return SourceGraph(source.toString(), {
+      'schema': 1,
+      'entry': 'app:entry',
+      'entry_package_uri': packageConfig.toPackageUri(entry.uri)?.toString(),
+      'language_version': languageVersion,
+      'library_language_versions': languageVersions,
+      'packages': {for (final name in packageNames) name: packageRecords[name]},
+      'libraries': {
+        for (final library in sorted)
+          library.uri: {
+            'source': library.source,
+            'source_sha256': _hash(library.source),
+            'owner': library.ownerUri,
+            'parts': library.parts.toSet().toList()..sort(),
+            'dependencies': library.dependencies.toSet().toList()..sort(),
+          },
+      },
+      'entities': records,
+      'classes': classes.manifest,
+      'sdk_libraries': linkedSdkLibraries.toList(),
+      // Retain legal SDK inheritance/implementation contracts before patches
+      // first use them. Analyzer still enforces original source restrictions.
+      'sdk_superclasses': [
+        for (final element in entities.keys.whereType<InterfaceElement>())
+          if (classes.sdkSuperclass(element))
+            {'library': element.library.uri.toString(), 'class': element.name},
+      ],
+      'sdk_mixins': [
+        for (final element in entities.keys.whereType<InterfaceElement>())
+          if (classes.sdkMixin(element))
+            {'library': element.library.uri.toString(), 'class': element.name},
+      ],
+      'sdk_interfaces': [
+        for (final element in entities.keys.whereType<InterfaceElement>())
+          if (classes.sdkInterface(element))
+            {'library': element.library.uri.toString(), 'class': element.name},
+      ],
+      'dynamic_retention_roots': _dynamicRetentionRoots(classes, sdkLibraries),
+    });
+  } finally {
+    await collection.dispose();
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "checked_at": "2026-09-21 17:58 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host; not mobile runtime or performance acceptance",
+  "implemented": [
+    "Cold-start module-local versions for structurally changed classes",
+    "Fixed-point invalidation of class fields, signatures, method helpers and callers",
+    "Default-expression dependencies include captured module-only factories",
+    "Module-only signatures never installed in old typed slots",
+    "Compatible entry points and unrelated AOT remain reusable",
+    "Closed ancestor relocation for changed existing subclasses",
+    "Retired method helpers bound to relocated owners",
+    "Manifest exposes structural seeds, replacement closure and installed/module-only functions"
+  ],
+  "compiler_sha256": "5413bf2665278e55e7a809ad0821b77b2ac9c1040478913f5ef4938fda6d6886",
+  "compiler_components": {
+    "compiler/bin/aot_patch.dart": "75ceb95bc2e5c8bac110db3a6f1c65e675dd6c7b90d98d8545e6db258627187e",
+    "compiler/lib/source_graph.dart": "764350f03b367dae576b2c4dd38b79d370870157bf5d982dc09cde4cf8919fab",
+    "compiler/lib/class_lowering.dart": "b22e5d697caccdcf600043f09461c10d4017c78f17eacc6c3d5627c6473942cd"
+  },
+  "evidence": {
+    "layout": "output/m1-aot-20260921T094826Z-gwagxmnq/build.json",
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095105Z-32onutqo/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095118Z-mqmzjga0/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095131Z-h130g1ru/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095144Z-c8j63rrd/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095159Z-vvi5kw7o/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095212Z-ht7whhbh/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095225Z-0y6n73_f/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095239Z-cl7qzxnp/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095252Z-vzu_0s81/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095306Z-p257d070/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095319Z-4m29v2vh/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095334Z-8izac0_7/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T095105Z-32onutqo/native-checks/report.json",
+    "verification": "output/m1-layout-verification.log"
+  },
+  "outputs": {
+    "baseline": "compute=8\nfieldType=false\nchild=9\nholder=8\nworker=8\naotBase=9\ndefault=5\ntype=true\ngc=9\nclosed=7\n",
+    "patched": "compute=31\nfieldType=true\nchild=32\nholder=31\nworker=31\naotBase=32\ndefault=20\ntype=true\ngc=32\nclosed=14\n"
+  },
+  "layout_dependency_closure": {
+    "structurally_changed_classes": [
+      "Box",
+      "Child",
+      "LockedChild"
+    ],
+    "replaced_classes": [
+      "Box",
+      "Child",
+      "Holder",
+      "Locked",
+      "LockedChild",
+      "Worker"
+    ],
+    "invalidated_functions": [
+      "Box.compute",
+      "Box.extra",
+      "Box.hook",
+      "Child.inherited",
+      "Holder.read",
+      "Locked.read",
+      "LockedChild.read",
+      "Worker.create",
+      "defaultFactory",
+      "factory",
+      "fromDefault",
+      "isBox",
+      "main"
+    ],
+    "module_only_functions": [
+      "Box.compute",
+      "Box.extra",
+      "Box.hook",
+      "Child.inherited",
+      "Holder.read",
+      "Locked.read",
+      "LockedChild.read",
+      "Worker.create",
+      "defaultFactory",
+      "factory"
+    ],
+    "installed_functions": [
+      "fromDefault",
+      "isBox",
+      "main"
+    ],
+    "retired_functions": [
+      "Box.obsolete"
+    ]
+  },
+  "retained_aot_functions": [
+    "stable",
+    "invokeBase",
+    "check",
+    "churn",
+    "Base.hook"
+  ],
+  "native_checks_passed": 55,
+  "baseline_aot_unchanged": true,
+  "optimizer_evidence": {
+    "name": "classes-optimizer-evidence",
+    "method_wrapper_inlined": true,
+    "optimized_main_calls_replaceable_entry_directly": true,
+    "passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 53,
+    "flutter_widget_tests": 7,
+    "native_checks": 55
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "General Flutter/Kernel layout and optimization dependency proof",
+    "Class deletion and top-level state dependency handling",
+    "Native coverage for broader generic shape changes",
+    "Unsupported inherited function/record substitutions and SDK bounds",
+    "Unrelated signature/default changes",
+    "Operators, static members, inferred and nullable signatures",
+    "Package/SDK linking",
+    "Stream, generators and isolates",
+    "Void-async top-level and method declarations",
+    "Android/iOS mixed runtime integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ],
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "class_scavenges": 16,
+  "new_class_scavenges": 16,
+  "accessor_scavenges": 1,
+  "async_scavenges": 16,
+  "generic_scavenges": 16,
+  "generic_class_scavenges": 33,
+  "layout_scavenges": 16,
+  "async_source_aot_reference_matches": true,
+  "async_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "a0ab02b1311586e3b25db0fdff8d311e94897420705789822e4db87cd7180d51",
+      "executable_sha256": "e9a85dcbde6cc6b3ab529db896a67045e47d1cfa673b1ea3e60bc15c32ac7775",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "400010b4de3580376a9f53101f1feca0e2705f3bc8b0d70b0cf7a68a41c29563",
+      "executable_sha256": "906067dd10cf6782fe625317588b526478519cacf1f7233018c8cd7f71a5b277",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "generics_source_aot_reference_matches": true,
+  "generics_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "c20f7acf9df7c9119f58518ec13c358a4f8be0123405ecd2ee384cc66362c7a5",
+      "executable_sha256": "1f49773fce10236aeab155c99e0225e18f591882ab0bff0da1117068ba91273e",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "c809e0737b8411c2cca13326b6c98c410ca9d98a28a817660c779af191f8264d",
+      "executable_sha256": "c9bf09b1d31c2aafcaa5105d3986c9fba6f3563783c9f4e56ba9b8f159a6af73",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "generic_classes_source_aot_reference_matches": true,
+  "generic_classes_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "42f3c370903ca575b94a7d89c932d03c3a99cad97c3871d4b9c76dae4ada4877",
+      "executable_sha256": "b721d4f244e4cbc996b9342e5f57ef27581e617b5acbf1cfa49a994df8dc2aae",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "d1f29736e7c90624b7e67eaafb64ddc3cb442a2f3964bec1faa8120de3602312",
+      "executable_sha256": "1c74d1f083f73f76512d06047e8922c6d46488aea3d9256cb014e83ffd0fc1da",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "layout_source_aot_reference_matches": true,
+  "layout_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "df36ee8f406255b3b97684b887f2a8322ff15552bca1156fde12f4756e370b3f",
+      "executable_sha256": "eda7104a843654f7e85a4be2608a6e1c3c65bdc42d3f35bb4daf2feb39d43446",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "5ba02818bf6fc55b2733b27b3e784f6843649671a71eb006fa25cf5d17c9d4d4",
+      "executable_sha256": "6f256ced351407b5240899c9546d75e36a54f14ebef233cc721fc8918e02c3df",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  }
+}

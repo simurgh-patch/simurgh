@@ -1,0 +1,2 @@
+# Unified patches contain significant leading spaces on empty context lines.
+runtime/patches/*.patch whitespace=-blank-at-eol

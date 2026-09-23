@@ -1,0 +1,119 @@
+{
+  "recorded_at": "2026-09-22 17:51 +08:00",
+  "scope": "User-defined operators and super-index assignment ordering in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T093802Z-2zknweox/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T093829Z-a81ofsa5/build.json",
+    "operators": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T093855Z-p04l93by/build.json",
+    "operator_removal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T093923Z-43wunexv/build.json",
+    "operator_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T093950Z-ns8m1fcw/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T094017Z-i33u_fpu/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T093802Z-2zknweox/native-checks/report.json",
+    "verification": "output/m1-operators-final-verification.log",
+    "compiler_analysis": "output/m1-operators-final-analysis.log",
+    "format": "output/m1-operators-final-format.log",
+    "native_log": "output/m1-operators-final-native-suite.log"
+  },
+  "compiler_sha256": "d780392c265401fd3fdfc5b6aec1b9bac89f77cfd7bf3a3b21f613022a3a3b4c",
+  "verification_script_sha256": "b6185e37c8ff88fd6947283b2c1be73cf07754e5c69b372f12325a6cc4ff4967",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 95,
+    "flutter_widget_tests": 7,
+    "native_checks": 35,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "arithmetic:11:5:-8:-9:16:true\nequality:false:false:true:8\ndynamic:-8:6:10\nnew:11:9\ngeneric:changed:changed!:changed!\nassign:3:3:irs\ncompound:6:6:igrs\nprefix:7:7:igs\npostfix:7:8:igs\nasync:13:13:igars\nnullFirst:7:igrs\nnullSecond:7:ig\naddedSuper:0:13:\nfailed:13:igr\nwriteOnly:rhs:rhs\noperators:5.5:5:1:2:11:9:44:2:2:true:false:true\n",
+    "patched": "arithmetic:21:-5:-18:-9:16:true\nequality:true:false:true:8\ndynamic:-18:-4:20\nnew:112:110\ngeneric:changed:changed!!:changed!!\nassign:4:4:irs\ncompound:18:8:igrs\nprefix:9:9:igs\npostfix:9:10:igs\nasync:15:15:igars\nnullFirst:7:igrs\nnullSecond:7:ig\naddedSuper:60:60:igrs\nfailed:60:igr\nwriteOnly:rhs:rhs\noperators:5.5:10:1:2:11:9:44:2:2:true:false:true\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "5960424c4a727da9cf260408c430b96de22a71080a03cfd6646757df327ca61d",
+      "executable_sha256": "c75daaf25534069e7a0b304e1cbf2cf9530722df7bf41cc647bdc82e405122ea",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "a12f0f0f35b4844d59a7a578d1b882351f02b1288c8f113c688b6597a12e98ae"
+    },
+    "patch": {
+      "source_sha256": "2a27909f4357ebdfcbce53fabdefddd1723b8bbf9eeed3bfb1ae7ee648712a18",
+      "executable_sha256": "2cb6e9ea50cf207662070e4b7d635558c3da44a6f483762d3ee8ab8d995d7643",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "8f2d2b10ccf0d4545f3bd7ade3c766bdc79b3cf3367065b9aa9bd6550391f9b3"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [],
+    "module_only_functions": [],
+    "installed_functions": [
+      "IndexChild.add",
+      "IndexChild.addedSuper",
+      "IndexChild.rhs",
+      "Num.+",
+      "Num.-",
+      "Num.==",
+      "Num.hashCode",
+      "Num.unary-",
+      "Ops.~/",
+      "Strings.append",
+      "make"
+    ]
+  },
+  "operator_scavenges": 16,
+  "mixin_scavenges": 16,
+  "operator_removal_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "27931090866930e33e33ffda48b0e79409763ae89e5a86d48fcda02b15123876",
+      "executable_sha256": "236414db22f7f8529faf912e38c791a52e96409846de69cc0727b55cf1b5dca8",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "4778383ebaa0acc1082a4a0455167a655ed948eea8164727633fa304d1fb64c3"
+    },
+    "patch": {
+      "source_sha256": "edd76e6f7023d8a56cf2bcbe1304f09eaefc49f5afb2bdf2cc3def73439431a3",
+      "executable_sha256": "f98f4f238d42be603146ccf563ba970a11761f89d40b097f4c0da8e4304e2ae9",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "33a86e9eb885a2f8fccbee6cf525f350dd95c5cc058cee7b363d312168f04109"
+    }
+  },
+  "notes": [
+    "Unary and binary minus have separate operator helper identities; real Dart wrappers preserve native dispatch, equality/null and argument checking.",
+    "Pre-created super bridges dispatch unary/binary/index operators to their actual ancestor. A typed generated index forwarding object preserves index evaluation once, get/RHS/set order, assignment results, short circuit, prefix/postfix and await RHS behavior.",
+    "Operator changes retain original classes and AOT main/invoke/negative/dynamicOps/equal/churn. New Added operator executes through old AOT consumers and survives GC.",
+    "IndexChild.addedSuper first uses super index multiplication in patch code without changing its class. Generic Strings.append also executes super-index code from patch bytecode.",
+    "Removing an index setter relocates Base/Child and retires only the unused generated adapter after a current-reference check; the old adapter class remains in the baseline snapshot. User class deletion remains rejected.",
+    "An exploratory non-void []= declaration was correctly rejected by original-source analysis. The final fixture uses void and a regression requires non-void rejection.",
+    "This increment rebuilt normal, GC, operators, operator-removal, dynamic index checks and mixins. It did not rebuild every historical native fixture.",
+    "An initial property adapter incorrectly evaluated the RHS before rejecting a bad dynamic index. That native counterexample is preserved in output/m1-operator-checks-initial.log. The old ordinary verification was cancelled and is not acceptance evidence; final source uses exact index parameter types and native []/[]= syntax.",
+    "The index adapter introduces temporary closures/objects; performance has not been measured."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Broader mixed-library/Isolate and explicit covariant-parameter operator combinations not established",
+    "SDK super calls, SDK interfaces/mixins, named application aliases and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

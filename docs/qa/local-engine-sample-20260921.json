@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-09-21 14:26 +08:00",
+  "engine_build": "output/engine-builds/20260921T022422Z-hr6hl4vg/build.json",
+  "engine_artifact_hashes_verified": 8,
+  "sample_build": "output/20260921T062022Z-local-sample-q_lep42c/build.json",
+  "sample_commands_passed": [
+    "pub-get",
+    "android",
+    "ios"
+  ],
+  "archived_artifact_hashes_verified": true,
+  "engine_linkage": {
+    "android": {
+      "engine_build_id": "3f7bf61b3130b55519c46e06d699a7082b78b835",
+      "apk_build_id": "3f7bf61b3130b55519c46e06d699a7082b78b835",
+      "matches": true,
+      "apk_engine_sha256": "a197fed2be91919e6fce2b8e437b9ceca347fda7b5c14874d7f18106b2766ab1",
+      "method": "ELF GNU build ID; APK engine is stripped"
+    },
+    "ios": {
+      "engine_uuids": [
+        [
+          "4C4C44E6-5555-3144-A1CD-7E323FF3489E",
+          "arm64"
+        ]
+      ],
+      "app_uuids": [
+        [
+          "4C4C44E6-5555-3144-A1CD-7E323FF3489E",
+          "arm64"
+        ]
+      ],
+      "matches": true,
+      "method": "Mach-O UUID and architecture",
+      "signed": false
+    }
+  },
+  "framework_tag": "3.44.8",
+  "framework_revision": "058e0af2c2b57e369d905a03ac9748b0ebf543c6",
+  "runtime_implemented": false,
+  "device_validated": false,
+  "performance_measured": false,
+  "m0_passed": false
+}

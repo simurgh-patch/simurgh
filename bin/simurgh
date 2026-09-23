@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+PROJECT_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+exec "${SIMURGH_DART:-dart}" run "$PROJECT_ROOT/bin/simurgh.dart" "$@"

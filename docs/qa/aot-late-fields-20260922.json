@@ -1,0 +1,116 @@
+{
+  "recorded_at": "2026-09-22 17:07 +08:00",
+  "scope": "Late instance field initialization, shared storage and layout relinking in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T085342Z-2evl1edk/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T085414Z-3dmonthl/build.json",
+    "late_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T085445Z-hiboxpq0/build.json",
+    "late_references": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T090141Z-l1qz7nym/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T085342Z-2evl1edk/native-checks/report.json",
+    "verification": "output/m1-late-fields-verification.log",
+    "compiler_analysis": "output/m1-late-fields-analysis.log",
+    "format": "output/m1-late-fields-format.log",
+    "native_log": "output/m1-late-fields-native-final.log"
+  },
+  "compiler_sha256": "ce19d85b62ec89c8dde6981f8f53670c2195eca436fe4e323eb96ffe4c8e300e",
+  "verification_script_sha256": "ed78dd78cfe4b027e195092e368d5712090ce83c3c1fc0975779ef72e888c595",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 91,
+    "flutter_widget_tests": 7,
+    "native_checks": 21,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "cold:0\nlazy:3:3:1\nfinal:3:3:2\nmissing:true\nonce:7:true\nwrite:10:10\ngc:7\nother:8:0\nnil:null:null:1\nonly:-1:false\ninferred:3:3:3\nretry:Bad state: retry\nretried:9:9:2\nshape:6\n",
+    "patched": "cold:0\nlazy:3:3:10\nfinal:3:3:20\nmissing:true\nonce:17:true\nwrite:20:20\ngc:17\nother:8:0\nnil:null:null:1\nonly:23:true\ninferred:3:3:30\nretry:Bad state: retry\nretried:9:9:2\nshape:7\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "e7240463e69bd9f87b930046a3484ccb4a13ed82b7053cb0757b5d1b1cfaf6f8",
+      "executable_sha256": "20cf72e366fe703dd6666f25c564db10c456a435074d1170968fa71dd4d994b9",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "b9895b0072440b0d2ae49e2b38486c581ffe56a50fe7f60ba7294957e6a520d1"
+    },
+    "patch": {
+      "source_sha256": "63bc569e087af7aaeb89829b917ef2dc981fd371c24c2e04d2e804bb303e8fc8",
+      "executable_sha256": "df734f47543588c3025d9a15d2875ead5887d88ab8f99c455130229ff75fb0ee",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "af42917e7f0479ac5dae2a6bea65ed9f9bc2e93d01f4fa3f696f73a5b960688b"
+    }
+  },
+  "dependency_closure": {
+    "replaced_classes": [
+      "Shape"
+    ],
+    "module_only_functions": [
+      "Shape.read",
+      "shape"
+    ],
+    "installed_functions": [
+      "Box.initialize",
+      "change",
+      "first",
+      "main",
+      "setOnly"
+    ]
+  },
+  "late_field_scavenges": 16,
+  "late_reference_scavenges": 33,
+  "late_reference_source_artifacts": {
+    "baseline": {
+      "source_sha256": "0e468fa8084edbcfc0055757222f2a1c8ca7df5473d2bc36055d08e57b5cef42",
+      "executable_sha256": "0b587b77372a67778faf3d48b9fda83846495c6c9abbbefc2b2a178059a254b5",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "7a629791592a59610d0ec7d65a54c0ef82152578a9f075687f3ac2231258c4f7"
+    },
+    "patch": {
+      "source_sha256": "0c0030aa955936c8b41b6db403f61c1afab4b595469a8249bf228301c39b6025",
+      "executable_sha256": "10b4bc76b926a0391f75ee1e4b6cf30cd73ab34233fbd58af7411eba8b6141b6",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "94312f905fab8de4347ed05327bb5d9ed51e33e595334640d4aa7fcb82b401fb"
+    }
+  },
+  "late_reference_outputs": {
+    "baseline": "first:10\ngc:4\nnext:12\ngc2:4\nidentity:false\n",
+    "patched": "first:40\ngc:14\nnext:42\ngc2:14\nidentity:false\n"
+  },
+  "notes": [
+    "Late fields remain native Dart fields with CFE/VM-managed initialization and single-assignment checks.",
+    "Box remains in baseline AOT. Changed Box.initialize executes from retained late-field getters, and patch setOnly performs the first and repeated writes to a field never assigned by baseline business code.",
+    "Uninitialized reads and duplicate late-final writes preserve LateInitializationError, null initialization runs once, and throwing initializers retry on the next access.",
+    "Inferred generic late-final fields and actual GC survive unchanged AOT consumers. Changing Shape.value from late int to late String relocates Shape and typed consumers.",
+    "This increment rebuilt only normal, GC, late-field and late-reference native fixtures. Earlier broad native-suite results were not relabeled as current."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Reentrant initialization, isolate and mobile late-field combinations not established",
+    "SDK interfaces/mixins, named application aliases, operators and general Flutter/Kernel semantics",
+    "General optimizer-dependency and performance proof",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

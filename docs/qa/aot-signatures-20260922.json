@@ -1,0 +1,125 @@
+{
+  "recorded_at": "2026-09-22 11:01 +08:00",
+  "scope": "Resolved function/method/closure signatures, nullable accepted types and local binding constructs",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025053Z-883mvnif/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025112Z-3lsbc2eg/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025131Z-ahbn3xwv/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025149Z-8bfmoi2n/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025211Z-tf61m3cl/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025230Z-v4uad4ki/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025249Z-6n4bt394/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025310Z-v6wsc69j/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025334Z-d1lxjl_k/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025354Z-cp__oixg/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025413Z-dofnvt56/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025431Z-pds_j1qf/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025451Z-_aduztxl/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025510Z-8sf47lzv/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025530Z-wcrao8ky/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025549Z-8ujgknhm/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025609Z-bxl27tvn/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T025053Z-883mvnif/native-checks/report.json",
+    "verification": "output/m1-signatures-verification.log"
+  },
+  "compiler_sha256": "91a2601c17f6850f5f0e535892f7db96164d2f8244862db56567a1c27b7daff1",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "50c263075108b9eecb6c2c3c3813d54bbcb3d5724d4ef2da95c0d374165184ed",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093"
+    },
+    "artifacts": {
+      "dartaotruntime": "84d250ac3f5c42b7d8031d5d58e2b356e2a1be20f624b0e0cfb973e17ef089c7",
+      "gen_snapshot": "87111d2ec09526c36f7a792a2afde09e7088ad06d63294ea360c532a38b81ef8",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "outputs": {
+    "baseline": "dynamic=3:4:null:4\ncallback=4\nnullable=7:2:true\ninherited=6:text\npattern\nloop=24\nasync=3\nfutureType=false:false\nfuture=1\n",
+    "patched": "dynamic=12:22:fallback:4\ncallback=13\nnullable=7:2:true\ninherited=15:text\npattern\nloop=44\nasync=12\nfutureType=false:false\nfuture=1\n"
+  },
+  "retained_aot_functions": [
+    "Base.echo",
+    "Child.echo",
+    "apply",
+    "asyncBroad",
+    "calculate",
+    "main",
+    "nullable"
+  ],
+  "installed_functions": [
+    "IntChild.result",
+    "asyncValue",
+    "forward",
+    "identity",
+    "loop",
+    "typed"
+  ],
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 70,
+    "flutter_widget_tests": 7,
+    "native_checks": 80
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "baseline_aot_unchanged": true,
+  "signatures_source_aot_reference_matches": true,
+  "signatures_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "cfb2c2a39887af7abb541acc80a03f6fb9ddd363e51c71981741dae0dd682a95",
+      "executable_sha256": "22cd18c3958c8201179d4d0446c3290d564a764134562ed33cf27630082f8901",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "a381bb01abbd61c3b491a9a0ba7dd0674b0536da8baa2523aa7b235690726904",
+      "executable_sha256": "983b36fe0cc575fb9d2f091e0db4e43ca35b673c5e50033c50a57dc7572edc08",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "dynamic_invocations_supported": false,
+  "dynamic_call_validation_kept_enabled": true,
+  "dynamic_invocation_failure": {
+    "evidence": "output/m1-aot-20260922T023909Z-mt0vj7yj/bytecode.log",
+    "fixtures": [
+      "compiler/fixtures/aot_dynamic_calls_baseline/app.dart",
+      "compiler/fixtures/aot_dynamic_calls_patch/app.dart"
+    ],
+    "source_archives_match_fixtures": true
+  },
+  "mobile_build": {
+    "manifest": "output/engine-builds/20260922T015928Z-gqajtfyy/build.json",
+    "state": "compiled-not-device-validated",
+    "last_observed_step": {
+      "command": [
+        "/Applications/project/test2/my-shorebird/.engine-workspace/engine/third_party/ninja/ninja",
+        "-j2",
+        "-C",
+        "out/ios_release_mixed"
+      ],
+      "cwd": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src",
+      "log": "03-ios_release_mixed.log",
+      "returncode": 0
+    },
+    "last_log_line": "[7349/7349] ACTION //flutter/lib/snapshot:create_macos_gen_snapshots(//build/toolchain/mac:ios_clang_arm)",
+    "available_artifacts_hashes_verified": true
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Dynamic invocation dispatch and retention in bytecode",
+    "General Flutter/Kernel and optimization dependency proof",
+    "Broader language and SDK/package linking",
+    "Mobile engine completion and startup patch installation",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ]
+}

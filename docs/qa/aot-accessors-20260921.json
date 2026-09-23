@@ -1,0 +1,71 @@
+{
+  "checked_at": "2026-09-21 16:45 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host; not mobile runtime or performance acceptance",
+  "implemented": [
+    "Explicit instance getters and setters with distinct stable helper identities",
+    "Native property wrappers dispatch to replaced bytecode bodies",
+    "Pre-generated inherited explicit accessor bridges",
+    "Super getter/setter compound assignment and post-increment preserve behavior",
+    "Accessor signature and removal incompatibility rejected"
+  ],
+  "compiler_sha256": "6d10a9064f3ead79b603da20c82d92b3f20b1540ecc0fb6eceb0b7133d252ffa",
+  "compiler_components": {
+    "compiler/bin/aot_patch.dart": "4fea8f0c02de74fee3e858148c290bf1771e6cea04b11471d4c1e8b58ea9ada9",
+    "compiler/lib/source_graph.dart": "ae36a4f9f7f50b6b8e7a03bd5e37b306972ce2d2710ff148187b79aee160c2ca",
+    "compiler/lib/class_lowering.dart": "8492f6c474315342e1746314889830e9eab9d65e0081db5e95381ec6cb79e452"
+  },
+  "evidence": {
+    "accessors": "output/m1-aot-20260921T083750Z-o9kdl22i/build.json",
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T083848Z-00yx7w5w/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T083932Z-775tdh67/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T083948Z-il3ck5b0/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T084004Z-_f6r61p2/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T084020Z-xxartl06/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T084039Z-h8kiveny/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T084056Z-fd1eucnd/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T083848Z-00yx7w5w/native-checks/report.json",
+    "verification": "output/m1-accessors-verification.log"
+  },
+  "accessor_outputs": {
+    "baseline": "read=6\nwrite=20\nstep=21\nafter=23\ngc=23\n",
+    "patched": "read=106\nwrite=139\nstep=380\nafter=863\ngc=863\n"
+  },
+  "native_checks_passed": 23,
+  "baseline_aot_unchanged": true,
+  "optimizer_evidence": {
+    "name": "classes-optimizer-evidence",
+    "method_wrapper_inlined": true,
+    "optimized_main_calls_replaceable_entry_directly": true,
+    "passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "accessor_source_archives_match": true,
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 44,
+    "flutter_widget_tests": 7,
+    "native_checks": 23
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Existing class layout, constructor and member-set changes",
+    "Operators, static members, inferred/optional/named signatures",
+    "General Kernel and package/SDK linking",
+    "General optimization dependencies",
+    "Generics, async, isolates",
+    "Android/iOS mixed runtime integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ],
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "class_scavenges": 16,
+  "new_class_scavenges": 16,
+  "accessor_scavenges": 1
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "checks_passed": false,
+  "checks": {
+    "toolchain": {
+      "passed": true,
+      "toolchain_id": "m0-0c5224cc9287169a1fe8667e538f00a5fd77ec4efcfc99fddb718dfae6c62d10",
+      "dart_revision_source": "0cd610717bde95fd88343c64f81c11ba4e5c0010:DEPS",
+      "mismatches": [],
+      "custom_runtime_available": false
+    },
+    "engine_workspace": {
+      "passed": false,
+      "available_bytes": 32006774784,
+      "required_bytes": 214748364800,
+      "missing_bytes": 182741590016
+    },
+    "git": {
+      "passed": true,
+      "version": "git version 2.50.1 (Apple Git-155)"
+    },
+    "python3": {
+      "passed": true,
+      "version": "Python 3.14.6"
+    },
+    "rustc": {
+      "passed": true,
+      "version": "rustc 1.91.0 (f8297e351 2025-10-28)"
+    },
+    "cargo": {
+      "passed": true,
+      "version": "cargo 1.91.0 (ea2d97820 2025-10-10)"
+    },
+    "go": {
+      "passed": true,
+      "version": "go version go1.25.3 darwin/arm64"
+    },
+    "gclient": {
+      "passed": true,
+      "revision": "0306e4682b4ac35287c726fa35a983157a625902"
+    },
+    "xcode": {
+      "passed": true,
+      "version": "Xcode 26.6\nBuild version 17F113"
+    },
+    "devices": {
+      "passed": false,
+      "ios_physical": 2,
+      "android_arm64_physical": 0
+    }
+  },
+  "toolchain_id": "m0-0c5224cc9287169a1fe8667e538f00a5fd77ec4efcfc99fddb718dfae6c62d10",
+  "runtime_available": false,
+  "m0_complete": false,
+  "note": "Environment diagnostics do not certify a source-built engine or device validation.",
+  "captured_at": "2026-09-20 15:41 +08:00"
+}

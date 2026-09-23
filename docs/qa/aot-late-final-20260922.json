@@ -1,0 +1,93 @@
+{
+  "recorded_at": "2026-09-22 09:53 +08:00",
+  "scope": "Host ARM64 AOT static late final setter retention and cross-module state semantics",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014638Z-wnfxqdg2/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014653Z-8x38nnlo/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014707Z-9g4za1nm/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014723Z-03_x40ao/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014736Z-4atb0fen/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014751Z-bcmm521c/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014806Z-6wb28it0/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014822Z-8d8hartn/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014836Z-tum2qf91/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014850Z-lhz20o4g/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014903Z-6dbf929m/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014918Z-74ieox00/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014931Z-i0pb4ejq/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014944Z-b3h4810b/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014957Z-8uj2hw8b/build.json",
+    "runtime_build": "output/m1-aot-20260921T102801Z-wfs0nzy8/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T014638Z-wnfxqdg2/native-checks/report.json",
+    "verification": "output/m1-late-final-verification.log",
+    "original_failure_recovery": "output/late-final-runtime-repro/report.json"
+  },
+  "compiler_sha256": "3805204e4e31a52c3f50d36175df2d19ec0dc68732f02c7562bce1ec251728af",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "50c263075108b9eecb6c2c3c3813d54bbcb3d5724d4ef2da95c0d374165184ed",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093"
+    },
+    "artifacts": {
+      "dartaotruntime": "84d250ac3f5c42b7d8031d5d58e2b356e2a1be20f624b0e0cfb973e17ef089c7",
+      "gen_snapshot": "87111d2ec09526c36f7a792a2afde09e7088ad06d63294ea360c532a38b81ef8",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "outputs": {
+    "baseline": "uninitialized=true\nshared=3:3\nsingleAssignment=true:3\nunused=-1\nlazy=10:10:1\n",
+    "patched": "uninitialized=true\nshared=8:8\nsingleAssignment=true:8\nunused=42\nlazy=20:20:1\n"
+  },
+  "retained_aot_functions": [
+    "beforeInitialization",
+    "main",
+    "readShared",
+    "rejectSecondWrite",
+    "writeFromAot"
+  ],
+  "installed_functions": [
+    "initialize",
+    "initializeUnused",
+    "writeFromPatch"
+  ],
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 62,
+    "flutter_widget_tests": 7,
+    "native_checks": 67
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "baseline_aot_unchanged": true,
+  "late_final_source_aot_reference_matches": true,
+  "late_final_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "d5d1f461dd3bdef1c73c9df4c791c3ffda0bb0fc4af5168ca79cb403472dfcf7",
+      "executable_sha256": "359181998a8475f4abf9e8e530d2be5dad3a12fc5b16b3dc4b318356f4d27ca1",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "4fc6fd4a7e86c0ac811459c056008e2cc4c79faeb53d8590d416d3ec828948c0",
+      "executable_sha256": "708e0c5af61bf081cd09d970f782ac7a6e411f31ec45a76b785ccd1774bcc791",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Inferred global declarations and unsupported language constructs",
+    "General Flutter/Kernel and optimization dependency proof",
+    "Broader SDK/package linking",
+    "Mobile engine patch provenance and Android/iOS mixed runtime integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ]
+}

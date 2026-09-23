@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-09-21 10:07 +08:00",
+  "source_inventory": {
+    "path": "output/source-inventories/inventory-y_lf6v1_/inventory.json",
+    "sha256": "40394f1f40a6dcba8b7211d391b4a21495cda30d8246ccfd3e37832daaab70fc",
+    "git_checkouts": 85,
+    "cipd_packages": 18,
+    "license_candidate_files": 449,
+    "git_revision_checks": "passed; annotated tags resolved to commits",
+    "cipd_license_scan": "not_performed",
+    "license_audit_complete": false
+  },
+  "metal_diagnosis": {
+    "checked_at": "2026-09-21 09:57 +08:00",
+    "xcode": "26.6 / 17F113",
+    "component_build": "17F109",
+    "installed": false,
+    "failed_stage": "Pallas component catalog request",
+    "http_status": 401,
+    "mobileasset_result": 41,
+    "mobileasset_error": "MADownloadServerAuthFailure",
+    "body_title": "401 Authorization Required",
+    "downloaded_bytes": 0,
+    "tls_handshake": "completed",
+    "root_cause": "not established: account, service, version availability and proxy causes not distinguished",
+    "download_log": "output/metal-toolchain-20260921.log"
+  },
+  "tests": {
+    "dart": 16,
+    "python": 21,
+    "flutter": 7,
+    "static_analysis": "passed"
+  },
+  "m0_passed": false
+}

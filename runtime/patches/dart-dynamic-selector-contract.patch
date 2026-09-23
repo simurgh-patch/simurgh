@@ -1,0 +1,61 @@
+diff --git a/pkg/front_end/lib/src/kernel/dynamic_module_validator.dart b/pkg/front_end/lib/src/kernel/dynamic_module_validator.dart
+index f08a1d4b..0425213b 100644
+--- a/pkg/front_end/lib/src/kernel/dynamic_module_validator.dart
++++ b/pkg/front_end/lib/src/kernel/dynamic_module_validator.dart
+@@ -70,6 +70,7 @@ class DynamicInterfaceYamlFile {
+         'can-be-overridden',
+         'callable',
+         'can-be-used-as-type',
++        'dynamic-callable-selectors',
+       });
+     }
+   }
+@@ -82,6 +83,7 @@ class DynamicInterfaceYamlFile {
+   YamlList? get canBeOverridden => sections['can-be-overridden'];
+   YamlList? get callable => sections['callable'];
+   YamlList? get canBeUsedAsType => sections['can-be-used-as-type'];
++  YamlList? get dynamicCallableSelectors => sections['dynamic-callable-selectors'];
+ 
+   // Coverage-ignore(suite): Not run.
+   Set<String> get libraries => {
+@@ -107,6 +109,7 @@ class DynamicInterfaceSpecification {
+   final Set<TreeNode> canBeOverridden = {};
+   final Set<TreeNode> callable = {};
+   final Set<TreeNode> canBeUsedAsType = {};
++  final Set<String> dynamicCallableSelectors = {};
+ 
+   factory DynamicInterfaceSpecification(
+     String dynamicInterfaceSpecification,
+@@ -127,6 +130,14 @@ class DynamicInterfaceSpecification {
+       return;
+     }
+ 
++    for (final selector in yamlFile.dynamicCallableSelectors ?? const []) {
++      if (selector is! String ||
++          !RegExp(r'^(get|set|invoke):.+$').hasMatch(selector)) {
++        throw 'Invalid dynamic callable selector: $selector';
++      }
++      dynamicCallableSelectors.add(selector);
++    }
++
+     final LibraryIndex libraryIndex = new LibraryIndex.all(component);
+ 
+     _parseList(
+@@ -810,6 +821,17 @@ class _DynamicModuleValidator extends RecursiveVisitor {
+       throw 'Unexpected node ${node.runtimeType} $node';
+ 
+   void _dynamicCall(TreeNode node) {
++    // This contract is paired with baseline selector-retention roots. Preserve
++    // ordinary interface validation and reject selectors not in that baseline.
++    final String? selector = switch (node) {
++      DynamicGet() => 'get:${node.name.text}',
++      DynamicSet() => 'set:${node.name.text}',
++      DynamicInvocation() => 'invoke:${node.name.text}',
++      _ => null,
++    };
++    if (selector != null && spec.dynamicCallableSelectors.contains(selector)) {
++      return;
++    }
+     loader.addProblem(
+       diag.dynamicCallsAreNotAllowedInDynamicModule,
+       node.fileOffset,

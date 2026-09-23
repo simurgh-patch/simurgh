@@ -1,0 +1,9 @@
+name: package_probe
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <3.13.0'
+dependencies:
+  engine_logic:
+    path: packages/engine_logic
+  labels:
+    path: packages/labels

@@ -1,0 +1,125 @@
+{
+  "recorded_at": "2026-09-23 12:01 +08:00",
+  "scope": "Linked SDK mixin applications, SDK private mixin ancestry, and abstract on-constraint super calls on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034335Z-xnoci71i/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034410Z-l2l0l096/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034442Z-wjv0ihcs/build.json",
+    "sdk_mixin_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034515Z-zuh8frhd/build.json",
+    "sdk_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034553Z-4pzsmz_t/build.json",
+    "sdk_super_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034628Z-l0x_xi7l/build.json",
+    "sdk_super_gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034703Z-yjgrl0tq/build.json",
+    "sdk_super_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034734Z-wpks78fa/build.json",
+    "sdk_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034806Z-iawhfckq/build.json",
+    "mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034839Z-hp38oa44/build.json",
+    "operators": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034909Z-qhlfndna/build.json",
+    "operator_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034941Z-sn037xcf/build.json",
+    "super_parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T035015Z-6c37hfsd/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T035050Z-ar6nsvek/build.json",
+    "interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T035122Z-n21st1bf/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T034335Z-xnoci71i/native-checks/report.json",
+    "verification": "output/m1-sdk-mixins-verification.log",
+    "native_log": "output/m1-sdk-mixins-final-native.log",
+    "compiler_analysis": "output/m1-sdk-mixins-analysis.log",
+    "format": "output/m1-sdk-mixins-format.log",
+    "input_hashes": "output/m1-sdk-mixins-start-hashes.json",
+    "process_results": "output/m1-sdk-mixins-process-results.json"
+  },
+  "compiler_sha256": "4156fb975b960c90d619ddda5cbedc660471fa6b5c2722d0960cb5f42fd88650",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 105,
+    "flutter_widget_tests": 7,
+    "native_checks": 96,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "sdk_mixins": {
+      "baseline": "private-sdk-ancestor:one\nimmutable:true\nsdk-alias-mixin:3|1|2\nsorted:1,2,3\nsdk-on:3|4:3\ngeneric:v3,v4:2\nwrite:8|4\nabstract-unused:0\nabstract-tearoff:5\ngc:3:8\n",
+      "patched": "private-sdk-ancestor:two\nimmutable:true\nsdk-alias-mixin:13:11:12\nsorted:22,31,33\nsdk-on:3:4:4\ngeneric:v3,v4:2\nwrite:8:4\nabstract-unused:0\nabstract-tearoff:15\ngc:30:4\n"
+    },
+    "sdk_mixin_relink": {
+      "baseline": "first:3\npicked:3\n",
+      "patched": "first:3\npicked:4\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "sdk_mixins": {
+      "baseline": {
+        "source_sha256": "3cdef8f8324fee233297c6f1c21fb4e07f27dad34ccc2ccfddb4cb4824c0531a",
+        "executable_sha256": "379213e4368078804e8363cc64488936c13645bd33dbc60fe44db8baf13f51d4",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "5901625f590d287c49a13e255ee7ff1887ac250fcdd58a3c994dbf68c6829cca"
+      },
+      "patch": {
+        "source_sha256": "9b2d423a43c04b5bbb924edb3eef208830c786a7bfbf4b99b209529f30d360b0",
+        "executable_sha256": "e9ae6233e5576a2f8a0f04804e1a0cb1a6a53ad1ffc3e218275e45650599496d",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "0a99260d5ea593afc27310fd7bdffe3264a371a844e7052d15dbc87df53a52b6"
+      }
+    },
+    "sdk_mixin_relink": {
+      "baseline": {
+        "source_sha256": "5e10674c1583dc1803aee549ca89e7bf9c665210c46c1f5cbe30cdc1469d76d3",
+        "executable_sha256": "65fd29264b8fdfff5bea08757c5b2b4c3d0c0b157bc2b8661d8f2e57ea4731fa",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "03775559bc5a5c73f1710b70770678285e0f0afaaea6e33905607acf3cca0411"
+      },
+      "patch": {
+        "source_sha256": "2ee6187e109d5db01c9f267e5a9d01bc4357bf37bc0113f2158e0aac591a73b1",
+        "executable_sha256": "a7b100bb7f8cf7b83d902700d8ece7ee7c98871f446938387d431655ed270331",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "cd3cc0252b0a9fe262de103bca5c6bc295c03bc7229f8ba2017cc382dbe83f0e"
+      }
+    }
+  },
+  "sdk_mixin_scavenges": 16,
+  "notes": [
+    "SDK mixable ClassElement and MixinElement contracts are deduplicated with SDK extension/implementation contracts and archived as sdk_mixins. Original analyzer enforces legal modifiers and application constraints.",
+    "SDK ancestor resolution accepts ClassDeclaration and MixinDeclaration. UnmodifiableMapView private SDK mixin ancestry is preserved without copying SDK bodies or state.",
+    "ListMixin/MapMixin aliases resolve to real SDK class identities. SDK sort and traversal call patched operators, and a patch-only MapMixin application stays alive through a native SDK values view across GC.",
+    "Direct public linked SDK extension/interface on-constraints support concrete super calls, generic map, abstract index reads/writes, abstract length, and a Comparable abstract method tear-off. The applying superclass supplies real implementations.",
+    "Only source-used abstract super selectors generate bridges, including members declared solely on an on-constraint interface. Abstract and noSuchMethod-based applications retain their original obligations.",
+    "First introduction of abstract super[] relinks Choosing and Chosen through the established class-version mechanism; Concrete and independent consumers main/consume remain baseline AOT.",
+    "The main mixin fixture replaces no baseline classes. Original AOT read/joined/ordered/total/churn/mapped/replace/count/comparer and business noSuchMethod stay retained.",
+    "All 15 fixture groups were rebuilt with the current compiler and checked against source archives, runtime provenance and artifact hashes. This is not the entire historical native suite.",
+    "Initial probe exposed the difference between superclass ancestry and interface-only ListBase requirements. Fixed bridge discovery is covered by both native fixtures. An unchanged-source exploratory patch was rejected for no function changes; the first targeted unittest command used a wrong Python module path and was rerun correctly. These failed attempts are preserved and not counted as passing."
+  ],
+  "preserved_failures": [
+    "output/m1-sdk-mixins-probe.log",
+    "output/m1-aot-20260923T033436Z-le2hi889/generate-baseline.log",
+    "output/m1-sdk-mixins-probe-fixed.log",
+    "output/m1-sdk-mixins-targeted.log"
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Direct super access to user-declared fields",
+    "Named mixin-application aliases, multiple-on intersections and broader mixin ordering/signatures",
+    "Other Dart declarations and full Flutter/Kernel support",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Signing, rollback, publishing CLI and private release platform",
+    "Physical-device and performance acceptance"
+  ]
+}

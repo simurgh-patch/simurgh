@@ -1,0 +1,8 @@
+name: simurgh_compiler_lab
+publish_to: none
+environment:
+  sdk: '>=3.12.2 <3.13.0'
+dependencies:
+  # Resolved from the exact Dart source checkout, not pub.dev.
+  analyzer: any
+  crypto: any

@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-09-21 15:37 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host; no mobile mixed runtime validation",
+  "implemented": [
+    "New top-level functions and mutual recursion",
+    "Existing function tear-offs preserve dispatch and identity",
+    "Conservative caller invalidation for newly shadowed core functions",
+    "Primitive and non-generic function types in required positional signatures",
+    "Synchronous closures and local functions with mutable captures",
+    "Resolved source error and entity binding validation before code emission"
+  ],
+  "evidence": {
+    "normal": "output/m1-aot-20260921T073326Z-1jd2aw6q/build.json",
+    "gc": "output/m1-aot-20260921T073339Z-iqbrwvpe/build.json",
+    "entities": "output/m1-aot-20260921T073351Z-3o555bld/build.json",
+    "closures": "output/m1-aot-20260921T073404Z-blzw19l5/build.json",
+    "native_checks": "output/m1-aot-20260921T073326Z-1jd2aw6q/native-checks/report.json",
+    "verification": "output/m1-expansion-verification.log"
+  },
+  "outputs": {
+    "normal": {
+      "baseline": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+      "patched": "calculate=407\ncaller=408\ncaught=Bad state: patched\n"
+    },
+    "gc": {
+      "baseline": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+      "patched": "calculate=407\ncaller=408\ncaught=Bad state: patched\n"
+    },
+    "entities": {
+      "baseline": "calculate=207\nreference=208\nidentity=true\nbinding=true\n",
+      "patched": "calculate=407\nreference=408\nidentity=true\nbinding=false\n"
+    },
+    "closures": {
+      "baseline": "closure=12\ncapture=15\ngc=16\nexception=Bad state: baseline callback\n",
+      "patched": "closure=14\ncapture=20\ngc=22\nexception=Bad state: patched callback\n"
+    }
+  },
+  "native_checks_passed": 11,
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "baseline_aot_unchanged": true,
+  "compiler_sha256": "ad60d3b6bc2e98b2fcf75e53b58f4b6fbf237bc48c2de87eac3ac758a7268e77",
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Multi-library dependency/linking support",
+    "Classes, virtual calls and layout changes",
+    "General optimization assumption invalidation",
+    "Generics, async, full closure semantics and isolates",
+    "Android/iOS mixed runtime integration",
+    "Signing and rollback",
+    "Performance and physical device acceptance"
+  ],
+  "checks": {
+    "static_analysis": "passed",
+    "dart_tests": 16,
+    "python_tests": 33,
+    "flutter_widget_tests": 7,
+    "native_checks": 11
+  }
+}

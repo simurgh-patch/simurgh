@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "flutter_version": "3.44.8",
+  "dart_version": "3.12.2",
+  "framework_revision": "058e0af2c2b57e369d905a03ac9748b0ebf543c6",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+  "flutter_repository": "https://github.com/flutter/flutter.git",
+  "dart_repository": "https://dart.googlesource.com/sdk.git",
+  "depot_tools_repository": "https://chromium.googlesource.com/chromium/tools/depot_tools.git",
+  "depot_tools_revision": "0306e4682b4ac35287c726fa35a983157a625902",
+  "channel": "stable",
+  "targets": ["android-arm64", "ios-arm64"],
+  "engine_workspace_min_free_bytes": 214748364800,
+  "patch_format_version": null,
+  "runtime_abi": null,
+  "runtime_implemented": false
+}

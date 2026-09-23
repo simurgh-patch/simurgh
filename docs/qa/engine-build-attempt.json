@@ -1,0 +1,57 @@
+{
+  "recorded_at": "2026-09-20 16:35 +08:00",
+  "source_preparation": "passed",
+  "host_gn": "passed",
+  "host_ninja": "failed",
+  "android_engine": "not_started",
+  "ios_engine": "not_started",
+  "m0_passed": false,
+  "runtime_implemented": false,
+  "space_check_overridden_by_user": true,
+  "failure": "ANGLE Metal shader action: cannot execute metal due to missing Metal Toolchain",
+  "metal_component": {
+    "build": "17F109",
+    "status": "uninstalled",
+    "official_download_attempts": 2,
+    "exit_code": 70,
+    "system_log_result": 41,
+    "system_log_error": "MADownloadServerAuthFailure"
+  },
+  "tests": {
+    "dart": 16,
+    "python": 16,
+    "flutter": 7,
+    "static_analysis": "passed",
+    "engine_compile_test_fixtures": "synthetic; not engine acceptance"
+  },
+  "evidence": [
+    {
+      "path": "output/engine-builds/20260920T081431Z-qg2x57xy/build.json",
+      "sha256": "ccea531c39cba1c04e2b661eb5aaf9b99789919f9689cfb99439e5dd076e5706"
+    },
+    {
+      "path": "output/engine-builds/20260920T081431Z-qg2x57xy/00-host_release_arm64.log",
+      "sha256": "e593b5bc11903252e0062fb25f56e9141292eb36ac184a3609ca94012ea3bfd3"
+    },
+    {
+      "path": "output/engine-builds/20260920T081431Z-qg2x57xy/01-host_release_arm64.log",
+      "sha256": "7c35ecad2381a71574f0ab4cc6fe6b9179d2f2390408bc824393df0ee7413326"
+    },
+    {
+      "path": "output/engine-prepare.log",
+      "sha256": "e8db43cbf856b18dd6b51ebb8f4eac054d38c73aca24b82e5030f62cea59a6c8"
+    },
+    {
+      "path": "output/metal-toolchain-download.log",
+      "sha256": "8a67f42a955cfb53b190bcf6e056f7500a8568a4d0e4d6c2964a1c12a4d8f36d"
+    },
+    {
+      "path": "output/metal-toolchain-retry.log",
+      "sha256": "bf9afc4866370ea56e6f703f48fba49be348ce140e34bcf4c140f4537a55f2b6"
+    },
+    {
+      "path": "output/engine-resume-preflight.json",
+      "sha256": "894f9068c838d5a90847a7fc645aad3c780289d17f2230c6be5c23fae5e966f6"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "checked_at": "2026-09-21 15:53 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host AOT; no mobile mixed engine acceptance",
+  "implemented": [
+    "Resolved local library graph lowering",
+    "Relative imports/exports with prefixes, show/hide, re-exports and cycles",
+    "Library-qualified stable function identity and private-name isolation",
+    "New dependency libraries",
+    "Caller invalidation on export rebinding",
+    "Complete original source graph fingerprint and archive"
+  ],
+  "compiler_sha256": "28322fb63f4e8a5c1530bfcb342a179c878ea3dffb362cfd727068aa3c74f2ef",
+  "compiler_components": {
+    "compiler/bin/aot_patch.dart": "3089b31e9cb6ad1691d19202128c9e6e39ceceb32db91a4a9189554cf64be033",
+    "compiler/lib/source_graph.dart": "adb6468ada02aad924b175b3c1214e3113da72a99cf611bcfc9e44d2267b90f0"
+  },
+  "evidence": {
+    "normal": "output/m1-aot-20260921T074224Z-ue_7dpld/build.json",
+    "gc": "output/m1-aot-20260921T074652Z-qkhjlzfd/build.json",
+    "entities": "output/m1-aot-20260921T074707Z-bwn7zyvi/build.json",
+    "closures": "output/m1-aot-20260921T074721Z-rhrv_25y/build.json",
+    "libraries": "output/m1-aot-20260921T074347Z-1eoic0dk/build.json",
+    "native_checks": "output/m1-aot-20260921T074224Z-ue_7dpld/native-checks/report.json",
+    "verification": "output/m1-libraries-verification.log",
+    "compiler_regressions": "output/m1-libraries-compiler-tests.log"
+  },
+  "outputs": {
+    "normal": {
+      "baseline": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+      "patched": "calculate=407\ncaller=408\ncaught=Bad state: patched\n"
+    },
+    "gc": {
+      "baseline": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+      "patched": "calculate=407\ncaller=408\ncaught=Bad state: patched\n"
+    },
+    "entities": {
+      "baseline": "calculate=207\nreference=208\nidentity=true\nbinding=true\n",
+      "patched": "calculate=407\nreference=408\nidentity=true\nbinding=false\n"
+    },
+    "closures": {
+      "baseline": "closure=12\ncapture=15\ngc=16\nexception=Bad state: baseline callback\n",
+      "patched": "closure=14\ncapture=20\ngc=22\nexception=Bad state: patched callback\n"
+    },
+    "libraries": {
+      "baseline": "value=11\nreference=11\nprivate=12\ncycle=1\nselected=100\n",
+      "patched": "value=118\nreference=118\nprivate=12\ncycle=101\nselected=200\n"
+    }
+  },
+  "native_checks_passed": 13,
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "baseline_aot_unchanged": true,
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "General Kernel and package/SDK linking",
+    "Classes, virtual calls and layout changes",
+    "General optimization assumption invalidation",
+    "Generics, async, full closure semantics and isolates",
+    "Android/iOS mixed runtime integration",
+    "Signing and rollback",
+    "Performance and physical device acceptance"
+  ],
+  "checks": {
+    "static_analysis": "passed",
+    "dart_tests": 16,
+    "python_tests": 37,
+    "flutter_widget_tests": 7,
+    "native_checks": 13
+  }
+}

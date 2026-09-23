@@ -1,0 +1,109 @@
+{
+  "checked_at": "2026-09-21 17:26 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "platform": "macOS ARM64 host; not mobile runtime or performance acceptance",
+  "implemented": [
+    "Lexically scoped generic function type parameters and supported bounds",
+    "Generic top-level function, method and closure dispatch",
+    "Explicit type-argument forwarding through slots, helpers and super bridges",
+    "Generic function-type arguments/returns and explicit tear-off instantiation",
+    "Preserved num type argument and generic Future<num> reification",
+    "Captured generic environment across GC",
+    "Runtime bound errors retained",
+    "Stricter generic patch signature rejected without partial slot mutation"
+  ],
+  "compiler_sha256": "5b0d93f00ca2d44039cc399024634ba4260d1a64293829cab41ce9086bc76ee9",
+  "compiler_components": {
+    "compiler/bin/aot_patch.dart": "e7871d54b721c2d6c6c95edff2185d5880917c24f0e18f0cdd5a77c7efbf2280",
+    "compiler/lib/source_graph.dart": "6e40fae553de223c7f139d97821e7337cec4fe89afe339b8b7d7553205720f0f",
+    "compiler/lib/class_lowering.dart": "b4dc3252d18932d9184a68a6cd320df80de37ed0a8e7a0cd01a4adfe90d982d2"
+  },
+  "evidence": {
+    "generics": "output/m1-aot-20260921T091829Z-hxbs9h4l/build.json",
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092019Z-67xi6qdz/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092035Z-vgrr0u4h/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092050Z-uymr5jco/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092105Z-2asr1pwi/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092121Z-6qbbzccy/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092136Z-1tsvv7k3/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092151Z-7pwu19j0/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092207Z-plnnrh1r/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092222Z-f2_5dvls/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092238Z-prpt4vpz/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260921T092019Z-67xi6qdz/native-checks/report.json",
+    "verification": "output/m1-generics-verification.log"
+  },
+  "generic_outputs": {
+    "baseline": "int=1\nstring=left\ncallback=3\ntearoff=4\nbound=3\nboundError=true\ntype=num:1\nfutureType=false\nasync=1\nclosure=a\nvirtual=4\ngc=4\n",
+    "patched": "int=2\nstring=right\ncallback=8\ntearoff=7\nbound=8\nboundError=true\ntype=patched:num:1\nfutureType=false\nasync=2\nclosure=b\nvirtual=9\ngc=9\n"
+  },
+  "native_checks_passed": 41,
+  "baseline_aot_unchanged": true,
+  "optimizer_evidence": {
+    "name": "classes-optimizer-evidence",
+    "method_wrapper_inlined": true,
+    "optimized_main_calls_replaceable_entry_directly": true,
+    "passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 50,
+    "flutter_widget_tests": 7,
+    "native_checks": 41
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Generic class layouts and arbitrary SDK generic bounds",
+    "Existing class layout, constructor and member-set changes",
+    "Changed parameter defaults require AOT dependency invalidation",
+    "Operators, static members, inferred and nullable signatures",
+    "General Kernel and package/SDK linking",
+    "General optimization dependencies",
+    "Stream, generators and isolates",
+    "Void-async top-level and method declarations",
+    "Android/iOS mixed runtime integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ],
+  "observed_scavenges": 21,
+  "closure_scavenges": 16,
+  "class_scavenges": 16,
+  "new_class_scavenges": 16,
+  "accessor_scavenges": 1,
+  "async_scavenges": 16,
+  "generic_scavenges": 16,
+  "async_source_aot_reference_matches": true,
+  "async_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "a0ab02b1311586e3b25db0fdff8d311e94897420705789822e4db87cd7180d51",
+      "executable_sha256": "b2035409546f51135f17ddb3eb5cca536625c82e085dd47d99d040a1d6616031",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "400010b4de3580376a9f53101f1feca0e2705f3bc8b0d70b0cf7a68a41c29563",
+      "executable_sha256": "b03a82aacb79cd761674e01a07286768576cc6902964ac197bac9ed34f50a4ce",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "generics_source_aot_reference_matches": true,
+  "generics_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "c20f7acf9df7c9119f58518ec13c358a4f8be0123405ecd2ee384cc66362c7a5",
+      "executable_sha256": "5d8dc9b70be73267e2f27d1057e87584f40081cb4a21c84b3daeb5d9760f14a6",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "c809e0737b8411c2cca13326b6c98c410ca9d98a28a817660c779af191f8264d",
+      "executable_sha256": "a4e34a5b046141d44ac2995f93cc68594864e7a851dcb02b146d12d29139f954",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  }
+}

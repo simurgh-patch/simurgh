@@ -1,0 +1,151 @@
+{
+  "recorded_at": "2026-09-22 11:02 +08:00",
+  "state": "compiled-not-device-validated",
+  "build_manifest": "output/engine-builds/20260922T015928Z-gqajtfyy/build.json",
+  "profile": "mixed",
+  "targets": [
+    "android",
+    "ios"
+  ],
+  "runtime_sources": {
+    "runtime_patchset_sha256": "50c263075108b9eecb6c2c3c3813d54bbcb3d5724d4ef2da95c0d374165184ed",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093"
+    }
+  },
+  "steps": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "flutter/tools/gn",
+        "--runtime-mode",
+        "release",
+        "--no-rbe",
+        "--no-goma",
+        "--android",
+        "--android-cpu",
+        "arm64",
+        "--dart-dynamic-modules",
+        "--target-dir",
+        "android_release_arm64_mixed",
+        "--no-prebuilt-dart-sdk"
+      ],
+      "cwd": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src",
+      "log": "00-android_release_arm64_mixed.log",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Applications/project/test2/my-shorebird/.engine-workspace/engine/third_party/ninja/ninja",
+        "-j2",
+        "-C",
+        "out/android_release_arm64_mixed"
+      ],
+      "cwd": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src",
+      "log": "01-android_release_arm64_mixed.log",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "flutter/tools/gn",
+        "--runtime-mode",
+        "release",
+        "--no-rbe",
+        "--no-goma",
+        "--ios",
+        "--dart-dynamic-modules",
+        "--target-dir",
+        "ios_release_mixed",
+        "--no-prebuilt-dart-sdk"
+      ],
+      "cwd": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src",
+      "log": "02-ios_release_mixed.log",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Applications/project/test2/my-shorebird/.engine-workspace/engine/third_party/ninja/ninja",
+        "-j2",
+        "-C",
+        "out/ios_release_mixed"
+      ],
+      "cwd": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src",
+      "log": "03-ios_release_mixed.log",
+      "returncode": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/android_release_arm64_mixed/args.gn",
+      "size": 2680,
+      "sha256": "402e57955556ea915f988f016bcd50cc2326900ce80e1eff7c9a9fa621594df1"
+    },
+    {
+      "path": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/android_release_arm64_mixed/libflutter.so",
+      "size": 165484792,
+      "sha256": "fc76bcdd9b8c3931e622d08ce213cdca7c2fb434a168b5950e48a5c6bd3b8e6c"
+    },
+    {
+      "path": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/android_release_arm64_mixed/flutter.jar",
+      "size": 42954533,
+      "sha256": "60bc4c55672d1bf511c23b3d18095ad3b81f6d3e368aef5600cc758649da7827"
+    },
+    {
+      "path": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/ios_release_mixed/args.gn",
+      "size": 2749,
+      "sha256": "ef616906664f25af36c4d4fdfc696239672856c50beb705a27ede4c47845ca79"
+    },
+    {
+      "path": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/ios_release_mixed/Flutter.framework/Flutter",
+      "size": 13886536,
+      "sha256": "fad46b00e01975a257553f8501a98a1e0f4b6904bdf3c45155280235acf21e70"
+    }
+  ],
+  "aot_cross_compilers": {
+    "android_release_arm64_mixed": [
+      {
+        "path": ".engine-workspace/engine/engine/src/out/android_release_arm64_mixed/clang_arm64/gen_snapshot",
+        "sha256": "98c83fd0e24fa204dca07a24860665721f640945f8c7605b181942a9dbeb7330",
+        "size": 7136448,
+        "file": ".engine-workspace/engine/engine/src/out/android_release_arm64_mixed/clang_arm64/gen_snapshot: Mach-O 64-bit executable arm64"
+      },
+      {
+        "path": ".engine-workspace/engine/engine/src/out/android_release_arm64_mixed/clang_x64/gen_snapshot",
+        "sha256": "473004f69a71bacf8189c8e81cf146a68d797ffe2b11a3aaafad80cd02196a1d",
+        "size": 7304832,
+        "file": ".engine-workspace/engine/engine/src/out/android_release_arm64_mixed/clang_x64/gen_snapshot: Mach-O 64-bit executable x86_64"
+      }
+    ],
+    "ios_release_mixed": [
+      {
+        "path": ".engine-workspace/engine/engine/src/out/ios_release_mixed/clang_arm64/gen_snapshot",
+        "sha256": "c4261ea0d83192f596d7108c4119c46df97d41c74a0de23f966f79cc3b307da5",
+        "size": 6988192,
+        "file": ".engine-workspace/engine/engine/src/out/ios_release_mixed/clang_arm64/gen_snapshot: Mach-O 64-bit executable arm64"
+      },
+      {
+        "path": ".engine-workspace/engine/engine/src/out/ios_release_mixed/clang_x64/gen_snapshot",
+        "sha256": "4dc27001ad89b8f8dd607017ed8d6bd1ffabcc0a27d64cc71e89c999f7cb323c",
+        "size": 7153552,
+        "file": ".engine-workspace/engine/engine/src/out/ios_release_mixed/clang_x64/gen_snapshot: Mach-O 64-bit executable x86_64"
+      }
+    ]
+  },
+  "android_gn_flags_verified": true,
+  "ios_gn_flags_verified": true,
+  "checks": {
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 66,
+    "flutter_widget_tests": 7,
+    "engine_orchestration_tests": 15
+  },
+  "verification_log": "output/mixed-mobile-verification.log",
+  "build_scripts_and_patch_archives_hashes_verified": true,
+  "mobile_engines_compiled": true,
+  "mobile_mixed_execution_verified": false,
+  "runtime_implemented": false,
+  "m1_passed": false,
+  "performance_measured": false
+}

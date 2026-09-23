@@ -1,0 +1,26 @@
+{
+  "kind": "official-ios-clean-rebuild-comparison",
+  "same_source": true,
+  "same_toolchain": true,
+  "clean_builds": [
+    true,
+    true
+  ],
+  "source_unchanged": [
+    true,
+    true
+  ],
+  "artifact_comparison": {
+    "identical": true,
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "note": "No differences were excluded. This is not proof of runtime compatibility."
+  },
+  "artifact_tree_sha256": [
+    "108b09f5c2a94ba684e61ec04016c7fa3cf43f6a62605b3e7051b567aa28b761",
+    "108b09f5c2a94ba684e61ec04016c7fa3cf43f6a62605b3e7051b567aa28b761"
+  ],
+  "device_validated": false,
+  "custom_engine_validated": false
+}

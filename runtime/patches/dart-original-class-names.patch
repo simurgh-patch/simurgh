@@ -1,0 +1,35 @@
+--- a/runtime/vm/object.cc
++++ b/runtime/vm/object.cc
+@@ -6073,6 +6073,32 @@
+   }
+   String& name = String::Handle(Name());
+   name = Symbols::New(Thread::Current(), String::ScrubName(name));
++#if defined(DART_DYNAMIC_MODULES)
++  // The source linker reserves this namespace and emits the original spelling
++  // after a fixed SHA-256 identity. Decode only for display: class identity,
++  // canonical types, subtype checks and module linking keep the full name.
++  // Older hash-only names and malformed encodings are deliberately unchanged.
++  const char* text = name.ToCString();
++  const char* prefix = "msbEntity_class_";
++  const intptr_t prefix_length = strlen(prefix);
++  const intptr_t identity_length = 64;
++  const intptr_t separator = prefix_length + identity_length;
++  if (String::Handle(Library::Handle(library()).name())
++          .Equals("simurgh_generated_v1") &&
++      strncmp(text, prefix, prefix_length) == 0 &&
++      static_cast<intptr_t>(strlen(text)) > separator + 2 &&
++      text[separator] == '_' && text[separator + 1] == '_') {
++    bool valid_identity = true;
++    for (intptr_t i = prefix_length; i < separator; ++i) {
++      const char c = text[i];
++      if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) {
++        valid_identity = false;
++        break;
++      }
++    }
++    if (valid_identity) return text + separator + 2;
++  }
++#endif  // defined(DART_DYNAMIC_MODULES)
+   if (name.ptr() == Symbols::_Future().ptr() &&
+       library() == Library::AsyncLibrary()) {
+     return Symbols::Future().ToCString();

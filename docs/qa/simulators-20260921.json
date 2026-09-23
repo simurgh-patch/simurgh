@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-09-21 14:50 +08:00",
+  "android": {
+    "device": "ARM64 emulator",
+    "engine": "source-built Android Release",
+    "tests_passed": 7,
+    "engine_linkage": {
+      "android_release_test_engine_build_id": "3f7bf61b3130b55519c46e06d699a7082b78b835",
+      "matches_source_build": true,
+      "apk_sha256": "97625bbcc88a9894892ac6fccb98e79b078047d4b38e6096c58b590443bfde73"
+    },
+    "log": "output/simulator-tests-20260921/android-integration-runtime-final.log",
+    "interactive_app": "restored original local-engine release APK; launch Status ok"
+  },
+  "ios": {
+    "device": "ARM64 iOS 26.5 simulator",
+    "engine": "official Flutter 3.44.8 Debug simulator engine, not source-built simulator engine",
+    "tests_passed": 7,
+    "log": "output/simulator-tests-20260921/ios-integration-verified.log",
+    "interactive_app": "ordinary main.dart Debug simulator app installed and launched; homepage visually verified"
+  },
+  "host_checks": {
+    "dart_tests": 16,
+    "python_tests": 21,
+    "flutter_widget_tests": 7,
+    "analysis_passed": true
+  },
+  "scope": {
+    "physical_devices_tested": false,
+    "performance_acceptance": false,
+    "patch_runtime_implemented": false,
+    "native_android_keyboard_tested": false
+  },
+  "failures_resolved": [
+    "Missing dev-only plugin in Release caused by stale Debug registrant; build with plugin regeneration, and serialize Flutter operations",
+    "Release text injection client -1 rejected; register test input channel to capture actual client ID; original assertions retained"
+  ],
+  "source_hashes": {
+    "examples/runtime_probe/pubspec.yaml": "f013f5f17bd08c7b9dc38585cbdbc18a6c77e88ef2b8d2f8b32522230a06145f",
+    "examples/runtime_probe/pubspec.lock": "f0fc8220554a71956ea431e0eabefc2d9fc0fa6b6a39b3e45b0f67a31d6e9572",
+    "examples/runtime_probe/test/widget_test.dart": "c5a1a44f9105142de80c666bec6f2e02e393f19771d6c0ddf75155c2f6ca31a9",
+    "examples/runtime_probe/integration_test/scenarios_test.dart": "d9af1a29c779567c880d14a34e5af1bd360761775f1a46fd0ed309b8ddbaedb9"
+  }
+}

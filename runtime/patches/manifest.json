@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+  "patches": [
+    {
+      "path": "dart-static-late-final-setter.patch",
+      "sha256": "5f51173ea2be5b72e00a9c7d1ef9b36dcbb24cea68b4bfa666aefa438696cdf7",
+      "files": {
+        "runtime/vm/compiler/aot/precompiler.cc": {
+          "base_sha256": "6f8d7fa4af57f610ed3808f483794b4921d476ad9c4f4b3bf05ab2299f9509d8",
+          "patched_sha256": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093"
+        }
+      }
+    },
+    {
+      "path": "dart-dynamic-selector-contract.patch",
+      "sha256": "40ee86cb0339ac4ef9ae71b542c078ea0305bace5c7567c114813a9c60eb746d",
+      "files": {
+        "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": {
+          "base_sha256": "6e82132285dd138994ee344a0eb6dd7d9844eb990ba35ea55040dafec2fdfdf6",
+          "patched_sha256": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34"
+        }
+      }
+    },
+    {
+      "path": "dart-original-class-names.patch",
+      "sha256": "747866b39f29e58740f3ec9535a8647a22ffd940cdb7f27446db3a3e1a15555f",
+      "files": {
+        "runtime/vm/object.cc": {
+          "base_sha256": "1e51af70dbb9fc34df4de6d3930c16cd68dd15928996e68580c1fed8261ebcb9",
+          "patched_sha256": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+        }
+      }
+    }
+  ]
+}

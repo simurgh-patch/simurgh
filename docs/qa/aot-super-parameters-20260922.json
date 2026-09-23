@@ -1,0 +1,105 @@
+{
+  "recorded_at": "2026-09-22 14:55 +08:00",
+  "scope": "Super constructor parameters and unbraced member/SDK interpolation in host ARM64 AOT/bytecode",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064126Z-8la8nhya/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064155Z-air_76mq/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064226Z-1i9xv7yd/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064300Z-u2y23zbi/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064336Z-cq2nhn1v/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064407Z-jwvg07k3/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064441Z-9ddwt9au/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064515Z-l_i5uari/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064550Z-9srcwwzf/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064620Z-ifwx53xe/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064651Z-29r_qs0o/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064722Z-ybp6kcym/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064753Z-b1g23v3f/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064820Z-eczvdq2j/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064848Z-408wsl7x/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064915Z-b7t9x7r5/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064943Z-m79hs6d7/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065010Z-d8yvrhk8/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065038Z-4h40bare/build.json",
+    "packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065106Z-uhwhg7kw/build.json",
+    "multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065133Z-zywmmcxv/build.json",
+    "multilang_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065201Z-tixxtl49/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065228Z-1bpezs_h/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065252Z-6a5ankzg/build.json",
+    "super_parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T065315Z-tbx99m4g/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T064126Z-8la8nhya/native-checks/report.json",
+    "verification": "output/m1-super-parameters-verification.log",
+    "compiler_analysis": "output/m1-super-parameters-analysis.log",
+    "format": "output/m1-super-parameters-format.log",
+    "native_log": "output/m1-super-parameters-native-suite.log",
+    "pre_fix_interpolation": "output/m1-aot-20260922T063615Z-xu07xx88/build.json"
+  },
+  "compiler_sha256": "a8e7a019da22c09641cfdff58c257b868c4bc8ad7181c902eb7a267eeecee29d",
+  "verification_script_sha256": "d804fef28a495b2c86c3b776100b2edff08fd958ac395c36ab5982107682b659",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "569f4cf1cd954ab6e6858874a14a97e9d6bdf8d2fa97093113075d69da10ba1c",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "082872b8ed9db51f8d1f43497f9d46bd513f147fa10efa487a89848547d6da84"
+    },
+    "artifacts": {
+      "dartaotruntime": "d0bd3ed9360f06795e988bb3223793df776ff84552363225cd844db2f386ba83",
+      "gen_snapshot": "d40a1c33232b543c7e75e0ce085249269f780f3d3e28023051f64c09c5fcddb4",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 81,
+    "flutter_widget_tests": 7,
+    "native_checks": 137,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "baseline": "positional:1:2:base\nexplicit:1:5:base\nnamed:v:3:base\nnamedExplicit:v:6:base\ngrand:deep:2:base\ndefault:4\nbody:4:8:base:5\noverride:3:11:base\nsdk:3.141592653589793\nraw:$value\nprivate:10:11\nconst:true\ntype:true\nadded:7:2:base\n",
+    "patched": "positional:1:2:patch\nexplicit:1:5:patch\nnamed:v:3:patch\nnamedExplicit:v:6:patch\ngrand:deep:2:patch\ndefault:9\nbody:4:8:patch:5\noverride:3:11:patch\nsdk:3.141592653589793\nraw:$value\nprivate:10:11\nconst:true\ntype:true\nadded:7:2:patch\n"
+  },
+  "source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "96343bb585d0d76bda22c461b43a93c1cb660ab9a0a788e547237e1242288fd2",
+      "executable_sha256": "1c06799bb87090ed633158461caef198c777a69d622ce4d172e323344789113c",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "86f61e32392fc3a9321587c51b3db8f7d97acff8e6e5e6cfe20fb71b946eed96"
+    },
+    "patch": {
+      "source_sha256": "eb203044c9de7e0d3d7b84fc3603082d25d6dd6c56ed673336011a1cff0d8432",
+      "executable_sha256": "2639c992647521146e864e47f0764c5de464e87f5e1cb122cc68e00f1683c85e",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+      "source_graph_sha256": "f815e326ec6bb16250a03e5e728ff24b9697a051381084bd366b7050fed159e0"
+    }
+  },
+  "replaced_classes": [
+    "Defaults",
+    "ForwardDefault"
+  ],
+  "new_subclass_consumer_retains_aot": true,
+  "notes": [
+    "Original-source analyzer rejects invalid super forwarding before emission.",
+    "Unchanged superclass defaults remain inferred by CFE; changed defaults relink the declaring class and its forwarding child.",
+    "The first native probe compiled and exited successfully but printed receiver text plus literal .value/.step. This was a real source-lowering bug, fixed by bracing rewritten interpolation expressions; the incorrect output is preserved.",
+    "Final comparison covers generic/named/multi-level forwarding, explicit super arguments, initializer parameter scope, overridden/inherited defaults, const identity, private positional parameters, SDK constants and raw strings."
+  ],
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Static members, mixins/interfaces and general Flutter/Kernel semantics",
+    "Full compiler dependency analysis and optimization/performance acceptance",
+    "Mobile engine rebuild and cold-start patch integration",
+    "Client signing/rollback, CLI and private release platform",
+    "True-device acceptance"
+  ]
+}

@@ -1,0 +1,18 @@
+diff --git a/runtime/vm/compiler/aot/precompiler.cc b/runtime/vm/compiler/aot/precompiler.cc
+index a1501f76..8977cb52 100644
+--- a/runtime/vm/compiler/aot/precompiler.cc
++++ b/runtime/vm/compiler/aot/precompiler.cc
+@@ -1561,6 +1561,13 @@ void Precompiler::AddAnnotatedRoots() {
+             }
+           } else {
+             implicit_static_getters.Add(field);
++            // Static late final fields without an initializer have an implicit
++            // setter which performs the single-assignment check. A callable
++            // field can be written by a dynamic module even if every baseline
++            // write was inlined. Retain that setter as an API entry as well.
++            if (EntryPointPragmaUtils::AllowsSet(pragma) && field.NeedsSetter()) {
++              implicit_setters.Add(field);
++            }
+           }
+         }
+       }

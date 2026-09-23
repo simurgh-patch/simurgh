@@ -1,0 +1,235 @@
+{
+  "recorded_at": "2026-09-22 13:27 +08:00",
+  "scope": "Mixed source-language graphs emitted as per-origin CFE libraries with retained AOT and patch bytecode; underscore argument normalization",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051303Z-dhi405bp/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051330Z-uk15qcvb/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051358Z-s7fop9lu/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051427Z-cxria1tq/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051455Z-3j4r6ce5/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051522Z-szl40y9x/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051551Z-gadxculr/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051619Z-v0a_tdxv/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051648Z-z5j5yjqh/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051717Z-2jrqbtci/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051745Z-jklpzqkg/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051814Z-8_9sicjb/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051844Z-c67gc_tt/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051913Z-4qj5az3i/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051942Z-ja7r4md7/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052011Z-chh139lf/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052040Z-lthavd86/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052108Z-e3zxo1l5/build.json",
+    "sdk": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052137Z-icxz73xl/build.json",
+    "packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052206Z-r44921l8/build.json",
+    "multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052235Z-h8l1h0pp/build.json",
+    "multilang_added": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052304Z-4padsimq/build.json",
+    "multilang_packages": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T052328Z-i847_41c/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T051303Z-dhi405bp/native-checks/report.json",
+    "verification": "output/m1-multilang-verification.log",
+    "native_log": "output/m1-multilang-native.log"
+  },
+  "compiler_sha256": "ebc371c74349556470889d41acefeb4d032f6e182b50c4f7a11229dab2d5bb96",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "0b4cf4f307c021ace9504d8aa659f73a4d7099045edd6c4983ab051e5a586acb",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34"
+    },
+    "artifacts": {
+      "dartaotruntime": "84d250ac3f5c42b7d8031d5d58e2b356e2a1be20f624b0e0cfb973e17ef089c7",
+      "gen_snapshot": "87111d2ec09526c36f7a792a2afde09e7088ad06d63294ea360c532a38b81ef8",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 78,
+    "flutter_widget_tests": 7,
+    "native_checks": 119
+  },
+  "cases": {
+    "multilang": {
+      "baseline": "wildcard=4\nbinding=3\nlegacy=6\nbound=6\nmodern=5\ngc=4\nidentity=true\n",
+      "patched": "wildcard=13\nbinding=6\nlegacy=24\nbound=24\nmodern=14\ngc=13\nidentity=true\n",
+      "baseline_library_versions": {
+        "app:entry": "3.12",
+        "app:legacy.dart": "3.0",
+        "app:modern.dart": "3.12"
+      },
+      "patch_library_versions": {
+        "app:entry": "3.12",
+        "app:legacy.dart": "3.0",
+        "app:modern.dart": "3.12"
+      },
+      "baseline_emitted_libraries": {
+        "app:entry": "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart",
+        "app:legacy.dart": "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart",
+        "app:modern.dart": "unit_6f900da73043d0c0df6fc264684b519df51b4e4967cb4a0a18789c2a86a4e9a4.dart"
+      },
+      "serialized_kernel_languages": {
+        "launcher.dart": "3.12",
+        "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+        "app.dart": "3.12",
+        "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+        "unit_6f900da73043d0c0df6fc264684b519df51b4e4967cb4a0a18789c2a86a4e9a4.dart": "3.12"
+      },
+      "retained_aot_functions": [
+        "stable",
+        "main",
+        "evaluate",
+        "churn"
+      ],
+      "installed_functions": [
+        "ignored",
+        "increment",
+        "callback",
+        "evaluate",
+        "binding",
+        "Box.read"
+      ],
+      "source_reference_artifacts": {
+        "baseline": {
+          "source_sha256": "1c777c60726f1c2fa6e81266f94f8622bf2a03ba8e9efddae76e28ee48bf0d42",
+          "executable_sha256": "a0276fe206c41ccfd9f8f6a7cf5e9501b70372c0369cf9c34063ea20002a75da",
+          "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+          "source_graph_sha256": "f361bb8031f9e9d49248840ee7132c94f25a98e58b9a1b12387ea94a28f7b6fe"
+        },
+        "patch": {
+          "source_sha256": "1c777c60726f1c2fa6e81266f94f8622bf2a03ba8e9efddae76e28ee48bf0d42",
+          "executable_sha256": "c98d6436ac1560f357c5952fe9da1b4e13caa75b892ba154b63fc5c37c198317",
+          "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+          "source_graph_sha256": "e4fa6d71fc9bf755a4bd076d592197ae59862536c771f4e224f127200fd368e0"
+        }
+      }
+    },
+    "multilang_added": {
+      "baseline": "virtual=4\n",
+      "patched": "virtual=14\n",
+      "baseline_library_versions": {
+        "app:entry": "3.0"
+      },
+      "patch_library_versions": {
+        "app:entry": "3.0",
+        "app:modern.dart": "3.12"
+      },
+      "baseline_emitted_libraries": {
+        "app:entry": "app.dart"
+      },
+      "serialized_kernel_languages": {
+        "launcher.dart": "3.12",
+        "app.dart": "3.0"
+      },
+      "retained_aot_functions": [
+        "stable",
+        "main",
+        "Box.read"
+      ],
+      "installed_functions": [
+        "make"
+      ],
+      "source_reference_artifacts": {
+        "baseline": {
+          "source_sha256": "5aea1c02983b6c49f68900684c35b71cd178cbf83fde3c9d4dd0feb063bf21c0",
+          "executable_sha256": "cd10363df283a92a9d1b80c9121cf83f0db310943e178095bb8897f21c8176e5",
+          "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+          "source_graph_sha256": "475ba8594fcfe7105fab867084357030a520c9c55d2893d52cc12a57b036b28d"
+        },
+        "patch": {
+          "source_sha256": "9b7d27ccd25ea78ba6eb281dc7580bf47e6063f5a315098ef4e24e00b6433d8b",
+          "executable_sha256": "278e30d216683e51868973389ab578c0d7d01182a394c2e3c8e481fd6cca17de",
+          "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+          "source_graph_sha256": "542e45cbc9b0d26be070652967eafbdaba22717b491fcb34f2fc037bbb2c4a15"
+        }
+      }
+    },
+    "multilang_packages": {
+      "baseline": "compute=8\nbox=4\nlabel=label-3\nmessage=package\n",
+      "patched": "compute=54\nbox=15\nlabel=label-4\nmessage=new-package\n",
+      "baseline_library_versions": {
+        "app:entry": "3.0",
+        "package:engine_logic/engine_logic.dart": "3.0",
+        "package:engine_logic/src/logic.dart": "3.0",
+        "package:labels/labels.dart": "3.0",
+        "package:utility/utility.dart": "3.1"
+      },
+      "patch_library_versions": {
+        "app:entry": "3.0",
+        "package:addon/addon.dart": "3.0",
+        "package:engine_logic/engine_logic.dart": "3.0",
+        "package:engine_logic/src/logic.dart": "3.0",
+        "package:labels/labels.dart": "3.0",
+        "package:utility/utility.dart": "3.1"
+      },
+      "baseline_emitted_libraries": {
+        "app:entry": "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart",
+        "package:engine_logic/engine_logic.dart": "unit_0e016d702f9abe997dddb45c77d31255f7fb02fe385e8d2b078dfe3f185e8960.dart",
+        "package:engine_logic/src/logic.dart": "unit_57d39fd06be81ed1f18d9edf06a7ded00bc9061a8b2ea12dd0418708af8a9ba0.dart",
+        "package:labels/labels.dart": "unit_a8e0641c19daac743a3afcf8d0c6098d0ea9a56eff03d8d8f2935c3cc9c0edef.dart",
+        "package:utility/utility.dart": "unit_ecac5d311f986f2f3e7b4443fbe09b92c9136cc7a27d89713c4b6d29efd8c5e0.dart"
+      },
+      "serialized_kernel_languages": {
+        "launcher.dart": "3.12",
+        "unit_57d39fd06be81ed1f18d9edf06a7ded00bc9061a8b2ea12dd0418708af8a9ba0.dart": "3.0",
+        "app.dart": "3.1",
+        "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.0",
+        "unit_0e016d702f9abe997dddb45c77d31255f7fb02fe385e8d2b078dfe3f185e8960.dart": "3.0",
+        "unit_a8e0641c19daac743a3afcf8d0c6098d0ea9a56eff03d8d8f2935c3cc9c0edef.dart": "3.0",
+        "unit_ecac5d311f986f2f3e7b4443fbe09b92c9136cc7a27d89713c4b6d29efd8c5e0.dart": "3.1"
+      },
+      "retained_aot_functions": [
+        "stableRead",
+        "main",
+        "compute",
+        "label"
+      ],
+      "installed_functions": [
+        "_secret",
+        "_secret",
+        "adjust",
+        "message",
+        "Box.read"
+      ],
+      "source_reference_artifacts": {
+        "baseline": {
+          "source_sha256": "baa6ba4a38aa2fcb1dbef17e054740af504511ab0db6b1a6f498d2d18b753a23",
+          "executable_sha256": "8c77ecd1020e6e0489963f0df74f41d54a4d65f6249c241904c06b8e37c357d6",
+          "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+          "source_graph_sha256": "3ce81fc96f707f9899092b5d6a0032ba9e1544a22a732cfafb0e5249db6151b5"
+        },
+        "patch": {
+          "source_sha256": "baa6ba4a38aa2fcb1dbef17e054740af504511ab0db6b1a6f498d2d18b753a23",
+          "executable_sha256": "e5b7101f545ee80bf981f61bea3e7fb675eaf62fab8ed86a23292120af1bff90",
+          "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+          "source_graph_sha256": "e6220394a6a8b940d28ad8a1c1fab691229d6a4032c84576fcdda8d9a5c684d6"
+        }
+      }
+    }
+  },
+  "mixed_language_scavenges": 16,
+  "kernel_language_inspector_sha256": "f6a28c681fbfa136779352e67c5c7de350b9dc8d98fbf8c656bdd3dd3b935def",
+  "fixture_language_versions_independently_asserted": true,
+  "fingerprints_and_artifact_hashes_verified": true,
+  "emitted_dart_sources_in_artifact_hashes": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "baseline_aot_unchanged": true,
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "mobile_mixed_language_execution_tested": false,
+  "remaining": [
+    "Observable class/type semantics and broader Flutter library lowering",
+    "Parts, SDK superclass, mixin/static/factory support",
+    "General Kernel optimization dependency proof",
+    "Changing an existing library language version still requires a new baseline",
+    "Mobile cold-start installation, signature verification and rollback",
+    "Real-device/performance acceptance and M3-M7 platform work"
+  ]
+}

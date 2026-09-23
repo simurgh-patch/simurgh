@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-09-21 15:18 +08:00",
+  "status": "m1-in-progress-not-accepted",
+  "implementation": "Automatic source AST dispatch instrumentation plus pinned upstream Dart AOT/dynamic-module bytecode runtime",
+  "platform": "macOS ARM64 host AOT; not Flutter/mobile integration",
+  "baseline_output": "calculate=207\ncaller=208\ncaught=Bad state: baseline\n",
+  "patched_output": "calculate=407\ncaller=408\ncaught=Bad state: patched\n",
+  "baseline_binary_unchanged": true,
+  "native_checks_passed": 7,
+  "observed_gc_scavenges": 21,
+  "evidence": {
+    "build": "output/m1-aot-20260921T070954Z-elxymfow/build.json",
+    "native_checks": "output/m1-aot-20260921T070954Z-elxymfow/native-checks/report.json",
+    "gc_build": "output/m1-aot-20260921T071400Z-svxkndg_/build.json",
+    "verification": "output/m1-verification.log"
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 28,
+    "flutter_widget_tests": 7,
+    "static_analysis": "passed"
+  },
+  "complete_runtime_implemented": false,
+  "m0_passed": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "not_implemented": [
+    "general Dart/Flutter AST and Kernel support",
+    "virtual dispatch and layout changes",
+    "general optimization-assumption invalidation",
+    "generics/closures/async/isolate coverage",
+    "Android/iOS mixed-runtime application bootstrap",
+    "signature chain and rollback",
+    "performance gates"
+  ],
+  "source_sha256": {
+    "compiler/bin/aot_patch.dart": "0291de7e112f7e869bf23afd7572432912c7019261054feea9612d8ba7052d59",
+    "scripts/aot_lab.py": "674255ff046f25b25a224957edf50fa4087c3283cd878b2389962ab27278809a",
+    "scripts/verify_aot_lab.py": "1a7310bf3b65cd6c10c8af7d028314e3dce55f332f7d7afb8c2bdde1625ea408",
+    "test/aot_compiler_test.py": "d62a6b63828d7576461f366856de84e2ead11d830079f96014d948b7b0ef45f8"
+  }
+}

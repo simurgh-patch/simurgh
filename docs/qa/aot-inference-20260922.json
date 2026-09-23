@@ -1,0 +1,135 @@
+{
+  "recorded_at": "2026-09-22 10:26 +08:00",
+  "scope": "Host ARM64 inferred top-level and instance state types",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021636Z-gq2hohd1/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021655Z-q5fznfpi/build.json",
+    "entities": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021713Z-5em0aezx/build.json",
+    "closures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021730Z-veph91vv/build.json",
+    "libraries": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021751Z-njj6q16f/build.json",
+    "classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021808Z-gbl6md8g/build.json",
+    "new_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021826Z-5mipsryd/build.json",
+    "accessors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021845Z-j1c1_rgw/build.json",
+    "parameters": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021902Z-pfg06gpy/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021920Z-50yq8t_h/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021937Z-22pv8678/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021956Z-w4300tbj/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T022014Z-ijh9pjhi/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T022033Z-nfl9k1w1/build.json",
+    "late_final": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T022052Z-7ro72w3x/build.json",
+    "inference": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T022112Z-uqg1qdsg/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260922T021636Z-gq2hohd1/native-checks/report.json",
+    "verification": "output/m1-inference-verification.log"
+  },
+  "compiler_sha256": "76bea580aa7967e4be8d3f3d279fda49f4bb5034d172fd928d5f560f4c690bc3",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "50c263075108b9eecb6c2c3c3813d54bbcb3d5724d4ef2da95c0d374165184ed",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093"
+    },
+    "artifacts": {
+      "dartaotruntime": "84d250ac3f5c42b7d8031d5d58e2b356e2a1be20f624b0e0cfb973e17ef089c7",
+      "gen_snapshot": "87111d2ec09526c36f7a792a2afde09e7088ad06d63294ea360c532a38b81ef8",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "inferred_globals": {
+    "shared": "int",
+    "changed": "String",
+    "other": "String",
+    "increment": "int",
+    "callback": "int Function(int)",
+    "choose": "T Function<T>(T, T)",
+    "held": "msbEntity_class_49e3ff94e0009746ea3e169c2829b452679dcb5f52ed8bd3e7b0a20151954437<int>"
+  },
+  "dependency_closure": {
+    "changed_globals": [
+      "changed",
+      "increment"
+    ],
+    "replaced_globals": [
+      "changed",
+      "held",
+      "increment"
+    ],
+    "replaced_classes": [
+      "Box"
+    ],
+    "module_only_functions": [
+      "Box.length",
+      "Box.run",
+      "defaultArg"
+    ],
+    "installed_functions": [
+      "add",
+      "describe",
+      "main",
+      "readHeld",
+      "update"
+    ]
+  },
+  "outputs": {
+    "baseline": "state=1:1\ntype=1:same\nstored=3\ndefault=2\ngeneric=3:a\nfield=1:7\n",
+    "patched": "state=10:10\ntype=word:same\nstored=12\ndefault=4\ngeneric=3:a\nfield=4:7\n"
+  },
+  "retained_aot_functions": [
+    "stableRead",
+    "viaStored"
+  ],
+  "checks": {
+    "compiler_analysis": "passed",
+    "full_verification": "passed",
+    "dart_tests": 16,
+    "python_tests": 68,
+    "flutter_widget_tests": 7,
+    "native_checks": 73
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match": true,
+  "exact_build_run_outputs_match_source_reference": true,
+  "baseline_aot_unchanged": true,
+  "inference_source_aot_reference_matches": true,
+  "inference_source_reference_artifacts": {
+    "baseline": {
+      "source_sha256": "11dbe5f3fa1ca351b4578dd238d92f5b70dd8b8d8fb63477d87b19415d86cd0b",
+      "executable_sha256": "fece88f55b02bcdd5f4bcaca1f194fc5a13c9eb02ceff1c0d0b30c1d47f8a5ee",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    },
+    "patch": {
+      "source_sha256": "0a9fce0e2f1ee00539da58c9dbeeb69c5998adbd42c023a7347ec5d600770314",
+      "executable_sha256": "43a9effba0f157a558c497c1b2d664b5fb923b05187953cb5a31e0d3b23b0dfa",
+      "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19"
+    }
+  },
+  "mobile_build": {
+    "manifest": "output/engine-builds/20260922T015928Z-gqajtfyy/build.json",
+    "state": "building",
+    "last_observed_step": {
+      "command": [
+        "/Applications/project/test2/my-shorebird/.engine-workspace/engine/third_party/ninja/ninja",
+        "-j2",
+        "-C",
+        "out/android_release_arm64_mixed"
+      ],
+      "cwd": "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src",
+      "log": "01-android_release_arm64_mixed.log",
+      "returncode": null
+    },
+    "last_log_line": "[7585/8222] CXX obj/flutter/shell/platform/android/flutter_shell_native_src.platform_message_handler_android.o"
+  },
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "production_patch": false,
+  "performance_measured": false,
+  "remaining": [
+    "Inferred function/method signatures, nullable signatures and unsupported SDK types",
+    "General Flutter/Kernel and optimization dependency proof",
+    "Broader SDK/package linking",
+    "Android/iOS mixed engine completion and startup integration",
+    "Signing, rollback and platform service",
+    "True-device and performance acceptance"
+  ]
+}
