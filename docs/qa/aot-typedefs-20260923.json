@@ -1,0 +1,171 @@
+{
+  "recorded_at": "2026-09-23 14:18 +08:00",
+  "scope": "Modern/legacy type aliases, constructor identity, async signatures and dependency relinking on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055704Z-ikutrl0n/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055733Z-wbm9o5av/build.json",
+    "typedefs": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055802Z-_cgq27ig/build.json",
+    "typedef_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055833Z-mu92qn60/build.json",
+    "typedef_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055903Z-m9dv8xvy/build.json",
+    "typedef_ancestors": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055935Z-4w5r9d5d/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060006Z-djxn5drk/build.json",
+    "named_mixin_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060038Z-3pj1bit7/build.json",
+    "named_mixin_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060109Z-j_6n3op8/build.json",
+    "named_mixin_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060142Z-qkua93nw/build.json",
+    "private_interfaces": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060219Z-k8g7ghch/build.json",
+    "generics": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060253Z-b9dsxx1d/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060327Z-a34u4ty5/build.json",
+    "factories": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060402Z-agoga_zf/build.json",
+    "parts": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060435Z-2ok6d3st/build.json",
+    "static": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060510Z-0d1efweu/build.json",
+    "globals": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060546Z-_j5fgc99/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060624Z-smehwqy3/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T060658Z-xwwu896_/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T055704Z-ikutrl0n/native-checks/report.json",
+    "verification": "output/m1-typedefs-verification.log",
+    "native_log": "output/m1-typedefs-native.log",
+    "compiler_analysis": "output/m1-typedefs-analysis.log",
+    "format": "output/m1-typedefs-format.log",
+    "input_hashes": "output/m1-typedefs-start-hashes.json",
+    "process_results": "output/m1-typedefs-process-results.json"
+  },
+  "compiler_sha256": "924f5bd02aea5415e3ba424ed1f9cd63962349a14bb674e9aa1b625a64bb0d1d",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 122,
+    "flutter_widget_tests": 7,
+    "native_checks": 130,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "typedefs": {
+      "baseline": "delayed:4\nstatic:3:3:3\n7:5:6:Box<int>:7:2.5:8\ntrue:true:true:true:true\nleft:2:String:int:right:3:String:int:9:10:11\nadded:box:12:Box<int>\ngc:box:12\n",
+      "patched": "delayed:4\nstatic:4:4:4\n17:5:6:Box<int>:7:2.5:8\ntrue:true:true:true:true\nleft:2:String:int:right:3:String:int:9:10:12\nadded:patched:12:Added\ngc:patched:12\n"
+    },
+    "typedef_relink": {
+      "baseline": "left:3:7:left:4\ntypes:true:true:Holder\ngc:left:4\n",
+      "patched": "right:3:five!:right:4\ntypes:false:false:Holder\ngc:right:4\n"
+    },
+    "typedef_multilang": {
+      "baseline": "type:_Hidden<int>\nold:7:old:8:old:9\n4:old:6:true:5\n",
+      "patched": "type:Added\nold:7:old:8:old:9\n4:old:6:true:5\n"
+    },
+    "typedef_ancestors": {
+      "baseline": "4:3\n",
+      "patched": "4:8\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "typedefs": {
+      "baseline": {
+        "source_sha256": "f22dc4cf9c678b91b14451c170656f63f6ab8f188a2e074366e5f13cbc9489a8",
+        "executable_sha256": "9ac51fb7bd179f8726520c9e4c9810fe44ff414273b711cbc23344094c112704",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "db9553c38b38ee5c0fe009db60f9cb37f622fa43e17209bd1604edfe5d6a3575"
+      },
+      "patch": {
+        "source_sha256": "31f36b0301f791f06466c7de07ae19a9749ad53865086c3229931f3f3784e13a",
+        "executable_sha256": "6d371fdd28dbd7f46e89ed8893361a4f540e769052e7605a8beded00ba6dd24b",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "53dab3778245b973dd28dc18d95f66b19807778e5d837becf66f97ab920fe545"
+      }
+    },
+    "typedef_relink": {
+      "baseline": {
+        "source_sha256": "13edf2a0c8e360f303bbbbb68befa7649ad94e7c83c95cbb8208204b8d287b87",
+        "executable_sha256": "8da476a50dd8323832b5f34c403c8d2daf3a4025802b31ba695f90ee5ad820c1",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "691af736950952667c696d11708508f528e2628c280a3b02cf462cf2996261e7"
+      },
+      "patch": {
+        "source_sha256": "e2c4ebdb6cb4027210678975c81c10a5b6feb6cadeb6bde6a2dec10ce7222ba2",
+        "executable_sha256": "26ed2e4637a21cebe84b74fca90719f77e4870a0ef720c2539c49eabf77dec6c",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "019b76db1927f3a49a11d23435f5aca2742222a8ae8d66b6a71d9be9f2a9d750"
+      }
+    },
+    "typedef_multilang": {
+      "baseline": {
+        "source_sha256": "ad42dd961f0b1b0d6127a25bf1d574c5fae6b85a133d93244ccd9c823fc9fa0e",
+        "executable_sha256": "9929609edc57bc533e81cf857da32adf71d2902b59708b03047b6d34b572f88c",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "a4df11cfa8f0009ba024677874ad85661c0e84fd199018e8dba560b81caa79d8"
+      },
+      "patch": {
+        "source_sha256": "16c746888da0d01ec9264659d3a7b8adc9518d7de1dabb7aadd3c4b87cad18b8",
+        "executable_sha256": "d7ec0da1c8072b4fc84a4872a42ae7c693f6d5a4663f014c1011242a74b5b475",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "9b5f6de2e108c8defa04f7f3a5864e2f0109d37b96ec4ff48680304755183e63"
+      }
+    },
+    "typedef_ancestors": {
+      "baseline": {
+        "source_sha256": "fb8a9299881c0dac033de8130b0cf9d1511402f36ccf29483c532f0b38965bc1",
+        "executable_sha256": "61648e92705694c6ed67e483002c5fe6a03035485274d93bddc33f66bfc33216",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "cc2f55fd782d5407735a32a215ec090971cf28c1afdd8e1a1c06e76e5cb9c831"
+      },
+      "patch": {
+        "source_sha256": "4f01746507b2360221c8e131261fcc7ba4a2cba547b2d94646370294f127fd2a",
+        "executable_sha256": "fa46307ad1a5a554d25faae04f71e96454a99be5b064cf4acc10b8bbd63249ee",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "5c297e0e71320cd6f0dd48d99ac6303ab36dd892df067e6a84ff3fe2530e2fa7"
+      }
+    }
+  },
+  "typedef_scavenges": 16,
+  "typedef_relink_scavenges": 16,
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_324231a01c24523372bdabbbfd09870a21d74699d6ce3a35bcce9929783a4120.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_09f82c00976cd8346c469d532cb9a6791c4eef537f11c11c69be951bc79c2219.dart": "3.12"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_09f82c00976cd8346c469d532cb9a6791c4eef537f11c11c69be951bc79c2219.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4",
+    "unit_324231a01c24523372bdabbbfd09870a21d74699d6ce3a35bcce9929783a4120.dart": "3.12"
+  },
+  "patch_kernel_sha256": "8d8a66a6f8976fc840486c5f3ed54a0f4af4d0883fdaa3c9fcdbb4e2e52ed936",
+  "notes": [
+    "Typedef targets are expanded by resolved identity, while declarations and generic binders preserve native constructor forwarding and tear-off inference.",
+    "Native checks cover modern/legacy function aliases, nested generic functions, nullable aliases, partial/reordered generic arguments, const/type/constructor identity, SDK aliases, private constructors and static member access.",
+    "Async alias acceptance uses the resolved return type, including Identity<Future<T>>; void-async remains outside the accepted subset.",
+    "Changed alias targets and relocated underlying classes invalidate typed functions, globals and classes; incompatible functions remain module-local. Typedef removal does not delete a runtime class.",
+    "Hierarchy aliases expand to real ancestors for closed-class checks. Parts/re-exports and same-name aliases retain library identity.",
+    "Fresh baseline/patch Kernel inspections verify actual 3.0/3.4/3.12 versions.",
+    "Initial tests had a wrong alias count and incorrectly expected static member access through aliases to fail. These assertions were corrected and static alias access was added to native positive coverage.",
+    "The first multilang fixture omitted its part language override and was rejected by original analysis; corrected fixtures passed.",
+    "Historical full native suite was not rerun; this report covers nineteen rebuilt groups."
+  ],
+  "limitations": [
+    "Records and other unsupported alias targets, annotated declarations and unlinked SDK/native code remain outside the accepted subset.",
+    "Full Flutter/mobile cold start, signing/rollback and physical-device performance remain incomplete. Alias relinking cost is not benchmarked."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

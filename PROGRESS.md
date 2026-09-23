@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-23 13:37 +08:00
+最后实质更新：2026-09-23 14:18 +08:00
 
 ## 当前状态
 
@@ -9,6 +9,8 @@
 M0 基础工具已落地；用户已授权忽略空间检查，完整源码与依赖已同步成功，用户已安装Metal，宿主/Android/iOS Release源码编译已成功，独立样例双端Release接入编译和包内引擎标识核对已通过，尚未完成真机验证；M1已开始，M2–M7未开始。已实现宿主ARM64受限AOT/字节码替换实验，完整Dart/Flutter补丁编译器、移动端混合运行时、更新器、服务和控制台未完成。所有实现和独立样例均在 simurgh 项目；不修改 OA 管理端或 oa-app。
 
 ## 已实现
+
+- 最新M1类型别名：支持现代/旧式typedef、原生构造器tear-off/泛型绑定、函数/nullable/SDK/异步别名，目标类型及底层类变化重连函数/存储/类；保留封闭祖先、parts和跨库语义。145项普通测试、130项专项原生检查及19组当前指纹/源码/制品核对通过，原始源码AOT对照、GC和实际3.0/3.4/3.12 Kernel版本已验。证据docs/qa/aot-typedefs-20260923.json。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
 - 最新M1命名混入应用：保留真实别名声明与构造器转发，支持泛型/多层/命名私有构造器/tear-off/const身份/SDK父类；必要接口桩由内部mixin提供，保持noSuchMethod及私有错误语义。139项普通测试、130项专项原生检查及19组当前指纹/源码/制品核对通过，原始源码AOT对照、GC和实际3.0/3.4/3.12 Kernel版本已验。证据docs/qa/aot-named-mixins-20260923.json。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
@@ -212,3 +214,9 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 - 2026-09-23 13:37 +08:00：完成命名混入应用：ClassTypeAlias保留原始解析身份和声明，构造器由CFE真实转发；映射沿父构造器链的私有命名，别名不重复生成super桥接，必要接口桥接/私有桩放入自动辅助mixin。泛型/多层别名、可选命名默认值、私有/命名构造器tear-off、const身份与SDK ListBase应用均与独立原始源码AOT一致。新增Added通过旧consume/churn消费，经历16次Scavenge且runtimeType正确；父默认值2/3改20/30时Base/Label/Named/Again/Child及typed消费者正确重连，另有16次GC验证。implements/noSuchMethod与外库私有错误保留，解除接口义务时5个无引用辅助类退役；非法private/factory转发、on约束和泛型界限由原始分析拒绝。基线3.0/3.12加补丁3.4新库的实际Kernel均已读回验证。初次定向测试从patch manifest误读语言版本失败，改为source_graph后通过。最终verify.sh为16 Dart+116 Python+7 Flutter共139项，130项原生检查及编译器分析/格式通过，19组当前指纹/源码/制品核对；未重跑历史原生全集。证据docs/qa/aot-named-mixins-20260923.json。完整Flutter/移动冷启动/签名回退/性能真机仍未验收，生产门禁关闭；下一步继续真实Flutter必需声明与类型语义。本轮按约定commit正文包含Important Changes并推送main，实际交付状态以Git核对。
 
   - 后续类型别名预研仅在output/typedef-inspection：固定SDK原始源码AOT通过现代/旧式函数typedef、泛型构造器tear-off和类型身份样例；当前编译器仍明确拒绝typedef声明。analyzer探测发现构造器引用NamedType.type可为空，且原始泛型构造器tear-off与裸类型字面量的实例化语义不同，下一轮不能简单统一展开。记录NOTES.md及原始构建/输出/拒绝日志；未修改主线或计入已支持能力。
+
+- 2026-09-23 13:57 +08:00：类型别名主线检查点：新增现代/旧式typedef规范化与逐库声明，保留原生构造器tear-off/泛型绑定；别名目标及其底层类变化加入依赖重连，层次别名展开后检查封闭类边界。已加入4组正式样例、6项编译器回归；初次定向测试误计别名数量并误判Dart不允许别名访问静态成员，失败保留，修正断言并加入静态成员正向样例后6项通过。跨版本样例首次part版本标记不一致被原始分析拒绝，修复样例后原生探索通过；新增Identity<Future<T>>异步返回基于解析类型判断，最终主样例探索已通过。最终编译器分析/20文件格式通过；冻结哈希output/m1-typedefs-start-hashes.json。完整verify.sh正在session5733运行，19组原生回归在session50293运行，日志output/m1-typedefs-verification.log和output/m1-typedefs-native.log；尚未完整验收或提交。下一步等待同一进程结束，核对原始AOT/GC/Kernel/当前指纹与制品并归档，再按约定commit Important Changes并推送main。未修改OA；完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
+
+- 2026-09-23 14:18 +08:00：完成typedef类型别名：原始解析检查隐私/泛型边界，规范化别名目标并保留声明/泛型绑定，由CFE处理构造器调用和tear-off、raw推断、部分绑定及参数重排；现代/旧式函数别名、嵌套泛型、nullable、SDK和静态成员与原始源码AOT一致。异步返回按解析类型判断，Identity<Future<T>>可用；main返回规范化，void-async仍拒绝。补丁透明重声明别名，保留AOT类身份；目标类型或底层类变化时传播至签名/全局存储/类，不把新签名安装进旧槽；删除typedef不删除底层类。层次别名展开为真实祖先，不能绕过封闭类边界。跨库同名、re-export、part私有构造器与3.0/3.4/3.12实际Kernel版本通过。新对象及重连存储分别跨16和16次Scavenge仍正确。初次定向误计别名数量、误判别名静态访问；修正并增加正向原生覆盖后通过；跨版本part遗漏版本标记的失败也保留。最终verify.sh为16 Dart+122 Python+7 Flutter共145项，130项原生检查及编译器分析/格式通过，19组当前指纹/源码/制品核对；未重跑历史原生全集。证据docs/qa/aot-typedefs-20260923.json。Record/注解及完整Flutter/移动冷启动/签名回退/性能真机仍未验收，生产门禁关闭；下一步继续真实Flutter必需声明和类型语义。本轮按约定commit正文包含Important Changes并推送main，实际交付状态以Git核对。
+
+  - 后续record预研位于output/record-compiler及output/record-inspection，未合入主线：副本新增RecordType渲染和递归字段类型校验，位置/命名字段、空/单字段、nullable、泛型父类返回及解构样例混合执行与独立原始源码AOT双侧完全一致；仅make/Box.label安装补丁、Added新类由旧consume读取，跨16次Scavenge仍正确。证据RESULT.json和NOTES.md。首次副本pubspec触发的包配置重写导致Kernel缺args/kernel/vm，已保存失败配置和日志，移开副本pubspec/lock并恢复固定源码配置后在新目录重建通过。下一轮需补record形状变化、函数字段、super字段、异步和跨版本等正式回归，再合入；不计为当前已支持。

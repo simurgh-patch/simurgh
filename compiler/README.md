@@ -668,3 +668,29 @@ inspects both baseline and freshly compiled patch Kernel versions, compares
 original-source AOT output, and checks old AOT consumers and actual GC. Factory
 constructors are not forwarded by Dart aliases; invalid private access, mixin
 constraints, and generic bounds continue to fail original-source analysis.
+
+### Type aliases (`typedef`)
+
+Modern and legacy function typedefs and aliases of supported class/SDK types are
+linked by resolved library identity. Targets are normalized while preserving
+alias declarations and generic binders. Dart's frontend handles constructor
+invocations/tear-offs, raw generic inference, partial binding and reordered type
+arguments; aliases do not acquire a separate runtime class identity. Static
+member access, private constructor access and generic bounds follow original
+source analysis. Nullable and nested generic function aliases are covered.
+
+Each patch emits its own transparent typedef declarations, referring to retained
+AOT classes where appropriate. Changed targets or relocated underlying classes
+propagate through typed functions, globals and class layouts. Incompatible
+functions remain module-local instead of entering old AOT slots. Removing an
+unused typedef does not remove its underlying class. Class hierarchy aliases
+are expanded to real ancestors before checking closed-class restrictions.
+
+The typedef fixtures compare original-source AOT against mixed execution for
+callbacks, async return aliases (including identity aliases), static members,
+const/type/constructor identity, patch-added objects and GC, changed target types
+and storage, parts/re-exports/same-name libraries, SDK ancestry and closed class
+relinking. Baseline and patch Kernel inspection checks 3.0/3.4/3.12 libraries.
+Aliases do not enable unsupported target types such as records, annotated
+aliases, or unlinked SDK/native declarations. Full Flutter and mobile acceptance
+remain outstanding.

@@ -54,6 +54,7 @@ bool isTypeParameter(NamedType type) {
       GenericFunctionType() => scope.typeParameters,
       ClassDeclaration() => scope.namePart.typeParameters,
       ClassTypeAlias() => scope.typeParameters,
+      GenericTypeAlias() => scope.typeParameters,
       MixinDeclaration() => scope.typeParameters,
       _ => null,
     };
@@ -95,7 +96,8 @@ bool supportedType(TypeAnnotation? type, {bool allowVoid = true}) {
     }
     return (primitiveTypes.contains(type.name.lexeme) &&
             (allowVoid || type.toSource() != 'void')) ||
-        (type.name.lexeme.startsWith('${entityPrefix}class_') &&
+        ((type.name.lexeme.startsWith('${entityPrefix}class_') ||
+                type.name.lexeme.startsWith('${entityPrefix}alias_')) &&
             (type.typeArguments?.arguments.every(
                   (argument) => supportedType(argument, allowVoid: false),
                 ) ??
@@ -140,7 +142,14 @@ class Program {
     if (unit.directives.map((d) => d.toSource()).join('\n') != sdkImports) {
       reject('Expected canonical linked SDK imports');
     }
+    for (final declaration in unit.declarations.whereType<GenericTypeAlias>()) {
+      if (!supportedTypeParameters(declaration.typeParameters) ||
+          !supportedType(declaration.type))
+        reject('Unsupported type alias target or bounds');
+      aliases[declaration.name.lexeme] = declaration;
+    }
     for (final declaration in unit.declarations) {
+      if (declaration is GenericTypeAlias) continue;
       if (declaration is ClassDeclaration ||
           declaration is ClassTypeAlias ||
           declaration is MixinDeclaration) {
@@ -190,7 +199,8 @@ class Program {
       }
       if (fn.body.isAsynchronous &&
           !isFutureType(declaration.returnType) &&
-          declaration.returnType!.toSource() != 'dynamic') {
+          declaration.returnType!.toSource() != 'dynamic' &&
+          (entities[name] as Map?)?['async_return_supported'] != true) {
         reject('Async declarations require a Future or dynamic return type');
       }
       validateParameters(fn.parameters!);
@@ -253,6 +263,7 @@ class Program {
           as Map<String, dynamic>;
   String entityId(String name) =>
       (entities[name] as Map<String, dynamic>)['entity'] as String;
+  final aliases = <String, GenericTypeAlias>{};
   final functions = <String, FunctionDeclaration>{};
   final classes = <String, CompilationUnitMember>{};
   final globals = <String, TopLevelVariableDeclaration>{};
@@ -273,6 +284,10 @@ class Program {
     'toolchain_sha256': toolchainHash,
     'compiler_sha256': compilerHash,
     'baseline_fingerprint': baselineKey(identity),
+    'type_aliases': {
+      for (final entry in aliases.entries)
+        entry.key: hash(entry.value.toSource()),
+    },
     'global_declarations': {
       for (final entry in globals.entries)
         entry.key: hash(entry.value.toSource()),
@@ -524,6 +539,8 @@ void writeLinkedSources(
             ? name.substring('${prefix}Patch_'.length)
             : null;
       }
+    } else if (declaration is GenericTypeAlias) {
+      name = declaration.name.lexeme;
     } else if (declaration is ClassDeclaration ||
         declaration is ClassTypeAlias ||
         declaration is MixinDeclaration) {
@@ -556,6 +573,9 @@ void baseline(Program program, Directory output) {
   final generated = StringBuffer(
     '// @dart=${program.languageVersion}\n// Generated M1 experimental AOT baseline.\n$sdkImports\n',
   );
+  for (final declaration in program.aliases.values) {
+    generated.writeln(declaration.toSource());
+  }
   for (final declaration in program.globals.values.toSet()) {
     generated.writeln(declaration.toSource());
   }
@@ -785,6 +805,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       )
       .toSet();
   for (final declaration in <AstNode>[
+    ...program.aliases.values,
     ...program.classes.values,
     ...program.functions.values,
     ...program.globals.values,
@@ -815,6 +836,20 @@ Future<void> patch(Program program, Directory base, Directory output) async {
         name,
   };
   final structuralChanges = replacedClasses.toList()..sort();
+  final originalAliases = original.aliases.keys.toSet();
+  final removedAliases = originalAliases.difference(
+    program.aliases.keys.toSet(),
+  );
+  final replacedAliases = <String>{
+    ...removedAliases,
+    for (final name in originalAliases.intersection(
+      program.aliases.keys.toSet(),
+    ))
+      if (original.aliases[name]!.toSource() !=
+          program.aliases[name]!.toSource())
+        name,
+  };
+
   final moduleOnly = <String>{};
   final invalidated = <String>{};
   // A changed class gets a fresh module-local identity. Rebind every typed
@@ -823,6 +858,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
   var grew = true;
   while (grew) {
     final size =
+        replacedAliases.length +
         replacedClasses.length +
         replacedGlobals.length +
         moduleOnly.length +
@@ -830,6 +866,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
     for (final name in program.functions.keys) {
       final current = program.functions[name]!;
       final signature = signatureReferences(current, {
+        ...replacedAliases,
         ...replacedClasses,
         ...replacedGlobals,
         ...moduleOnly,
@@ -837,6 +874,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       if (before.contains(name)) {
         signature.addAll(
           signatureReferences(original.functions[name]!, {
+            ...replacedAliases,
             ...replacedClasses,
             ...replacedGlobals,
             ...moduleOnly,
@@ -852,15 +890,24 @@ Future<void> patch(Program program, Directory base, Directory output) async {
         moduleOnly.add(name);
       }
       if (referencesTo(current, {
+        ...replacedAliases,
         ...replacedClasses,
         ...replacedGlobals,
         ...moduleOnly,
       }).isNotEmpty)
         invalidated.add(name);
     }
+    for (final entry in program.aliases.entries) {
+      if (referencesTo(entry.value, {
+        ...replacedAliases,
+        ...replacedClasses,
+      }).isNotEmpty)
+        replacedAliases.add(entry.key);
+    }
     for (final name in originalGlobals) {
       final declaration = program.globals[name]!;
       if (referencesTo(declaration, {
+            ...replacedAliases,
             ...replacedClasses,
             ...replacedGlobals,
             ...moduleOnly,
@@ -875,6 +922,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
     }
     for (final name in originalClasses) {
       if (referencesTo(program.classes[name]!, {
+        ...replacedAliases,
         ...replacedClasses,
         ...replacedGlobals,
         ...moduleOnly,
@@ -915,7 +963,8 @@ Future<void> patch(Program program, Directory base, Directory output) async {
     }
     grew =
         size !=
-        replacedClasses.length +
+        replacedAliases.length +
+            replacedClasses.length +
             replacedGlobals.length +
             moduleOnly.length +
             invalidated.length;
@@ -984,6 +1033,19 @@ Future<void> patch(Program program, Directory base, Directory output) async {
   final source = StringBuffer(
     '// @dart=${program.languageVersion}\n$sdkImports\nimport ${jsonEncode(File('${base.path}/app.dart').absolute.uri.toString())} as ${prefix}Baseline;\n',
   );
+  // Typedefs have no runtime identity. Each module re-declares its aliases,
+  // qualifying retained classes while keeping generic constructor forwarding.
+  for (final declaration in program.aliases.values) {
+    source.writeln(
+      nodeText(
+        program,
+        declaration,
+        baselineNames: baselineFunctions,
+        baselineClasses: baselineClasses,
+        baselineGlobals: baselineGlobals,
+      ),
+    );
+  }
   for (final declaration
       in moduleGlobals.map((name) => program.globals[name]!).toSet()) {
     source.writeln(
@@ -1043,6 +1105,11 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       'changed_functions': changed,
       'added_functions': added,
       'added_classes': addedClasses,
+      'changed_type_aliases': replacedAliases.toList()..sort(),
+      'added_type_aliases':
+          program.aliases.keys.toSet().difference(originalAliases).toList()
+            ..sort(),
+      'removed_type_aliases': removedAliases.toList()..sort(),
       'changed_globals': changedGlobals,
       'replaced_globals': replacedGlobals.toList()..sort(),
       'added_globals': addedGlobals.toList()..sort(),

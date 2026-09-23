@@ -1074,6 +1074,68 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
 
+    def test_typedefs_keep_aot_consumers_and_native_alias_identity(self):
+        base, patch, manifest = self.named_mixin_pair('typedefs')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['added_type_aliases']), ['AddedAlias'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Box.bump', 'Box.label', 'add', 'later', 'make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(manifest['changed_type_aliases'], [])
+        original = json.loads((base / 'manifest.json').read_text())
+        self.assertEqual(len(original['type_aliases']), 14)
+
+    def test_typedef_target_changes_relink_typed_storage_and_functions(self):
+        base, patch, manifest = self.named_mixin_pair('typedef_relink')
+        original = json.loads((base / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Holder'])
+        self.assertEqual(self.names(manifest, manifest['replaced_globals']), ['callback', 'selected'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main', 'make'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['Holder.label', 'Holder.toString', 'consume', 'transform', 'typed'])
+        self.assertEqual(self.names(original, manifest['removed_type_aliases']), ['Removed'])
+        self.assertEqual(self.names(original, manifest['changed_type_aliases']), ['Chosen', 'Handler', 'Removed', 'Value'])
+
+    def test_typedef_parts_exports_and_language_versions(self):
+        base, patch, manifest = self.named_mixin_pair('typedef_multilang')
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+        aliases = [v for v in graph['entities'].values() if v.get('kind') == 'typedef']
+        self.assertEqual(sorted(v['library'] for v in aliases if v['name'] == 'Public'), ['app:legacy.dart', 'app:same.dart'])
+
+    def test_typedef_ancestors_preserve_closed_class_relinking(self):
+        base, patch, manifest = self.named_mixin_pair('typedef_ancestors')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Child', 'Parent'])
+        self.assertEqual(self.names(manifest, manifest['changed_type_aliases']), ['Children', 'ParentAlias'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Numbers.[]', 'main'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['Child.twice', 'Parent.read', 'consume', 'make'])
+
+    def test_typedef_cannot_hide_new_closed_baseline_ancestor(self):
+        base = self.root / 'alias-closed-base'
+        common = 'final class B {} typedef Alias = B; '
+        result = self.command('baseline', self.source('closed.dart', common + 'void main() { print(B()); }'), base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', self.source('closed.dart', common + 'final class C extends Alias {} void main() { print(C()); }'), base, self.root / 'alias-closed-patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('New class cannot extend a closed baseline class', result.stderr)
+
+    def test_typedef_source_privacy_and_bounds_are_checked(self):
+        self.source('alias_library.dart', 'class _Hidden { _Hidden(); _Hidden._private(); } typedef Public = _Hidden;')
+        cases = {
+            'private': "import 'alias_library.dart'; void main() { Public._private(); }",
+            'bound': 'class B<T extends num> {} typedef A<T extends num> = B<T>; void main() { A<String>(); }',
+            'cycle': 'typedef A = B; typedef B = A; void main() {}',
+            'function_constructor': 'typedef F = int Function(); void main() { F(); }',
+            'hidden': "import 'alias_library.dart' hide Public; void main() { Public(); }",
+        }
+        for name, source in cases.items():
+            result = self.command('baseline', self.source('alias-' + name + '.dart', source), self.root / ('alias-' + name + '-out'))
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('Static source errors', result.stderr)
+
     def named_mixin_pair(self, kind):
         base, patch = self.root / (kind + '-base'), self.root / (kind + '-patch')
         for action, side, args in [('baseline', 'baseline', [base]), ('patch', 'patch', [base, patch])]:

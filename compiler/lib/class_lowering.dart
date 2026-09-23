@@ -369,6 +369,10 @@ class _Classes {
               'entity': id,
               'kind': '${member.isStatic ? 'static' : 'instance'}-$kind',
               'owner': owner.symbol,
+              if (member.body.isAsynchronous)
+                'async_return_supported': supportsAsyncReturn(
+                  element.returnType,
+                ),
             };
           }
         } else {

@@ -20,6 +20,12 @@ import 'package:yaml/yaml.dart';
 
 part 'class_lowering.dart';
 
+bool supportsAsyncReturn(DartType type) =>
+    type is DynamicType ||
+    (type is InterfaceType &&
+        type.element.name == 'Future' &&
+        type.element.library.uri.toString() == 'dart:async');
+
 // Shared class, mixin and named application view, preserving resolved nodes.
 extension ProgramTypeDeclaration on CompilationUnitMember {
   Token get typeName => switch (this) {
@@ -31,6 +37,8 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
   TypeParameterList? get typeParameters => switch (this) {
     ClassDeclaration c => c.namePart.typeParameters,
     ClassTypeAlias c => c.typeParameters,
+    GenericTypeAlias a => a.typeParameters,
+    FunctionTypeAlias a => a.typeParameters,
     MixinDeclaration m => m.typeParameters,
     _ => null,
   };
@@ -436,6 +444,24 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitNamedType(NamedType node) {
+    final parent = node.parent;
+    if (node.element is TypeAliasElement &&
+        node.type != null &&
+        classes != null &&
+        (parent is ExtendsClause ||
+            parent is WithClause ||
+            parent is ImplementsClause ||
+            parent is MixinOnClause ||
+            (parent is ClassTypeAlias && parent.superclass == node))) {
+      // Class compatibility checks must see the real ancestor, including closed
+      // class modifiers. A typedef cannot hide an ancestor across modules.
+      replace(
+        node.offset,
+        node.end,
+        classes!.typeText(node.type!, names: entities),
+      );
+      return;
+    }
     final symbol = entities[node.element];
     if (symbol != null) replace(node.offset, node.name.end, symbol);
     node.typeArguments?.accept(this);
@@ -661,6 +687,8 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (declaration is! FunctionDeclaration &&
           declaration is! ClassDeclaration &&
           declaration is! ClassTypeAlias &&
+          declaration is! GenericTypeAlias &&
+          declaration is! FunctionTypeAlias &&
           declaration is! MixinDeclaration &&
           declaration is! TopLevelVariableDeclaration) {
         _reject(
@@ -834,6 +862,32 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         classes.register(library, declaration);
       }
     }
+    final aliases = <(_Library, CompilationUnitMember, TypeAliasElement)>[];
+    for (final library in sorted) {
+      for (final declaration in resolved[library.uri]!.unit.declarations) {
+        if (declaration is! GenericTypeAlias &&
+            declaration is! FunctionTypeAlias)
+          continue;
+        if (declaration.metadata.isNotEmpty)
+          _reject('Annotated type aliases are not implemented');
+        final element =
+            declaration.declaredFragment!.element as TypeAliasElement;
+        final id = _hash('${library.ownerUri}::typedef::${element.name}');
+        final symbol = '${entityPrefix}alias_$id';
+        entities[element] = symbol;
+        for (var index = 0; index < element.typeParameters.length; index++) {
+          entities[element.typeParameters[index]] =
+              '${entityPrefix}type_${_hash('$id::$index')}';
+        }
+        records[symbol] = {
+          'library': library.ownerUri,
+          'name': element.name,
+          'entity': id,
+          'kind': 'typedef',
+        };
+        aliases.add((library, declaration, element));
+      }
+    }
     for (final library in sorted) {
       for (final declaration
           in resolved[library.uri]!.unit.declarations
@@ -851,6 +905,8 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
           'library': library.ownerUri,
           'name': name,
           'entity': id,
+          if (declaration.functionExpression.body.isAsynchronous)
+            'async_return_supported': supportsAsyncReturn(element.returnType),
         };
       }
     }
@@ -880,6 +936,24 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     classes.prepare();
     classes.prepareInterfaceBridges();
     final source = StringBuffer('// @dart=$languageVersion\n$sdkImports\n');
+    // Expand the target type, but retain the alias binder and declaration.
+    // Raw constructor tear-offs must remain generic rather than instantiate to bounds.
+    for (final (library, declaration, element) in aliases) {
+      final visitor = _References(
+        entities,
+        classes: classes,
+        libraryUri: library.ownerUri,
+      );
+      final parameters = declaration.typeParameters;
+      parameters?.accept(visitor);
+      final generics = parameters == null
+          ? ''
+          : _rewrite(library.source, parameters, visitor.edits);
+      source.writeln(
+        'typedef ${entities[element]}$generics = ${classes.typeText(element.aliasedType)};',
+      );
+    }
+
     for (final library in sorted) {
       for (final declaration
           in resolved[library.uri]!.unit.declarations
@@ -890,7 +964,15 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
           classes: classes,
           libraryUri: library.ownerUri,
         );
-        declaration.returnType?.accept(visitor);
+        if (symbol == 'main' && declaration.returnType != null) {
+          visitor.replace(
+            declaration.returnType!.offset,
+            declaration.returnType!.end,
+            classes.typeText(declaration.declaredFragment!.element.returnType),
+          );
+        } else {
+          declaration.returnType?.accept(visitor);
+        }
         declaration.functionExpression.accept(visitor);
         final edits = [
           ...visitor.edits,
