@@ -108,6 +108,21 @@ class _Classes {
           : '<${type.typeArguments.map((t) => typeText(t, names: symbols)).join(', ')}>';
       return '$name$arguments$suffix';
     }
+    if (type is RecordType) {
+      final fields = type.positionalFields
+          .map((f) => typeText(f.type, names: symbols))
+          .toList();
+      if (type.namedFields.isNotEmpty) {
+        fields.add(
+          '{${type.namedFields.map((f) => '${typeText(f.type, names: symbols)} ${f.name}').join(', ')}}',
+        );
+      }
+      final comma =
+          type.positionalFields.length == 1 && type.namedFields.isEmpty
+          ? ','
+          : '';
+      return '(${fields.join(', ')}$comma)$suffix';
+    }
     if (type is FunctionType) {
       final required = <String>[];
       final optional = <String>[];

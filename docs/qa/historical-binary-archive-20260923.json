@@ -1,0 +1,815 @@
+{
+  "recorded_at": "2026-09-23T15:02:42.801255+08:00",
+  "scope": "Local disk maintenance: lossless archives of generated binary artifacts from completed native experiments before 2026-09-23",
+  "summary": {
+    "runs": [
+      "output/m1-aot-20260921T070954Z-elxymfow",
+      "output/m1-aot-20260921T071400Z-svxkndg_",
+      "output/m1-aot-20260921T072519Z-2ff059wx",
+      "output/m1-aot-20260921T072737Z-08pvimqb",
+      "output/m1-aot-20260921T073024Z-bfdz5r7p",
+      "output/m1-aot-20260921T073118Z-htshcg2t",
+      "output/m1-aot-20260921T073134Z-npfzhhqf",
+      "output/m1-aot-20260921T073150Z-j_pbb445",
+      "output/m1-aot-20260921T073326Z-1jd2aw6q",
+      "output/m1-aot-20260921T073339Z-iqbrwvpe",
+      "output/m1-aot-20260921T073351Z-3o555bld",
+      "output/m1-aot-20260921T073404Z-blzw19l5",
+      "output/m1-aot-20260921T074224Z-ue_7dpld",
+      "output/m1-aot-20260921T074347Z-1eoic0dk",
+      "output/m1-aot-20260921T074652Z-qkhjlzfd",
+      "output/m1-aot-20260921T074707Z-bwn7zyvi",
+      "output/m1-aot-20260921T074721Z-rhrv_25y",
+      "output/m1-aot-20260921T080507Z-njaj5l4m",
+      "output/m1-aot-20260921T081150Z-sie4o689",
+      "output/m1-aot-20260921T081412Z-5x5a2df4",
+      "output/m1-aot-20260921T081425Z-d38p2x07",
+      "output/m1-aot-20260921T081438Z-dqpeo3yf",
+      "output/m1-aot-20260921T081452Z-dph_c97e",
+      "output/m1-aot-20260921T081457Z-0au0hxab",
+      "output/m1-aot-20260921T081508Z-pd1a01_7",
+      "output/m1-aot-20260921T082450Z-hthai852",
+      "output/m1-aot-20260921T082620Z-ok1o0k73",
+      "output/m1-aot-20260921T082834Z-0qpx7cn5",
+      "output/m1-aot-20260921T082851Z-t56v7qdy",
+      "output/m1-aot-20260921T082910Z-ze5udem7",
+      "output/m1-aot-20260921T082929Z-gsp0xwj9",
+      "output/m1-aot-20260921T082952Z-qhw47dog",
+      "output/m1-aot-20260921T083012Z-yk874snk",
+      "output/m1-aot-20260921T083750Z-o9kdl22i",
+      "output/m1-aot-20260921T083848Z-00yx7w5w",
+      "output/m1-aot-20260921T083932Z-775tdh67",
+      "output/m1-aot-20260921T083948Z-il3ck5b0",
+      "output/m1-aot-20260921T084004Z-_f6r61p2",
+      "output/m1-aot-20260921T084020Z-xxartl06",
+      "output/m1-aot-20260921T084039Z-h8kiveny",
+      "output/m1-aot-20260921T084056Z-fd1eucnd",
+      "output/m1-aot-20260921T084802Z-bgwone9x",
+      "output/m1-aot-20260921T084906Z-pp0db3ne",
+      "output/m1-aot-20260921T085013Z-bdubidt_",
+      "output/m1-aot-20260921T085032Z-_n404v3q",
+      "output/m1-aot-20260921T085049Z-g98vd4wd",
+      "output/m1-aot-20260921T085108Z-iofffx8u",
+      "output/m1-aot-20260921T085124Z-4nzupi5f",
+      "output/m1-aot-20260921T085143Z-uvb5gywl",
+      "output/m1-aot-20260921T085200Z-z1s38kj2",
+      "output/m1-aot-20260921T085219Z-9xbvad54",
+      "output/m1-aot-20260921T085914Z-69h1b4dv",
+      "output/m1-aot-20260921T090024Z-37enip4z",
+      "output/m1-aot-20260921T090142Z-4iz6mse_",
+      "output/m1-aot-20260921T090200Z-tqprexxu",
+      "output/m1-aot-20260921T090217Z-qc1p6x11",
+      "output/m1-aot-20260921T090235Z-m_lwc3qq",
+      "output/m1-aot-20260921T090254Z-mxacbu80",
+      "output/m1-aot-20260921T090314Z-5nttwo8m",
+      "output/m1-aot-20260921T090335Z-yq79u6y3",
+      "output/m1-aot-20260921T090354Z-ql83c9ll",
+      "output/m1-aot-20260921T090412Z-241bny6e",
+      "output/m1-aot-20260921T090524Z-4q4gvn47",
+      "output/m1-aot-20260921T090620Z-1d5okyes",
+      "output/m1-aot-20260921T090715Z-v6ah4j_j",
+      "output/m1-aot-20260921T090730Z-a8xpa0zs",
+      "output/m1-aot-20260921T090742Z-pe6n6my2",
+      "output/m1-aot-20260921T090754Z-4vzrt_xd",
+      "output/m1-aot-20260921T090808Z-7e29ul3i",
+      "output/m1-aot-20260921T090821Z-4ww1azj2",
+      "output/m1-aot-20260921T090835Z-m5gsw_w8",
+      "output/m1-aot-20260921T090849Z-7ts4zhc7",
+      "output/m1-aot-20260921T090904Z-tuq05fs2",
+      "output/m1-aot-20260921T091710Z-zozn7fz3",
+      "output/m1-aot-20260921T091829Z-hxbs9h4l",
+      "output/m1-aot-20260921T092019Z-67xi6qdz",
+      "output/m1-aot-20260921T092035Z-vgrr0u4h",
+      "output/m1-aot-20260921T092050Z-uymr5jco",
+      "output/m1-aot-20260921T092105Z-2asr1pwi",
+      "output/m1-aot-20260921T092121Z-6qbbzccy",
+      "output/m1-aot-20260921T092136Z-1tsvv7k3",
+      "output/m1-aot-20260921T092151Z-7pwu19j0",
+      "output/m1-aot-20260921T092207Z-plnnrh1r",
+      "output/m1-aot-20260921T092222Z-f2_5dvls",
+      "output/m1-aot-20260921T092238Z-prpt4vpz",
+      "output/m1-aot-20260921T092940Z-7d46b3dy",
+      "output/m1-aot-20260921T093103Z-ulfus_1z",
+      "output/m1-aot-20260921T093217Z-kfc9wtsg",
+      "output/m1-aot-20260921T093229Z-vaocfr7j",
+      "output/m1-aot-20260921T093244Z-lgcfatos",
+      "output/m1-aot-20260921T093259Z-iotqvjaq",
+      "output/m1-aot-20260921T093300Z-ehk2h0sv",
+      "output/m1-aot-20260921T093315Z-edrgkka2",
+      "output/m1-aot-20260921T093330Z-79o1rcgb",
+      "output/m1-aot-20260921T093344Z-mhvmkfsj",
+      "output/m1-aot-20260921T093358Z-u263s3oc",
+      "output/m1-aot-20260921T093412Z-vj8khrui",
+      "output/m1-aot-20260921T093426Z-5wwcvrqb",
+      "output/m1-aot-20260921T093440Z-7mgphp6a",
+      "output/m1-aot-20260921T094504Z-mlywikhi",
+      "output/m1-aot-20260921T094826Z-gwagxmnq",
+      "output/m1-aot-20260921T095105Z-32onutqo",
+      "output/m1-aot-20260921T095118Z-mqmzjga0",
+      "output/m1-aot-20260921T095131Z-h130g1ru",
+      "output/m1-aot-20260921T095144Z-c8j63rrd",
+      "output/m1-aot-20260921T095159Z-vvi5kw7o",
+      "output/m1-aot-20260921T095212Z-ht7whhbh",
+      "output/m1-aot-20260921T095225Z-0y6n73_f",
+      "output/m1-aot-20260921T095239Z-cl7qzxnp",
+      "output/m1-aot-20260921T095252Z-vzu_0s81",
+      "output/m1-aot-20260921T095306Z-p257d070",
+      "output/m1-aot-20260921T095319Z-4m29v2vh",
+      "output/m1-aot-20260921T095334Z-8izac0_7"
+    ],
+    "raw_bytes": 2150964936,
+    "archive_bytes": 692120118,
+    "bytes_released": 1458844818,
+    "all_archive_members_hash_verified": true,
+    "current_runs_untouched": true,
+    "round_trip_restored_run": "output/m1-aot-20260921T070954Z-elxymfow",
+    "round_trip_restored_bytes": 18528772,
+    "net_bytes_released_after_round_trip": 1440316046
+  },
+  "archives": {
+    "output/m1-aot-20260921T070954Z-elxymfow": {
+      "archive": "output/m1-aot-20260921T070954Z-elxymfow/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "a1b8ae01b77042d9805d2145c05aa6187827a99d1fcbefbbdc3121c494d720bd",
+      "index_sha256": "3a1eca75bb741d5939f605843431fc028950736ce6caf66763788f6aa272ae8c",
+      "file_count": 6
+    },
+    "output/m1-aot-20260921T071400Z-svxkndg_": {
+      "archive": "output/m1-aot-20260921T071400Z-svxkndg_/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "e69967499d5e71811da8a6bb67c8602912a7168e5df3255277795d9203dff9cb",
+      "index_sha256": "d7b7318e24de6bee313e1e2b5b43b6fabdd2dce4e07b9f715c49996de50659f9",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T072519Z-2ff059wx": {
+      "archive": "output/m1-aot-20260921T072519Z-2ff059wx/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "5deda7ab37a81a918fca11f34af285d209f78dc7b36a0967ec36c9f425a419bf",
+      "index_sha256": "fe6fcab70755767d2711b63cd1d4d4cf88ac069bee8078b5959a00a012a62251",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T072737Z-08pvimqb": {
+      "archive": "output/m1-aot-20260921T072737Z-08pvimqb/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "b6c0b2a38f53ea79f180c92478fe59837f752830528067e65e394ad4ad3c87d8",
+      "index_sha256": "f32370ce993bb9e01157a5baa51dd01736076c4ae5c67061ee034125ece0020d",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073024Z-bfdz5r7p": {
+      "archive": "output/m1-aot-20260921T073024Z-bfdz5r7p/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "9f31a45192437e627a4c200717dd7373abb7873305c8edc2188281faffd11c79",
+      "index_sha256": "0f81c5cd706d4f133864e55c2f0dab781190848c3050ce3f05878a7be76ac883",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073118Z-htshcg2t": {
+      "archive": "output/m1-aot-20260921T073118Z-htshcg2t/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "831dfd84eca81a4c0ffd8a64755ac9580f7c3d44f3935c5d4b7eaa3032547c61",
+      "index_sha256": "4cc4c73a4d4e2b175ae94fd36755a563f21a7928f8dd6bec6fe6c389df24b154",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073134Z-npfzhhqf": {
+      "archive": "output/m1-aot-20260921T073134Z-npfzhhqf/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0142fa24838bd0890a062a3be407f596180bd0e29ff0e70b0b2a403e59d67ab7",
+      "index_sha256": "58522101145783d421fbcdc2830ce28006de886a4cba0aded6ca0f9280774d06",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073150Z-j_pbb445": {
+      "archive": "output/m1-aot-20260921T073150Z-j_pbb445/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "4e598afee8a7e7c238d00fb782877f6ce422f498185ec4a1a056e70b2725c4e1",
+      "index_sha256": "8a53777e5c274bdb2aeab3423ca880263eebfb30982c157bafe09686d8ef2068",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073326Z-1jd2aw6q": {
+      "archive": "output/m1-aot-20260921T073326Z-1jd2aw6q/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "6e28a5f6a289fc0a6b93eef0c9f4772a75f4676e008b5d59a6b5418f528123ef",
+      "index_sha256": "396852abfe01818c16302723512aeac26a17bfc056691f1a97d102f8ab517f56",
+      "file_count": 6
+    },
+    "output/m1-aot-20260921T073339Z-iqbrwvpe": {
+      "archive": "output/m1-aot-20260921T073339Z-iqbrwvpe/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "8968c991fc1f746cf2d73d70b843252c62f8140e68f9f2b1a8bf9b374f26c465",
+      "index_sha256": "b09ca809f2798c20ceb4bcbb6fdcfee06062c8bda77dbb72510d42f6345a4d1c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073351Z-3o555bld": {
+      "archive": "output/m1-aot-20260921T073351Z-3o555bld/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "6d0d243fdbb6c0fee9ced766dd8e92d13bf4f861d6eba30058ecc131ed168a85",
+      "index_sha256": "1f32929b2998945456cff51e82a5b53f26f4d2e6070382f01af800fceb108cd2",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T073404Z-blzw19l5": {
+      "archive": "output/m1-aot-20260921T073404Z-blzw19l5/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "656c552c60024111590a51bc075b434fe05c2cd9268c7edf6ddf6c535d01771a",
+      "index_sha256": "3c3fbf45e5b4956d00dc870adc183cf063c6415c28b17f528df13c934f325b6c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T074224Z-ue_7dpld": {
+      "archive": "output/m1-aot-20260921T074224Z-ue_7dpld/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "23254288381e67ec313bdfac284feadffd6650df4482e141575eaafd41c8f330",
+      "index_sha256": "9f7af1091d152ea7d1184f4659a0215edf8deb082411ea0da79b2e55777e5d4b",
+      "file_count": 6
+    },
+    "output/m1-aot-20260921T074347Z-1eoic0dk": {
+      "archive": "output/m1-aot-20260921T074347Z-1eoic0dk/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "fa5abe77a049a23731c9ba1005ebf8df6fc858ae9f4455a005cdb4e17256da64",
+      "index_sha256": "cd5e84c54cc96e0734f6f3836c45fec2f3edf73f1dc73eb908f3359e0e6faa81",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T074652Z-qkhjlzfd": {
+      "archive": "output/m1-aot-20260921T074652Z-qkhjlzfd/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "930e1bc8ec7a2602b0ce6d098e4e0d7279156fba082e8ae702757e76344ef06c",
+      "index_sha256": "a36a024851cc3510362fa463f4b9c32d7dee5f9acb5df35e5d8151ea30439e4c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T074707Z-bwn7zyvi": {
+      "archive": "output/m1-aot-20260921T074707Z-bwn7zyvi/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2ac6ad9031c0e96637eece271d7785d7dfc668c995020c0ea652b96fd74da376",
+      "index_sha256": "6eea903fcae2f1906253411336d56a4ab030e272f7a42242c1606c357154b441",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T074721Z-rhrv_25y": {
+      "archive": "output/m1-aot-20260921T074721Z-rhrv_25y/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "cc9f0b78f0376c4f15104adbe18f8d2f09fdd5dbd642892a7909d7426db6b699",
+      "index_sha256": "a99653c322f044caa819e4911aeab3718f46b9bb1a6e44fb33ec5163ae90c0c6",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T080507Z-njaj5l4m": {
+      "archive": "output/m1-aot-20260921T080507Z-njaj5l4m/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "46757840d1b7cae83e7a84671cad9fca3de4ead7834ef123a3ed7d3d9013c3dd",
+      "index_sha256": "12437791aa776b5f168a6bbd38a314465b9e79edc2dad2980a274d912be00b2f",
+      "file_count": 5
+    },
+    "output/m1-aot-20260921T081150Z-sie4o689": {
+      "archive": "output/m1-aot-20260921T081150Z-sie4o689/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "987f457dd20a421e3834138c252b116202bfb48b9eef3280b9a1e25007bc585c",
+      "index_sha256": "660a626bbe905d2abd7c1fecda477f77bdd3ef794434d10a7e96c3e458f040ab",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T081412Z-5x5a2df4": {
+      "archive": "output/m1-aot-20260921T081412Z-5x5a2df4/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2ebb5bc0b74a8a40dfd0f18070ced2b8504c7d99303ac45e1a2f80a2b8d8ac02",
+      "index_sha256": "ad2110e6469f8637d44d0cdede301eb3b9a6b1a8fd9736f166089cf5048b5910",
+      "file_count": 7
+    },
+    "output/m1-aot-20260921T081425Z-d38p2x07": {
+      "archive": "output/m1-aot-20260921T081425Z-d38p2x07/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "422420d6b2bd5255070cf3456ab6a0fb44fe0ba260a6f93ad3cf2b0ebccf11dc",
+      "index_sha256": "29b5fd8b4b10650d5f235bdb97893a502558abb0c40bf6f6cbf82d5c2120c546",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T081438Z-dqpeo3yf": {
+      "archive": "output/m1-aot-20260921T081438Z-dqpeo3yf/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "6f9cb631fb2f75a382a06848e44c6390a58754da0b811a287165a5820947856e",
+      "index_sha256": "21a6c6c8d2a6d558f10a251a89372c822243925a886657f26da2fb3480da2eda",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T081452Z-dph_c97e": {
+      "archive": "output/m1-aot-20260921T081452Z-dph_c97e/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "9fea7872fb6ef56c24aeded8e3a1b02240744722c54333dca12485f7f98f4c8d",
+      "index_sha256": "e736d25427ea88b35dda01987bf7bb53fbfe0f374def65021c3dfb7055a8a9d4",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T081457Z-0au0hxab": {
+      "archive": "output/m1-aot-20260921T081457Z-0au0hxab/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "30342c5100780fda8041bb0a4758bf16ce0fee9934257e67b835f57e6745ea48",
+      "index_sha256": "cbe5d60dcdde5f212c38caee76ec1343ee945b379a3bcde4983203b00bb2498f",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T081508Z-pd1a01_7": {
+      "archive": "output/m1-aot-20260921T081508Z-pd1a01_7/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "49399dac29ed8453c81cfdf7a471ca767423991c3f0143006ca318fd8e34f986",
+      "index_sha256": "0109a14c45dd9edd2f7548496751d803afc936015baf58c27009775dde318eae",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T082450Z-hthai852": {
+      "archive": "output/m1-aot-20260921T082450Z-hthai852/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "39a680d75b6e99d23357807f09d43b736e099ea54cc17f49cca9f352cab97709",
+      "index_sha256": "5df47ef583a58026d680965af8908361d111a8ec3caddbaca7d15351d308ef69",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T082620Z-ok1o0k73": {
+      "archive": "output/m1-aot-20260921T082620Z-ok1o0k73/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "95a5ad7a49fc9ebb553af96e640558534d5014e99153d18e33741eeb4f66ef93",
+      "index_sha256": "fe77623f8d8828f7804237b8b7c8c22f02a07040f71a6b221b6c61ed22ed8b73",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T082834Z-0qpx7cn5": {
+      "archive": "output/m1-aot-20260921T082834Z-0qpx7cn5/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "1805b1e4a611c0a01241d3b34fffaa2f93c60a48458c712234dbbf2f907fa23f",
+      "index_sha256": "86d68005229d29cc88351cdc12c70c0c69a419a6a930ca8398a957bae4cb5f2f",
+      "file_count": 7
+    },
+    "output/m1-aot-20260921T082851Z-t56v7qdy": {
+      "archive": "output/m1-aot-20260921T082851Z-t56v7qdy/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "4a9ae95d99851e529334811252bd951248ef8f85a0167c049dacf8b4f843beb8",
+      "index_sha256": "9cdd775c7a325986db6f26db68cf02d87d76bf44ba2f3b3778c84edc3478137f",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T082910Z-ze5udem7": {
+      "archive": "output/m1-aot-20260921T082910Z-ze5udem7/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "a697974a4054664fb2de1e99796f9dc265a675593297310ba388005c7f003f36",
+      "index_sha256": "13669d5fa4277331b14ab93753fad12e667a23716ff3b90ad347b95f72fe1779",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T082929Z-gsp0xwj9": {
+      "archive": "output/m1-aot-20260921T082929Z-gsp0xwj9/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2082234473b24f727b6abfd6d3c7d367ce83dfddc06b4bda6d89e6fcd2016977",
+      "index_sha256": "167f55648e72bf0e8a4afccbd6c9d8d6a0e76796f8e1f9e6bc8d8607e9a31e63",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T082952Z-qhw47dog": {
+      "archive": "output/m1-aot-20260921T082952Z-qhw47dog/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "bd3b6e56f4751faececef1f83a7e9872ad7e863ea3f4b50fe4b4ce4b6a7da0be",
+      "index_sha256": "a5999a18bc37c16dd3f6da4d53dbb9e297f5ddd39a3be5168225844b6af7ca15",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T083012Z-yk874snk": {
+      "archive": "output/m1-aot-20260921T083012Z-yk874snk/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "86e7704530c0edfb0107b1786629ed3cb8cc29e4af40c6d8cd797ee85892c383",
+      "index_sha256": "8b93d570a405c1c414bdf9323eb856fb17d236f0c7f3704fde0d82b8db9c86c6",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T083750Z-o9kdl22i": {
+      "archive": "output/m1-aot-20260921T083750Z-o9kdl22i/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0b86d3ff36ef90a9f39db5c349127c380f6cfb74c5d1b50cbbc32e60f827514a",
+      "index_sha256": "056557d218eef12b033e821c35d6ada71cf9bc2a81dfeda585f3b0999d735ba2",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T083848Z-00yx7w5w": {
+      "archive": "output/m1-aot-20260921T083848Z-00yx7w5w/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2bc2774cdd6f7a4b402baf8ea91ebb0676fc9200ce77b6bf2e7557a625a24e86",
+      "index_sha256": "e5e5f22b55aa052da38e30c5b387795a5db988ac220ade8e689717ec1a05495b",
+      "file_count": 7
+    },
+    "output/m1-aot-20260921T083932Z-775tdh67": {
+      "archive": "output/m1-aot-20260921T083932Z-775tdh67/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "db3e75a8eec0ac568a263b34f2a33e758f578ae411074221ad6e4aa5bbc58826",
+      "index_sha256": "eb3f06d563de47657662bc5c2ae25577d357e25bac4f90dec02863b0d72d4c29",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T083948Z-il3ck5b0": {
+      "archive": "output/m1-aot-20260921T083948Z-il3ck5b0/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "c565acc961af40952546fb0ab8023b0358802bbe8c334c8689fb349907638b43",
+      "index_sha256": "29ae047d4e7a7438b8a14a547e743b517d117c417466534c9bd7e58492d3fd12",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T084004Z-_f6r61p2": {
+      "archive": "output/m1-aot-20260921T084004Z-_f6r61p2/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "c5283b8b9585959da0819ba0e2c4c2e07a58547a37d71c4b5959e88bd2de0d84",
+      "index_sha256": "7c1554a52fd081e15117d83814bed1757392f1d09352df562202b16dc8fee1df",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T084020Z-xxartl06": {
+      "archive": "output/m1-aot-20260921T084020Z-xxartl06/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "9fda1c6fc30a0d011e2e5aceb3d92a4377dfdf0909f53c6d1cd932f38d2906cf",
+      "index_sha256": "adb608478a68e29d767d575411db976cadbeee6b6f59628f107048b07a6f0678",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T084039Z-h8kiveny": {
+      "archive": "output/m1-aot-20260921T084039Z-h8kiveny/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "a622959606ad4138154eaec8771b3c7917cd8705ecf3fcb8af81d0d0f4839bbf",
+      "index_sha256": "2911940f951a543e171a9d1321bba8a66f326d2c7ec2142ea3dcc85bf2c0f7e7",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T084056Z-fd1eucnd": {
+      "archive": "output/m1-aot-20260921T084056Z-fd1eucnd/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "b5ddcbc16acfd2874b16744608a141c9735414d1e9b3ead7a814b5376f85b247",
+      "index_sha256": "7c33c965151e2c5e414b454e8f2226c734508912a3798ffa3460bba884443559",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T084802Z-bgwone9x": {
+      "archive": "output/m1-aot-20260921T084802Z-bgwone9x/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0c68984775345cfc894733287e5cc2eec0df3ade788a43610ce1faef1627da38",
+      "index_sha256": "f5db5f4eab95d816018a7fb1e5deda5d5049441e424480432f77633b92264e7d",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T084906Z-pp0db3ne": {
+      "archive": "output/m1-aot-20260921T084906Z-pp0db3ne/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2b21bfd2856130f10c0f1c43e0920ea0c51a236b958e4a05e370878ac6bffdaa",
+      "index_sha256": "7dcfa69dae9cad380e5ba1e0c832f0eb5983938269710ee492956f2b2e558f55",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085013Z-bdubidt_": {
+      "archive": "output/m1-aot-20260921T085013Z-bdubidt_/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "9baac0ccea4fd22d8c630f92d67742af6ffa5f0c6d03efa26b0681e917a7ce64",
+      "index_sha256": "06407a7cce57eadcd1986ead6a82594febd44303ab586b916f01e5d1cd76cb34",
+      "file_count": 8
+    },
+    "output/m1-aot-20260921T085032Z-_n404v3q": {
+      "archive": "output/m1-aot-20260921T085032Z-_n404v3q/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "8432bd1c5b512556b7bd10cfd626689894fa2ec9378c0b251b3c4026ee18f664",
+      "index_sha256": "73cd0600696b20d1b1b152f3735d7686fbf735fc35f7a89b7667378aed3dab18",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085049Z-g98vd4wd": {
+      "archive": "output/m1-aot-20260921T085049Z-g98vd4wd/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "b6f3578165d024e2e6e4da8924e9714ba73b79bf9676cbf0ca609927e94ec635",
+      "index_sha256": "83b35c85a15c37d2059d71ea9abebd66f9ce9a86d1ee1b298c91b61a0619836c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085108Z-iofffx8u": {
+      "archive": "output/m1-aot-20260921T085108Z-iofffx8u/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "01b944673fb1bb1592d5c63af98352b44fcbb59c124f5c890de075e2500035f2",
+      "index_sha256": "1ef67853e64bb1041d04d709d1ae4b7b6dc90a192df12ad1791c8cd1ac4a99ad",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085124Z-4nzupi5f": {
+      "archive": "output/m1-aot-20260921T085124Z-4nzupi5f/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "b1c3298c19e82c6773aede4e1c2282a695e79265d8082a73be6c388e4596fb63",
+      "index_sha256": "3206b57ce702139e41a33baabb8300b3e94a62ee39b73175d1057b759431210a",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085143Z-uvb5gywl": {
+      "archive": "output/m1-aot-20260921T085143Z-uvb5gywl/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "1e4d481d967576a052491ce0cbaa6d958b364dbc837c6cd4ccb57078ffd2ee02",
+      "index_sha256": "122fa0d6d05b967bbcbdc17a53cf8c2f000766b4d7ae37088111b23714b98da7",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085200Z-z1s38kj2": {
+      "archive": "output/m1-aot-20260921T085200Z-z1s38kj2/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "3f5f58935be147cc2ed2e1dfb5ff1d8c4c9aa1e98bd29fcb59cb5c1d23d77435",
+      "index_sha256": "4e05058c60f17ee38fb4044e00967a16b308529ee43c289300b35ea959782a87",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085219Z-9xbvad54": {
+      "archive": "output/m1-aot-20260921T085219Z-9xbvad54/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "74636335cd61d03dc88ea1519d007cfe14bfc267cbb9964f3ac5bac273581cc4",
+      "index_sha256": "3ff0e697252c7aa467cdc6595f0c86787509e19d2516d7ea7bc6f2337e0ac5b3",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T085914Z-69h1b4dv": {
+      "archive": "output/m1-aot-20260921T085914Z-69h1b4dv/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "e06ec6f135627094bf9b7853e3a8201df222166279eb9db8e2d5666f74f98c7c",
+      "index_sha256": "fbd456b97570d1dcb7fa3bd4ecd3dda262a54a882546c850ff75254dfdb03669",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090024Z-37enip4z": {
+      "archive": "output/m1-aot-20260921T090024Z-37enip4z/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "c0deade0e1ed3c1fa9bb6eda829dcdee4a49a63b6246a6330ce0df50e8cf079e",
+      "index_sha256": "51165d4990f64201967bab4b70c8015147300feed50316504b9ae8030bb6fb52",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090142Z-4iz6mse_": {
+      "archive": "output/m1-aot-20260921T090142Z-4iz6mse_/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "1e771f30c995c6622b262390bbcea5755c21c94eac2c151785f4d183479e09a6",
+      "index_sha256": "ee03d7e0fcecb5494f6a04f06740fefc57d44a2cb1a372a8e4ff48b79ad99133",
+      "file_count": 8
+    },
+    "output/m1-aot-20260921T090200Z-tqprexxu": {
+      "archive": "output/m1-aot-20260921T090200Z-tqprexxu/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "948be28ae767d6d9da9948331bf4425048638a6b373062217d71159b94985de7",
+      "index_sha256": "cb58e8a51e71fa45d224e84baa087056373a2f25a2dfe85845f2da898ae60849",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090217Z-qc1p6x11": {
+      "archive": "output/m1-aot-20260921T090217Z-qc1p6x11/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0a305e107a1aba38f5c91faaad84fb4b7395bca77dfd120a35ecef57910cdd5c",
+      "index_sha256": "e4f9a269d1f9ac6d7e7e3f605f86d169cf48db195d0ce31ee3f0cd808331b4c5",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090235Z-m_lwc3qq": {
+      "archive": "output/m1-aot-20260921T090235Z-m_lwc3qq/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "878be1f0e8180f4e52d8c19ade5f756ec3435fff18dae64dd74673870e269936",
+      "index_sha256": "981bbee8fccc16fe459d411cb446a651b3d79b0f43750ddc12b21ff6b50cc636",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090254Z-mxacbu80": {
+      "archive": "output/m1-aot-20260921T090254Z-mxacbu80/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "665420391808578c98e9066a6d5f619353520cd5ae719b2323901658d096c5dc",
+      "index_sha256": "a4369da5e48f9b84b1862c1d43ea662f226319e7ecd78a9791e8e2307b71f1b2",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090314Z-5nttwo8m": {
+      "archive": "output/m1-aot-20260921T090314Z-5nttwo8m/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2ca46ddee907a2c707c2b4969bc255d3cd73e22571f9fa596dc170de1cd15297",
+      "index_sha256": "9aa041e89ac6177633a3b764c1672dafde2ff3bb78c22d0e86edb58bd9a7b67c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090335Z-yq79u6y3": {
+      "archive": "output/m1-aot-20260921T090335Z-yq79u6y3/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "991d0c57647e6df3b948e5b62185c7022ba132c0b799a24b6b773da0dabe2f13",
+      "index_sha256": "fff6f48a18c8ec613f124a8377a352463fd777b54984bdaed0bb50956ffb039a",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090354Z-ql83c9ll": {
+      "archive": "output/m1-aot-20260921T090354Z-ql83c9ll/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2bd9164c7f63c33148eb55af2c715a79c5a97998683d7149dd8a2f6e13472869",
+      "index_sha256": "7b97e22d5652b99f0519a7641b2409587a4edd03a58e5c91929c8a1cffe427ff",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090412Z-241bny6e": {
+      "archive": "output/m1-aot-20260921T090412Z-241bny6e/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "4e9c987a8cbb6f2637abf7a9b573d98eb25f332a2c6279cd8348f163934fd25d",
+      "index_sha256": "4325cd7c28f771ff7e9276733ff9d634f1e59639d55440532e4e91de03390da2",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090524Z-4q4gvn47": {
+      "archive": "output/m1-aot-20260921T090524Z-4q4gvn47/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "4b3ba1092d46dbb2b87d39b5cfcabbbeb8085bb90927fd83bc99b563d5f3d598",
+      "index_sha256": "42daf294486e7dec07fe64bce9836aabf66925fe793041967a1e9388a8db1071",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090620Z-1d5okyes": {
+      "archive": "output/m1-aot-20260921T090620Z-1d5okyes/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "4b3b4a890711e4357c0e64634b120d725b26d936b0d00a3231193473af046e99",
+      "index_sha256": "204e186c13af6b3534236ab6643e55980eefb619c3885223c53a5f63667092d1",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090715Z-v6ah4j_j": {
+      "archive": "output/m1-aot-20260921T090715Z-v6ah4j_j/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "593f0caf39624beb80c13c831cfae741fbeea764ee7fffe7843dbf5ed844880d",
+      "index_sha256": "918fa78de937a40721849ecb7d286e33c9d3a2ca02afb5b746d6f62fc7b9fc67",
+      "file_count": 8
+    },
+    "output/m1-aot-20260921T090730Z-a8xpa0zs": {
+      "archive": "output/m1-aot-20260921T090730Z-a8xpa0zs/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0f8de98e89382f2479a6a346f6478d604cdd7dddd8fc3ee1f5a6c60887cb0f8c",
+      "index_sha256": "c230af46beed06727ebdce6a5e06a430adcd1a8c0f9a70985e1542ca9631b272",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090742Z-pe6n6my2": {
+      "archive": "output/m1-aot-20260921T090742Z-pe6n6my2/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "632c0c1f7c00824aa041ce0a68a1094f486593467fc953accaae5a23ca43ecdb",
+      "index_sha256": "444dffd15ada3f9790063c8afb1b38cfd98bcce3b6f44ed95c290560053e9b03",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090754Z-4vzrt_xd": {
+      "archive": "output/m1-aot-20260921T090754Z-4vzrt_xd/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0328533ec1b521afd5eb61eab7b9451ecadcb8c9b3933d0682847f4b64803a10",
+      "index_sha256": "1b2022f0a0146154d4f1573c357bfc5bc5c486582b5877764d73e499de46d2d7",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090808Z-7e29ul3i": {
+      "archive": "output/m1-aot-20260921T090808Z-7e29ul3i/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "968a93e0602f45957082af63185c64be9d2e61faad4c3385420b328b6e50fcc6",
+      "index_sha256": "0f60e82ed2ae93e274365c41e0aafe058e75b55e51875dcaf1ec60022acbd2bf",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090821Z-4ww1azj2": {
+      "archive": "output/m1-aot-20260921T090821Z-4ww1azj2/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "caab0801eb3c143c44099675d40953f9ef8db1239b71db218d8e13bbfee88ece",
+      "index_sha256": "8142f695cd5d71fbcbb799c534a96d48e60117a93be09677e8150f65db540b10",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090835Z-m5gsw_w8": {
+      "archive": "output/m1-aot-20260921T090835Z-m5gsw_w8/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "95b9fc4926a4a4cafe65a86b56096c64b9f6d54707cbac39be38b572463ca99a",
+      "index_sha256": "49515c27dafb8a6eec451c537af52d56e6143923e3996230d790991498fb4a1c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090849Z-7ts4zhc7": {
+      "archive": "output/m1-aot-20260921T090849Z-7ts4zhc7/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "3ce43c18658d4c22ea8fb8503e3f3253461d488d08dc90c2a6379744407a3cf0",
+      "index_sha256": "86c4c716235b46fd211ebd0d54c9a2cc9101c240f89334b019d267e1b1d8a89c",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T090904Z-tuq05fs2": {
+      "archive": "output/m1-aot-20260921T090904Z-tuq05fs2/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "8d40ab3d3562cf36783a3a97cbe3238bbd7c7718ac159650435f4ff35bca3243",
+      "index_sha256": "62f3c22053d14ce37c67187b9a7a507d0294e98ffb8cec3aa6a2eadaca3d4e53",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T091710Z-zozn7fz3": {
+      "archive": "output/m1-aot-20260921T091710Z-zozn7fz3/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "77fddd619775760f5cb92238a33db191f71e8b028f856ab79e3404e17e2a6d5d",
+      "index_sha256": "623ff9d29e42cbb2de6330dd502ef8224b3e7c03d069dbf8ddfcef26a76f832d",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T091829Z-hxbs9h4l": {
+      "archive": "output/m1-aot-20260921T091829Z-hxbs9h4l/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "0ddc216b117b469ed1f9776d3a40b0b2336ba8908f159732ced326d55ecdbed4",
+      "index_sha256": "505295352c98d66c2e4a0acc725bd332cdc809f9c6a1b0e8cfb423b9ca2653d3",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092019Z-67xi6qdz": {
+      "archive": "output/m1-aot-20260921T092019Z-67xi6qdz/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "96cc7185cce04b761525187b213844d0b95b4ddd9813014fb8e853c1e2114ab8",
+      "index_sha256": "ad7ffe1d9ef9c4f66828d5f00364dd104d3b37caa6dbb543c4c560826ad30221",
+      "file_count": 9
+    },
+    "output/m1-aot-20260921T092035Z-vgrr0u4h": {
+      "archive": "output/m1-aot-20260921T092035Z-vgrr0u4h/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "83967d68f6003c97a706a369c2aa74f7ed6e3436d71ff31cd9bac3c3283296fc",
+      "index_sha256": "5ec3e6234b6b7f4ff323a4b626ace4a32a342ed0ed7688f38db83d36bb9761fc",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092050Z-uymr5jco": {
+      "archive": "output/m1-aot-20260921T092050Z-uymr5jco/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "22958d1be8215ebe907e9454a86eaccd63b87a49efb5d266e7bf9accd8adafe1",
+      "index_sha256": "89a1b8dfda73e776612ba0cb3787f3b1ec9645d1c0c4148bccb338b1193c216e",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092105Z-2asr1pwi": {
+      "archive": "output/m1-aot-20260921T092105Z-2asr1pwi/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "7c0d640c91bee793ca752da68f8e67beb8087bef55b706e912a1a26124bc41d3",
+      "index_sha256": "8defddf154f57c111bb4473b3e5aca441bde334b12ca003c7669b6d67cb3ed91",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092121Z-6qbbzccy": {
+      "archive": "output/m1-aot-20260921T092121Z-6qbbzccy/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "013ab679afe5c750eed463193b2504ef234fd4458458ff09e90b6837d1e73584",
+      "index_sha256": "9b5476de0f7d79cbefe515f5df119ed03a648b69c55cf5558297fac51843c7b9",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092136Z-1tsvv7k3": {
+      "archive": "output/m1-aot-20260921T092136Z-1tsvv7k3/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "148220acd56afad6ac626b0848e533d5cba0344aaaa8f2af0247cca53bd7cc57",
+      "index_sha256": "42d040cd0ab0f1d8be5a8af9371e5e84c478c1e39c152aac17a9f3cd579c32e9",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092151Z-7pwu19j0": {
+      "archive": "output/m1-aot-20260921T092151Z-7pwu19j0/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "12d02867023ab81fa06e21acb6c338a76af959016738bf5ad32439f1fc8be877",
+      "index_sha256": "60cf2c326e5ece44d0f224f912c1439e83c03432b1946e2a0c0301c29e4e2526",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092207Z-plnnrh1r": {
+      "archive": "output/m1-aot-20260921T092207Z-plnnrh1r/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "2524f8c6c4a3b5e57ce00c705ceb57941befeed101ffed471f5d167a24dbb6f5",
+      "index_sha256": "5791b3e98259dc3285d62b8fc8e040d4829ef91dc75f465548b06530c9d2de3e",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092222Z-f2_5dvls": {
+      "archive": "output/m1-aot-20260921T092222Z-f2_5dvls/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "23d198b999111b9ce3d30ba25123ca19a8fa10dee463aab2f5796acc2ed3cdca",
+      "index_sha256": "5371e33d77ce9484c42ff0c173e14993f9f12fab655a0b4af28ef0477ba26e3f",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092238Z-prpt4vpz": {
+      "archive": "output/m1-aot-20260921T092238Z-prpt4vpz/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "3a1dbcb5c4ad9661db7fdca18faa6fd7b07775ea613ab4dd3021d15c7e2845cc",
+      "index_sha256": "2cd0b8607765643500d3147b882f3d32ef7c9862f64dd134ac1d34b352d3b246",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T092940Z-7d46b3dy": {
+      "archive": "output/m1-aot-20260921T092940Z-7d46b3dy/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "38de9ca8357f23bff69f1bce4905cc59bc66e1993f3a2ff234d9b13c1579d489",
+      "index_sha256": "7b999ce0f7b8c79fef9a9f9d23231e0a729eaa5da261e1d141dd1046568afebf",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093103Z-ulfus_1z": {
+      "archive": "output/m1-aot-20260921T093103Z-ulfus_1z/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "1003b876bb6e966cc754de8c44f392afc3d04b547453000827e4fc46cb108287",
+      "index_sha256": "43acc96c336e2626e8dd3d6cc4e468375a30627b17da0451196fbfc676a61bc9",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093217Z-kfc9wtsg": {
+      "archive": "output/m1-aot-20260921T093217Z-kfc9wtsg/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "dfb6626061cfd3025795f8c7edb5a65f7a4c509b4a4a73b121c147e8b73745fc",
+      "index_sha256": "868d880e7ba21383d56b56a0be8321486d2a219e71a709ee5dcd8dcb6ac4c038",
+      "file_count": 9
+    },
+    "output/m1-aot-20260921T093229Z-vaocfr7j": {
+      "archive": "output/m1-aot-20260921T093229Z-vaocfr7j/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "f1c5dd3e6e80cb22dbc9470865fa315c5a33b676397fb20fa992d90e3e1a3208",
+      "index_sha256": "94b1443e30f63690ef5362161ddd43a87d818a749cce938507bad7eb3a26da83",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093244Z-lgcfatos": {
+      "archive": "output/m1-aot-20260921T093244Z-lgcfatos/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "a0de9d5162baa8a1d7f599bc2103be3d5b294246afc18f7fb6fb3600701c3822",
+      "index_sha256": "18c7a940853bff5b55b7b50c2f196e37dfc0d87932604762e53191661a7bc696",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093259Z-iotqvjaq": {
+      "archive": "output/m1-aot-20260921T093259Z-iotqvjaq/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "15777f5d2386bb662fa84f08f0877c9bf035a60b0f28437ca23360d2715af761",
+      "index_sha256": "ae14e62e0dd14c6990531d0eff08ccbccc20fe0bf7f1f70e478874e6986fc394",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093300Z-ehk2h0sv": {
+      "archive": "output/m1-aot-20260921T093300Z-ehk2h0sv/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "a192267801f7d33a5da746f850ae3f5406390f5ddb4cb00d8ab54055de179592",
+      "index_sha256": "a196cc44c66e449f33f2639c5f68e18026bb46d55bc466c662307d695098c05d",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093315Z-edrgkka2": {
+      "archive": "output/m1-aot-20260921T093315Z-edrgkka2/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "91ec3d28b2de80b2ba0a1dcd9c48baefc5e37c85da23f73d158a085c93b0b897",
+      "index_sha256": "3fcd501183b359a45abb2c8eeffd240781c5de11ed2256d0ca72de9cbccd17fd",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093330Z-79o1rcgb": {
+      "archive": "output/m1-aot-20260921T093330Z-79o1rcgb/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "021cffcf4ec31c7ee80ffe872aa954f5b9b895cb14bf06fde860f82868a2bfd0",
+      "index_sha256": "c00ae07e6c2f86c07dc2faccb2e3f3237c7e6b961f08d6939d3adccabd6a5d9d",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093344Z-mhvmkfsj": {
+      "archive": "output/m1-aot-20260921T093344Z-mhvmkfsj/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "d7fe2e300fd2522358e23ea45d27dbd0a9140dc6076ade4b2a8c822ad7981f08",
+      "index_sha256": "242b80d7e9b21c779aafff50f79f2a5f3e11b1631329ee5a39bbe74cf14afde2",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093358Z-u263s3oc": {
+      "archive": "output/m1-aot-20260921T093358Z-u263s3oc/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "fd7b35c09924244a5fd907f0742f414690c229e2ea7cfe56057523f9e3ad54e7",
+      "index_sha256": "d4f6137528053925b7ccc0185ad0a6942f7a0106fd14e4def0797266ebe97ffb",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093412Z-vj8khrui": {
+      "archive": "output/m1-aot-20260921T093412Z-vj8khrui/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "27772a3b7fc023386024114638771097e03613c3ce8c8732bfd876a354185051",
+      "index_sha256": "809c006bd10cef40ced675152f7ebf26d8de331a74a4b130913d2f21e4905149",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093426Z-5wwcvrqb": {
+      "archive": "output/m1-aot-20260921T093426Z-5wwcvrqb/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "930f2e9a69116bc0a07eb1cb696d8db7dc2c9a715e0313fd5b286271c68bcd47",
+      "index_sha256": "e35e59b4838fad193d4260a30b4a2a87963fea37952d6127b66cd8c4ce3a7a40",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T093440Z-7mgphp6a": {
+      "archive": "output/m1-aot-20260921T093440Z-7mgphp6a/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "5ea7a59f051d38545b6b06e7aca92d5a3f11e448bcb56764dfd059060d905ef0",
+      "index_sha256": "af5f8c92cfe776a9eaa2301457f479b6d018d09af0d5c74bf2b7f4b6226ce1cd",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T094504Z-mlywikhi": {
+      "archive": "output/m1-aot-20260921T094504Z-mlywikhi/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "762314f4c2d05c0b2998551667e85edac98174b8183214f7f3288898285565dc",
+      "index_sha256": "1aad6c5b281c288538bff9d93016692b44e6f29886dd99f3e1f0ed08aacca6ec",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T094826Z-gwagxmnq": {
+      "archive": "output/m1-aot-20260921T094826Z-gwagxmnq/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "15bd3281a841bf888aa23c900e2b7a1d172b6da4b2e5db13d2aaccfee1b0d51e",
+      "index_sha256": "d9503714b92c95e7fcb8e4a916bb1ede8dda301cab84af4eafadd646e7ae2814",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095105Z-32onutqo": {
+      "archive": "output/m1-aot-20260921T095105Z-32onutqo/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "e8af5247923d0027df4bf190388fbff2d061a802355c3e18ef6aa15e4d7a775d",
+      "index_sha256": "ac0b712ba7207e9bdfab4b9c444b26742cbce84772818911f5f7ee933c71ec02",
+      "file_count": 10
+    },
+    "output/m1-aot-20260921T095118Z-mqmzjga0": {
+      "archive": "output/m1-aot-20260921T095118Z-mqmzjga0/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "ce1cc23a8a4f044273122baa04c8ae3f3bced42b555ae5f704fc5b5f0f97a301",
+      "index_sha256": "c6f001ddf0027d07bd42742e1e82017d2f95f3db833bb34aafc7153a7c2df297",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095131Z-h130g1ru": {
+      "archive": "output/m1-aot-20260921T095131Z-h130g1ru/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "c47ec1e5a086cac67eec5795e8b8fd3c9203d07e16de0a1aa47a46fbad22230e",
+      "index_sha256": "881a4ea7ccf16fe8537f6e54ab33a0862d6003f1ea4fa30480d71e57a6f192f7",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095144Z-c8j63rrd": {
+      "archive": "output/m1-aot-20260921T095144Z-c8j63rrd/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "fb6a1f9e9119f546a65d5e79db1cd0c2601e23f209a8db302583f96abd18b7ad",
+      "index_sha256": "df7561d5a68003d21182d7c01d89a5490f45dd9fba8bede4677f9c20c5c0bea6",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095159Z-vvi5kw7o": {
+      "archive": "output/m1-aot-20260921T095159Z-vvi5kw7o/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "e26c4c1360af52aa153af1d82307905373485ff2b694f0bb4a7a79e0dd0295b1",
+      "index_sha256": "8e12c720e2d5db45cf17293aa60b1bd5ffe27a5b9bac80014dbc55064dba1111",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095212Z-ht7whhbh": {
+      "archive": "output/m1-aot-20260921T095212Z-ht7whhbh/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "10a8c335e91b62d77e944406964622f95866c1bddef7aca72a25e3766d2a299e",
+      "index_sha256": "661fa41dd47536cc35d7995ebcef2b915e0498a31d9b69fc8099bba1268febee",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095225Z-0y6n73_f": {
+      "archive": "output/m1-aot-20260921T095225Z-0y6n73_f/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "bdb707b75bb1c4c542696e9f9c5120479b525068831721a46c552faa0476e862",
+      "index_sha256": "ce181ffdd5e78cb12baf078d2ccb4065fa8f6415c07e82185b37ad8e113c553b",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095239Z-cl7qzxnp": {
+      "archive": "output/m1-aot-20260921T095239Z-cl7qzxnp/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "407ffaf4bb1c29662a70bbd754230a2be2e258b5f94e3bef56a751342bc145f8",
+      "index_sha256": "11710c510daa614fe03defc7d4a718209b23a3a55459b99217808dfb1d15412a",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095252Z-vzu_0s81": {
+      "archive": "output/m1-aot-20260921T095252Z-vzu_0s81/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "1481841bd544594c4366a9d9744d71c591064364c8726eab8c5e7c8becd149b7",
+      "index_sha256": "72439d6ba3881d7cad441f2748e19de9917060e821943d8ae56778ba71ad4927",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095306Z-p257d070": {
+      "archive": "output/m1-aot-20260921T095306Z-p257d070/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "238f26de2c8e240cc317749c0867b43ffd1d3468bb3afa15430eda7ada04e470",
+      "index_sha256": "db40de017ddd607c8d166400cd9f3a6a5cc87d71c2d67063c96a5b08c56ec076",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095319Z-4m29v2vh": {
+      "archive": "output/m1-aot-20260921T095319Z-4m29v2vh/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "6f70c8a95e320487faceab63ec7d17b995e2dbdb669a05c10514bbe36652bfe0",
+      "index_sha256": "e896a34df205253bdc1850451710914dfaf6edd221a5efb0b9a112a087460454",
+      "file_count": 4
+    },
+    "output/m1-aot-20260921T095334Z-8izac0_7": {
+      "archive": "output/m1-aot-20260921T095334Z-8izac0_7/BINARY_ARTIFACTS.tar.gz",
+      "sha256": "9f5d332d679f71814298d93e566ddaea1935efeba3d5bb543cf372e8d5a71586",
+      "index_sha256": "8f28ba4ef5e6445b726f53b37880d55ed81aef6d103b9b06d71736ff0512cce8",
+      "file_count": 4
+    }
+  },
+  "all_source_logs_and_manifests_retained_in_place": true,
+  "current_verification_and_engine_artifacts_untouched": true,
+  "local_restore_tool": "output/restore_archived_run.py",
+  "restore_tool_sha256": "36c5404ce9d899a588d193e34dfe2c6e86dc8bdf7650821536eb9834ed70b4d8",
+  "archive_tool_sha256": "16dc9fda45538399ba846ef86238c79a992f2a757ce483c7ecde384ccf51ec40",
+  "round_trip_log": "output/historical-binary-restore-roundtrip.log"
+}

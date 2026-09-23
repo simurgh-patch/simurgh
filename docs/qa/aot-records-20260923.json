@@ -1,0 +1,209 @@
+{
+  "recorded_at": "2026-09-23 15:13 +08:00",
+  "scope": "Record types, generic fields, dynamic selectors, shape relinking and AOT/bytecode boundaries on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T063840Z-ywynyugg/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T063913Z-whl15clx/build.json",
+    "records": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T063949Z-9c71veez/build.json",
+    "record_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064024Z-1stmcokh/build.json",
+    "record_shapes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064102Z-dc2rhlbd/build.json",
+    "record_dynamic": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064139Z-ju641vas/build.json",
+    "record_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064215Z-_mecpiee/build.json",
+    "typedefs": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064252Z-xh_e2zv6/build.json",
+    "typedef_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064334Z-qy3hzq5u/build.json",
+    "typedef_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064407Z-j9skr1bf/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064445Z-50twx53m/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064521Z-wf2fo05x/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064555Z-aiibdnpk/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064629Z-1dfxbghv/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064702Z-68jp_la0/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064735Z-12o54860/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064803Z-3vieb3zp/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T064832Z-h9gebzlx/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T063840Z-ywynyugg/native-checks/report.json",
+    "verification": "output/m1-records-final-verification.log",
+    "corrected_boundary_test": "output/m1-records-boundary-retry.log",
+    "flutter_final": "output/m1-records-flutter-final.log",
+    "native_log": "output/m1-records-native.log",
+    "compiler_analysis": "output/m1-records-analysis.log",
+    "format": "output/m1-records-format.log",
+    "input_hashes": "output/m1-records-start-hashes.json",
+    "process_results": "output/m1-records-process-results.json"
+  },
+  "compiler_sha256": "da9bb7d15201f5935ce150b8477ed927649f260ad56bf75ecd54dabe82837ddd",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "c7fcec6963a29420ccec1cb4db0b673fd9b1350f3694f1eb7fb975b048ae62f1",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 129,
+    "flutter_widget_tests": 7,
+    "native_checks": 126,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures": true,
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "records": {
+      "baseline": "5:base:box:6:3:old:box:4:base:box:6:5:true:true\ntrue:(int, {Box<int> box, String label})\ngc:5:base:box:6\npattern:5:base:6\n",
+      "patched": "15:patch:patched:16:3:old:patched:4:patch:patched:16:15:true:true\ntrue:(int, {Added box, String label})\ngc:15:patch:patched:16\npattern:15:patch:16\n"
+    },
+    "record_super": {
+      "baseline": "read:3:4:6:4:4\nwrite:7:null:6\noptional:3:4:6:3:4:6\nasync:3:4:6\ngc:3:4:6\n",
+      "patched": "read:13:14:15:23:14\nwrite:7:null:15\noptional:13:14:15:13:14:15\nasync:13:14:15\ngc:13:14:15\n"
+    },
+    "record_shapes": {
+      "baseline": "2:initial:3:made:(3, label: made)\ntype:Holder\ngc:(3, label: made)\n",
+      "patched": "two:20:initial:true:three:30:made:false:(three, 30, enabled: false, label: made)\ntype:Holder\ngc:(three, 30, enabled: false, label: made)\n"
+    },
+    "record_dynamic": {
+      "baseline": "generic:base\nread:3:base:6\nerrors:true:true:true:true\ngc:3:base:6\n",
+      "patched": "generic:4\nread:30:patch:14\nerrors:true:true:true:true\ngc:30:patch:14\n"
+    },
+    "record_multilang": {
+      "baseline": "4:5:Box\nlegacy:9\n",
+      "patched": "14:15:Added\nlegacy:29\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "records": {
+      "baseline": {
+        "source_sha256": "f4f52814d4877f4814fcc8fa04996da7c95313d3520d0a9d8d88eeedd9d31587",
+        "executable_sha256": "1921a95fa71e91b62350722034f446687159c84d419e477f6deceed4c3bd89e6",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "45e0fd4838525d81cd931c7b344d455b4a73c88d84fbf8512d9d1095c519089d"
+      },
+      "patch": {
+        "source_sha256": "17e3291164da90e11290b100a8082fae3563ef4473ee12cf17fcd4428f659ea5",
+        "executable_sha256": "5b5128a5625a74b77b9eb6a4e4f96c644c0765d0f7f8036565e63fa37f5c2f74",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "938bc48842c313cecba3edfcf37b8d46c5a24d327795de5e57e8fde20a6e2395"
+      }
+    },
+    "record_super": {
+      "baseline": {
+        "source_sha256": "dcdd5331b025e365b9707d37aec968a677ef2494f0eab79fc9a9fb83cd226cfe",
+        "executable_sha256": "9b751e60640ca68ee9e64322806975a4c8aca93f72e2c2ae567631f8fe8a8576",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "c0f9a6155c5973a99c69359fade373567f6787985458cdc4e379c0737dcdb513"
+      },
+      "patch": {
+        "source_sha256": "09a5398b7674e2e340fef2c11dcbd66fcb4c8579c158e31af4d6835e2fb1d7af",
+        "executable_sha256": "a3b10c0c79f3585e4c143e9da02770c68783debbdb416d89c8513a719c31651d",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "2ed5994d79f8073a2b19ddda0ac6118ec115d1987c0a979bf2ce3cd060864fb7"
+      }
+    },
+    "record_shapes": {
+      "baseline": {
+        "source_sha256": "e848b0392af8ebbb2fffa058acfea54a154015e1cd94b817e18bb50ffd0a199a",
+        "executable_sha256": "a954ae58cb31c11df4ac5e73893aeda41d90e7f30b38c9d67caace9675a70890",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "09f19ee2237bf7d45f8d5f7ff21b0aa606f0ebc8e16d6e1039fd8c5a29020639"
+      },
+      "patch": {
+        "source_sha256": "009daf07f3456d1a0b962725793ced2b2117a07df186515ff9fed77370fdabc8",
+        "executable_sha256": "ee350e119cfe9606c113340bb9c7749dbf9b7e15b78f9c64f6e62a027e3b7554",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "641d03c58c3b5d36379e14f66ff782eba38d79fef0e80669b6279f48ccb74bda"
+      }
+    },
+    "record_dynamic": {
+      "baseline": {
+        "source_sha256": "dcb8f0174fb55edd1cf15bc8aa95129c55188e32878422a5e3676b2319b7da21",
+        "executable_sha256": "cdc5877e8c01af25d51a8a27d841722021b12006c6a0a9739e046e703e7d0a8d",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "f06680c27286753c0d6a9c476215112cd4f49c807e10894151815fbe7f37a876"
+      },
+      "patch": {
+        "source_sha256": "db31b483b69b2e38b0f53a0fa9a2bb588bcd1b7525fdf4ed5e4a17cb3a55012f",
+        "executable_sha256": "08cd7c0f75c0f1f59e794d7dc034977d0a21a71fcad0b187365d28cef07a77e8",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "3da9fe5442fb6b46cfb9847b7255c5f11f12cfba6645cb71120911ca1ed1a04a"
+      }
+    },
+    "record_multilang": {
+      "baseline": {
+        "source_sha256": "9dab166fc580055821846ade2b70d5d9a7f9bee8fa3368f0a0a4a5a03333727b",
+        "executable_sha256": "0266d214929808f6e7f41730be4cbf2d39223ee20cc4d0e6db7b00018c5ee136",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "88820161e14dc9e9c775ef403d8b21197e924d187b03a28f2bb96e85c817be62"
+      },
+      "patch": {
+        "source_sha256": "6dd30e158b6d01ea5e16fe6a78741c78f096fddb81e5385f4cd78df57573a72c",
+        "executable_sha256": "6792642eaf3601f44399ef24b621701b188aa3406761273c0eabfe84dfc30527",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "db02978492badcdd0b718f54e371f690e44acc905ec7d6addcaf5fb485d82c6b"
+      }
+    }
+  },
+  "gc": {
+    "record_scavenges": 16,
+    "record_super_scavenges": 16,
+    "record_shape_scavenges": 16,
+    "record_dynamic_scavenges": 16
+  },
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0"
+  },
+  "patch_kernel_sha256": "e062efc24b2325c4653fbfc958808bc7a56e47aa380aa78d1c7d19d267f53a57",
+  "unknown_record_getter_rejected_without_bytecode": true,
+  "incompatible_record_signature_rejected_without_slot_mutation": true,
+  "validation_method": "The full verify.sh run passed 16 Dart tests and 128 of 129 Python tests; one test had two obsolete record-bound rejection assertions. Only that method was corrected (previous file reconstructed and hash-checked), its focused retry passed, and the previously unreached Flutter analysis/7 tests passed separately. All 152 distinct current ordinary tests are covered; the full script was not rerun after this test-only correction.",
+  "supplementary_record_bounds": {
+    "run": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T070936Z-e57r4yuh",
+    "compiler_sha256": "da9bb7d15201f5935ce150b8477ed927649f260ad56bf75ecd54dabe82837ddd",
+    "source_aot_matches": true,
+    "outputs": [
+      "10",
+      "14"
+    ],
+    "installed": [
+      "C.total"
+    ],
+    "generic_class_and_function_record_bounds": true,
+    "artifacts_verified": true
+  },
+  "notes": [
+    "Render record types recursively, preserving structural runtime identity, positional/named fields, empty/single-field and nullable records, generic substitutions, function fields and typedef targets.",
+    "Typed old AOT consumers read record payload objects added by bytecode. Original-source AOT matches mixed output, including record runtimeType and pattern destructuring.",
+    "Generic super fields, null-aware writes, super method calls and async record returns retain original storage and callback dispatch.",
+    "Record shape changes through aliases relink global storage, classes and signatures; incompatible typed functions stay module-local.",
+    "Resolved record shapes retain get/invoke paths, including generic function-valued fields used for the first time by a patch. New record shapes can use retained selectors; unknown selectors still fail CFE validation.",
+    "Dynamic record reads/closure calls, bad argument types/arity, immutable writes and missing fields match original-source behavior.",
+    "Fresh baseline/patch Kernel inspections verify actual 3.0/3.4/3.12 library versions.",
+    "The initial ordinary suite had an obsolete test expecting inferred record globals to be rejected. It was stopped, the failure reproduced, and the test now proves inferred record storage plus unchanged global deletion rejection. The compiler stayed frozen; a full ordinary rerun then exposed two more obsolete record-bound assertions in one method. That method now accepts valid class/function bounds and rejects invalid type arguments; its focused retry and the separately completed Flutter phase passed. The compiler remained frozen throughout.",
+    "The first multilang fixture incorrectly read a record pattern wildcard as a variable. Source analysis rejected it; a named binding fixed the fixture and regressions passed.",
+    "An isolated negative-probe extraction initially had a Python indentation error; its wrapper was corrected before running both successful native negatives.",
+    "Historical full native suite was not rerun; this report covers eighteen rebuilt groups."
+  ],
+  "limitations": [
+    "All pattern forms, unlinked SDK/native code, metadata and enum declarations remain outside this acceptance.",
+    "Full Flutter/mobile cold start, signing/rollback and physical-device performance remain incomplete. Retention/instrumentation cost is not benchmarked."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

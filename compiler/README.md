@@ -51,7 +51,7 @@ Each run generates baseline AOT and a bytecode module, then launches the same AO
 
 Currently supported: a graph of local libraries under the entry file's directory and resolved pure Dart package libraries, relative/package imports/exports and the linked SDK libraries described below, synchronous or Future/dynamic-returning async public/private top-level and supported instance methods and explicit getters/setters, resolved primitive/linked-SDK/program-class/type-parameter/function return and required/optional positional or named parameter types, new libraries/functions with recursion, unchanged retained-entry signatures, function tear-offs in accepted expression positions, synchronous/async closures and local functions with resolved parameter types, mutable captures, primitive expressions, branches, while/for loops, local pattern bindings and exceptions. Class method changes work for the checked class subset, including generic receiver types, with explicit or inferred instance fields, generative/body-factory/redirecting constructors and single inheritance. Resolved local bindings may shadow ordinary program names. Dispatch slots preserve required named markers and optional parameter groups without putting default expressions in function types. Wrappers forward named arguments by name; methods, super bridges, constructors and closures retain their original defaults. Default-value changes unrelated to dependency relocation are rejected as signature changes because unchanged AOT callers can bake them in. A default that captures a relocated function moves with that function and its callers. Existing function references retain baseline wrapper identity, while new functions refer to module-local entities. Returned bytecode closures can be called by unchanged AOT functions, including across GC and exception boundaries. Function body changes are installed before the user's `main` runs.
 
-Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, conditional/deferred imports, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, generators and void-async top-level/method declarations, external/annotated constructors, unsupported inherited record type substitutions, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
+Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, conditional/deferred imports, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, generators and void-async top-level/method declarations, external/annotated constructors, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
 
 The generated installer checks the baseline fingerprint and all replacement types before mutating slots. The fingerprint binds the complete original source graph, toolchain lock and all three compiler source files. Logical identities are independent of the checkout's absolute location. Baseline and patch archives contain `source_graph.json` with original sources, dependencies and logical-to-generated symbol mappings; archived-source tampering is rejected. Class-shape hashes record the frozen structural baseline. **This is compatibility binding, not authentication:** bytecode is trusted local experimental input. No signature parser, untrusted-bytecode hardening, rollback, mobile startup hook, network service or published update is implemented.
 
@@ -89,7 +89,7 @@ The generic fixture checks int/string instantiations, unchanged generic AOT call
 
 Generic class type parameters are renamed by resolved element identity, so a method parameter named `T` can shadow a class parameter named `T` without colliding in a lifted helper. Helpers carry class parameters before method parameters and receive the original instantiated object. Super bridge signatures substitute the ancestor type arguments obtained from the analyzer, including multi-level inheritance and concrete specializations. Changes to field layouts, parameter counts/bounds or hierarchy trigger class versioning. Baseline objects are not converted in place.
 
-The generic-class fixture checks `Box<T>`, `Child<U>`, an `int` specialization, bounded classes, generic getters/setters and methods, async return type preservation, method/class type-parameter shadowing, covariance write checks and a bytecode-added generic subclass. Old AOT reads the new object's inherited type and retains it across GC. Both source versions are compiled separately to ordinary AOT for observable-output comparison. Unsupported inherited function/record type substitutions are rejected explicitly.
+The generic-class fixture checks `Box<T>`, `Child<U>`, an `int` specialization, bounded classes, generic getters/setters and methods, async return type preservation, method/class type-parameter shadowing, covariance write checks and a bytecode-added generic subclass. Old AOT reads the new object's inherited type and retains it across GC. Both source versions are compiled separately to ordinary AOT for observable-output comparison. Function and record substitutions now follow resolved generic types; the record increment below documents the checked cases.
 
 ## Class versioning and dependency closure
 
@@ -132,7 +132,7 @@ Missing top-level/local return annotations and simple parameter annotations are 
 
 The accepted signature types include dynamic, Object, Null, Never and nullable forms of otherwise supported types. Unrelated signature changes, including narrowing a dynamic input to int, still fail closed. An unannotated no-argument main is accepted with its resolved dynamic return type; the launcher awaits its result. Explicit void-async functions remain unsupported because preserving their dynamically observable Future requires further work.
 
-For-loop and local pattern bindings no longer need the old parser-only rejection: library resolution distinguishes their local elements from generated stable program identities before emission. The signatures fixture exercises shadowed function names in loops and record destructuring, inherited generic signature inference, nullable arguments, inferred closures and async return behavior. This does not claim general record signatures, all patterns or all dynamic behavior are complete.
+For-loop and local pattern bindings no longer need the old parser-only rejection: library resolution distinguishes their local elements from generated stable program identities before emission. The signatures fixture exercises shadowed function names in loops and record destructuring, inherited generic signature inference, nullable arguments, inferred closures and async return behavior. The record increment below covers record signatures; all patterns and all dynamic behavior are not yet complete.
 
 ## Dynamic selector contract
 
@@ -160,7 +160,7 @@ All six libraries are part of the baseline contract, even if a particular applic
 
 Resolved public SDK types, nested generics and accepted function types are usable in globals, parameters, results and generic bounds. Existing signature compatibility checks still apply. The `aot_sdk` fixture passes real Uint8List/List/Map/Queue/DateTime/Stream/Future objects across the boundary, preserves shared typed-array storage, calls SDK APIs from bytecode and catches a SDK FormatException in unchanged AOT. Its main and typed-array reader remain AOT. Independent source AOT is the output oracle. This is not a claim that every method in these libraries or every Stream lifecycle has passed runtime tests.
 
-Package constructs outside the supported lowered source subset, other SDK libraries (including io/isolate/ffi), general extension declarations, broader SDK coverage and record signature types remain incomplete. Their existing fail-closed boundaries are preserved.
+Package constructs outside the supported lowered source subset, other SDK libraries (including io/isolate/ffi), general extension declarations and broader SDK coverage remain incomplete. Their existing fail-closed boundaries are preserved.
 
 ```sh
 python3 scripts/aot_lab.py --baseline compiler/fixtures/aot_sdk_baseline/app.dart --candidate compiler/fixtures/aot_sdk_patch/app.dart
@@ -691,6 +691,31 @@ callbacks, async return aliases (including identity aliases), static members,
 const/type/constructor identity, patch-added objects and GC, changed target types
 and storage, parts/re-exports/same-name libraries, SDK ancestry and closed class
 relinking. Baseline and patch Kernel inspection checks 3.0/3.4/3.12 libraries.
-Aliases do not enable unsupported target types such as records, annotated
-aliases, or unlinked SDK/native declarations. Full Flutter and mobile acceptance
+Aliases do not enable unsupported annotated declarations or unlinked SDK/native
+targets; supported record targets are described below. Full Flutter and mobile acceptance
 remain outstanding.
+
+### Record types and values
+
+Positional/named record types are rendered recursively through generic
+substitution, including empty/single-field records, nullable records, nested
+function fields, inferred storage and typedef targets. Runtime record values
+retain Dart's structural identity, field order rules and native representation.
+The fixtures cover typed AOT consumers of new bytecode payload objects, record
+patterns, generic super field/method access, null-aware field assignment, async
+returns and actual GC.
+
+Record shape changes through typedefs relink affected storage, classes and typed
+functions. Unrelated direct signature changes still require a new baseline; a
+native negative test checks incompatible record-slot installation is rejected
+before any slot changes.
+
+Resolved source types (including expression inference) retain dynamic getters
+for known record fields and invocation paths for callable, dynamic or generic
+fields. A patch can introduce a new record shape using retained selectors.
+Unknown dynamic field selectors still fail bytecode validation. Native tests
+check positional/named reads, closure invocation, type/arity errors, immutable
+writes and missing fields; no broad dynamic-validation bypass is enabled.
+Separate 3.0/3.12 libraries and a newly added 3.4 payload library are checked in
+both baseline and patch Kernel. These host experiments do not complete all
+pattern forms, Flutter/mobile integration or performance acceptance.

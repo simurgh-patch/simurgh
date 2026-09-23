@@ -104,6 +104,12 @@ bool supportedType(TypeAnnotation? type, {bool allowVoid = true}) {
                 true) &&
             type.importPrefix == null);
   }
+  if (type is RecordTypeAnnotation) {
+    return [...type.positionalFields, ...?type.namedFields?.fields].every(
+      (field) =>
+          field.metadata.isEmpty && supportedType(field.type, allowVoid: false),
+    );
+  }
   if (type is GenericFunctionType) {
     return supportedTypeParameters(type.typeParameters) &&
         supportedType(type.returnType) &&

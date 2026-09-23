@@ -503,12 +503,64 @@ String _rewrite(String source, AstNode node, List<_Edit> edits) {
   return text;
 }
 
+// Collect actual record shapes in the resolved source, including inferred SDK
+// expression types and record fields nested inside function/container types.
+class _RecordSelectors extends GeneralizingAstVisitor<void> {
+  final fields = <String, bool>{};
+  final seen = <DartType>{};
+  void type(DartType? value) {
+    if (value == null || !seen.add(value)) return;
+    if (value is RecordType) {
+      void field(String name, DartType fieldType) {
+        fields[name] =
+            (fields[name] ?? false) ||
+            fieldType is FunctionType ||
+            fieldType is DynamicType ||
+            fieldType is TypeParameterType;
+        type(fieldType);
+      }
+
+      for (var i = 0; i < value.positionalFields.length; i++) {
+        field('\$${i + 1}', value.positionalFields[i].type);
+      }
+      for (final item in value.namedFields) {
+        field(item.name, item.type);
+      }
+    } else if (value is InterfaceType) {
+      value.typeArguments.forEach(type);
+    } else if (value is TypeParameterType) {
+      type(value.bound);
+    } else if (value is FunctionType) {
+      type(value.returnType);
+      for (final parameter in value.formalParameters) {
+        type(parameter.type);
+      }
+      for (final parameter in value.typeParameters) {
+        type(parameter.bound);
+      }
+    }
+  }
+
+  @override
+  void visitExpression(Expression node) {
+    type(node.staticType);
+    super.visitExpression(node);
+  }
+
+  @override
+  void visitTypeAnnotation(TypeAnnotation node) {
+    type(node.type);
+    super.visitTypeAnnotation(node);
+  }
+}
+
 // Each root is callable from the dynamic interface, so optimization must retain
 // its selector and the native dynamic argument-checking paths. These functions
 // are generated infrastructure and are never executed during application boot.
 List<Map<String, String>> _dynamicRetentionRoots(
   _Classes classes,
   Iterable<LibraryElement> sdkLibraries,
+  Map<String, bool> recordFields,
 ) {
   final roots = <String, Map<String, String>>{};
   void add(String selector, String expression, int count) {
@@ -577,6 +629,10 @@ List<Map<String, String>> _dynamicRetentionRoots(
     }
   }
 
+  for (final entry in recordFields.entries) {
+    add('get:${entry.key}', 'receiver.${entry.key}', 0);
+    if (entry.value) add('invoke:${entry.key}', 'receiver.${entry.key}()', 0);
+  }
   add('invoke:call', 'receiver.call()', 0);
   for (final library in sdkLibraries) {
     for (final element in [
@@ -815,6 +871,10 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     versionNumbers.sort();
     final latest = versionNumbers.last;
     final languageVersion = '${latest ~/ 1000}.${latest % 1000}';
+    final recordSelectors = _RecordSelectors();
+    for (final unit in resolved.values) {
+      unit.unit.accept(recordSelectors);
+    }
     final entities = <Element, String>{};
     for (final unit in resolved.values) {
       unit.unit.accept(_ParameterSymbols(entities));
@@ -1086,7 +1146,11 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
           if (classes.sdkInterface(element))
             {'library': element.library.uri.toString(), 'class': element.name},
       ],
-      'dynamic_retention_roots': _dynamicRetentionRoots(classes, sdkLibraries),
+      'dynamic_retention_roots': _dynamicRetentionRoots(
+        classes,
+        sdkLibraries,
+        recordSelectors.fields,
+      ),
     });
   } finally {
     await collection.dispose();

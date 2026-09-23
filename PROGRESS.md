@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-23 14:18 +08:00
+最后实质更新：2026-09-23 15:13 +08:00
 
 ## 当前状态
 
@@ -9,6 +9,8 @@
 M0 基础工具已落地；用户已授权忽略空间检查，完整源码与依赖已同步成功，用户已安装Metal，宿主/Android/iOS Release源码编译已成功，独立样例双端Release接入编译和包内引擎标识核对已通过，尚未完成真机验证；M1已开始，M2–M7未开始。已实现宿主ARM64受限AOT/字节码替换实验，完整Dart/Flutter补丁编译器、移动端混合运行时、更新器、服务和控制台未完成。所有实现和独立样例均在 simurgh 项目；不修改 OA 管理端或 oa-app。
 
 ## 已实现
+
+- 最新M1 record：支持记录类型的递归渲染、泛型字段/函数/nullable/typedef及形状变化重连；按已解析字段保留动态get/invoke，未知getter仍拒绝。152项普通测试、126项专项原生检查及18组当前指纹/源码/制品核对通过，原始源码AOT对照、GC、实际3.0/3.4/3.12 Kernel及签名原子拒绝已验。证据docs/qa/aot-records-20260923.json。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
 - 最新M1类型别名：支持现代/旧式typedef、原生构造器tear-off/泛型绑定、函数/nullable/SDK/异步别名，目标类型及底层类变化重连函数/存储/类；保留封闭祖先、parts和跨库语义。145项普通测试、130项专项原生检查及19组当前指纹/源码/制品核对通过，原始源码AOT对照、GC和实际3.0/3.4/3.12 Kernel版本已验。证据docs/qa/aot-typedefs-20260923.json。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭。
 
@@ -220,3 +222,13 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 - 2026-09-23 14:18 +08:00：完成typedef类型别名：原始解析检查隐私/泛型边界，规范化别名目标并保留声明/泛型绑定，由CFE处理构造器调用和tear-off、raw推断、部分绑定及参数重排；现代/旧式函数别名、嵌套泛型、nullable、SDK和静态成员与原始源码AOT一致。异步返回按解析类型判断，Identity<Future<T>>可用；main返回规范化，void-async仍拒绝。补丁透明重声明别名，保留AOT类身份；目标类型或底层类变化时传播至签名/全局存储/类，不把新签名安装进旧槽；删除typedef不删除底层类。层次别名展开为真实祖先，不能绕过封闭类边界。跨库同名、re-export、part私有构造器与3.0/3.4/3.12实际Kernel版本通过。新对象及重连存储分别跨16和16次Scavenge仍正确。初次定向误计别名数量、误判别名静态访问；修正并增加正向原生覆盖后通过；跨版本part遗漏版本标记的失败也保留。最终verify.sh为16 Dart+122 Python+7 Flutter共145项，130项原生检查及编译器分析/格式通过，19组当前指纹/源码/制品核对；未重跑历史原生全集。证据docs/qa/aot-typedefs-20260923.json。Record/注解及完整Flutter/移动冷启动/签名回退/性能真机仍未验收，生产门禁关闭；下一步继续真实Flutter必需声明和类型语义。本轮按约定commit正文包含Important Changes并推送main，实际交付状态以Git核对。
 
   - 后续record预研位于output/record-compiler及output/record-inspection，未合入主线：副本新增RecordType渲染和递归字段类型校验，位置/命名字段、空/单字段、nullable、泛型父类返回及解构样例混合执行与独立原始源码AOT双侧完全一致；仅make/Box.label安装补丁、Added新类由旧consume读取，跨16次Scavenge仍正确。证据RESULT.json和NOTES.md。首次副本pubspec触发的包配置重写导致Kernel缺args/kernel/vm，已保存失败配置和日志，移开副本pubspec/lock并恢复固定源码配置后在新目录重建通过。下一轮需补record形状变化、函数字段、super字段、异步和跨版本等正式回归，再合入；不计为当前已支持。
+
+- 2026-09-23 14:39 +08:00：record主线检查点：已合入递归RecordType渲染、RecordTypeAnnotation校验，新增解析后record字段的动态get/invoke保留（含泛型字段），仍按基线选择器契约验证补丁。加入5组正式样例及7项回归，覆盖record/模式/新增payload、泛型super字段与异步、形状变化重连、动态闭包/错误及混合语言版本。初次定向6项通过，混合版本样例误把record pattern的_当可读变量而失败；改具名绑定后复测，并补首次调用泛型函数字段，相关2项通过。所有主要探索混合执行通过；未知getter不产字节码、不兼容record签名原子拒绝两项原生负例通过，首次独立负例提取脚本缩进错误已保留并修复。编译器分析及16文件格式通过。源码冻结output/m1-records-start-hashes.json，完整verify.sh在session24847运行，18组最终原生回归在session31868运行；日志output/m1-records-verification.log与output/m1-records-native.log。尚未登记完整验收、commit或push；下一步等同一进程完成并核对当前指纹/源码/制品、独立原始AOT、GC及实际Kernel版本，再按约定提交Important Changes并推送main。完整Flutter/移动启动/签名回退/性能真机仍未完成，生产门禁关闭，无OA改动。
+
+  - 2026-09-23 14:52 +08:00补充：完整普通回归第20项暴露旧test_globals_unsupported_and_deletion_rejected仍把推断record全局变量当非法。已停止普通session24847（实际退出143），取消说明output/m1-records-verification-cancelled.json，独立失败复现output/m1-records-obsolete-global-assertion.log。仅更新该测试为推断类型/重连/删除边界正向+负向验证，定向通过；编译器和所有原生输入未改变，旧冻结哈希保留before-test-update，当前仅更新测试哈希。普通全集重新运行session11247，日志output/m1-records-final-verification.log；原生session31868继续。磁盘可用空间不足600MiB，正在将2026-09-23之前已完成实验的生成二进制无损归档，session33785；逐文件/归档读取哈希核验后释放原文件，源码/日志/build.json原地保留，ARCHIVED-BINARIES.json记录恢复命令，工具output/restore_archived_run.py，当前验证目录不在归档范围。尚未宣称本轮全部通过或提交。
+
+- 2026-09-23 15:13 +08:00：完成record类型及值接入：递归渲染位置/命名、空/单字段、nullable与嵌套函数/泛型记录类型，保留原生结构身份和命名字段顺序规则；typedef目标和继承替换支持record。原始源码独立AOT对照覆盖模式解构、补丁新增payload由旧AOT消费、泛型super字段读写/空值赋值/异步返回，以及形状变化后的存储/类/签名重连。动态保留根从原始解析类型收集已知字段，包含泛型字段的首次函数调用；补丁可增加使用已保留选择器的新形状。动态参数类型/个数、只读写入、缺字段均按预期抛错；未知getter编译失败且无字节码，不兼容record槽签名原子拒绝且旧槽未部分改变。4组实际GC次数分别为16,16,16,16；跨版本基线/补丁Kernel读取确认3.0/3.4/3.12。首轮普通回归发现旧断言仍拒绝推断record全局变量，已停止并保存独立失败复现，改为验证其类型/重连且删除全局仍拒绝后重跑全集；编译器指纹保持不变。首轮样例把record pattern的_误当变量被原始分析拒绝，具名绑定后复测；独立负例提取脚本缩进错误已保留并修复。普通验证覆盖16 Dart+129 Python+7 Flutter共152项：verify.sh重跑仅一个测试中的两条过时record泛型约束拒绝断言失败，修正为合法约束通过/非法实参拒绝后定向复测通过，并单独补跑Flutter分析及7项测试；仅此测试方法变化已还原旧文件并核对冻结哈希，未再次重跑整条脚本。126项原生检查及编译器分析/格式通过，18组当前指纹/源码/制品核对；未重跑历史原生全集。证据docs/qa/aot-records-20260923.json。全模式/metadata/enum及完整Flutter/移动冷启动/签名回退/性能真机仍未验收，生产门禁关闭。下一步继续真实Flutter必需声明语义；本轮按约定commit正文包含Important Changes并推送main，实际交付状态以Git核对。
+
+  - 本轮补充：两条过时泛型约束断言失败日志为output/m1-records-final-verification.log（完整129项Python，退出1），独立复现output/m1-records-boundary-reproduction.log；修正后output/m1-records-boundary-retry.log退出0，Flutter分析及7项测试另行退出0。最初定向命令使用错误Python模块路径，仅导入失败，纠正PYTHONPATH后才得到真实复现。泛型record约束补充实验output/record-bounds-inspection/RESULT.json：类与函数的Iterable<(int,int)>约束均可用，仅C.total进入字节码，保留AOT泛型调用方；10→14与两侧独立源码AOT一致，编译器及制品哈希核对通过，不并入126项原生统计。
+  - 磁盘归档完成：113个2026-09-23之前已完成output/m1-aot-*目录仅生成的.aot/.dill/.bytecode无损压缩，逐成员SHA256读回核验后移除原件；源码、日志和build.json保持原位，ARCHIVED-BINARIES.json含恢复命令。对output/m1-aot-20260921T070954Z-elxymfow实际恢复并校验，恢复件保留；净释放1,440,316,046字节。证据docs/qa/historical-binary-archive-20260923.json；当前验收与引擎制品未改动。
+  - 下一轮enum预研仅在output/enum-inspection：原始源码AOT覆盖普通/私有值、增强泛型枚举、mixin/interface、索引/名称/穷尽switch/常量身份。直接重命名会改变Enum.name/toString；手工保留私有值并生成public const别名、补原始默认toString，配合现有运行时显示名修复，真实Kernel/AOT输出与原始一致（BRIDGE-RESULT.json）。analyzer证实Enum可实现不可普通继承，默认toString不在用户methods列表。尚无自动enum lowering或混合补丁验收；下一步实现真实枚举声明/构造参数/私有值别名、默认显示及值变化重连，再补独立原生回归。完整目标仍进行中。

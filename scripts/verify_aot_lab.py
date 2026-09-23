@@ -51,6 +51,11 @@ def main():
     parser.add_argument('--type-names-run-dir', type=Path)
     parser.add_argument('--super-parameters-run-dir', type=Path)
     parser.add_argument('--super-fields-run-dir', type=Path)
+    parser.add_argument('--records-run-dir', type=Path)
+    parser.add_argument('--record-super-run-dir', type=Path)
+    parser.add_argument('--record-shapes-run-dir', type=Path)
+    parser.add_argument('--record-dynamic-run-dir', type=Path)
+    parser.add_argument('--record-multilang-run-dir', type=Path)
     parser.add_argument('--typedefs-run-dir', type=Path)
     parser.add_argument('--typedef-relink-run-dir', type=Path)
     parser.add_argument('--typedef-multilang-run-dir', type=Path)
@@ -93,7 +98,7 @@ def main():
             raise RuntimeError(f'{name} failed; inspect {destination}')
         return process.stdout
 
-    folders = [run, gc_run] + [p.resolve() for p in [args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
+    folders = [run, gc_run] + [p.resolve() for p in [args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -132,6 +137,20 @@ def main():
         return result
 
     for kind, folder, expected_base, expected_patch in [
+        ('records', args.records_run_dir,
+         ['5:base:box:6:3:old:box:4:base:box:6:5:true:true', 'true:(int, {Box<int> box, String label})', 'gc:5:base:box:6', 'pattern:5:base:6'],
+         ['15:patch:patched:16:3:old:patched:4:patch:patched:16:15:true:true', 'true:(int, {Added box, String label})', 'gc:15:patch:patched:16', 'pattern:15:patch:16']),
+        ('record_super', args.record_super_run_dir,
+         ['read:3:4:6:4:4', 'write:7:null:6', 'optional:3:4:6:3:4:6', 'async:3:4:6', 'gc:3:4:6'],
+         ['read:13:14:15:23:14', 'write:7:null:15', 'optional:13:14:15:13:14:15', 'async:13:14:15', 'gc:13:14:15']),
+        ('record_shapes', args.record_shapes_run_dir,
+         ['2:initial:3:made:(3, label: made)', 'type:Holder', 'gc:(3, label: made)'],
+         ['two:20:initial:true:three:30:made:false:(three, 30, enabled: false, label: made)', 'type:Holder', 'gc:(three, 30, enabled: false, label: made)']),
+        ('record_dynamic', args.record_dynamic_run_dir,
+         ['generic:base', 'read:3:base:6', 'errors:true:true:true:true', 'gc:3:base:6'],
+         ['generic:4', 'read:30:patch:14', 'errors:true:true:true:true', 'gc:30:patch:14']),
+        ('record_multilang', args.record_multilang_run_dir,
+         ['4:5:Box', 'legacy:9'], ['14:15:Added', 'legacy:29']),
         ('typedefs', args.typedefs_run_dir,
          ['delayed:4', 'static:3:3:3', '7:5:6:Box<int>:7:2.5:8', 'true:true:true:true:true', 'left:2:String:int:right:3:String:int:9:10:11', 'added:box:12:Box<int>', 'gc:box:12'],
          ['delayed:4', 'static:4:4:4', '17:5:6:Box<int>:7:2.5:8', 'true:true:true:true:true', 'left:2:String:int:right:3:String:int:9:10:12', 'added:patched:12:Added', 'gc:patched:12']),
@@ -290,11 +309,11 @@ def main():
             continue
         folder = folder.resolve()
         before = digest(folder / 'baseline/app.aot')
-        if kind in ['multilang', 'multilang_added', 'multilang_packages', 'parts_packages', 'named_mixin_multilang', 'typedef_multilang']:
+        if kind in ['multilang', 'multilang_added', 'multilang_packages', 'parts_packages', 'named_mixin_multilang', 'typedef_multilang', 'record_multilang']:
             metadata = json.loads((folder / 'baseline/manifest.json').read_text())
             expected_versions = {'multilang': {'3.0', '3.12'},
                                  'multilang_added': {'3.0'},
-                                 'multilang_packages': {'3.0', '3.1'}, 'parts_packages': {'3.0', '3.12'}, 'named_mixin_multilang': {'3.0', '3.12'}, 'typedef_multilang': {'3.0', '3.12'}}[kind]
+                                 'multilang_packages': {'3.0', '3.1'}, 'parts_packages': {'3.0', '3.12'}, 'named_mixin_multilang': {'3.0', '3.12'}, 'typedef_multilang': {'3.0', '3.12'}, 'record_multilang': {'3.0', '3.12'}}[kind]
             if set(metadata['library_language_versions'].values()) != expected_versions:
                 raise ValueError('Fixture source language versions were not preserved')
             if kind == 'multilang_packages' and (
@@ -312,7 +331,7 @@ def main():
                     raise ValueError('CFE Kernel library language does not match original source')
             report[kind + '_kernel_languages'] = versions
             report['kernel_language_inspector_sha256'] = digest(inspector)
-            if kind in ['named_mixin_multilang', 'typedef_multilang']:
+            if kind in ['named_mixin_multilang', 'typedef_multilang', 'record_multilang']:
                 sdk = source_dart.parent.parent
                 packages = ROOT / 'compiler/.dart_tool/package_config.json'
                 kernel = destination / (kind + '-patch.dill')
@@ -335,12 +354,12 @@ def main():
 
 
         baseline_output = execute(kind + '-baseline', [RUNTIME, folder / 'baseline/app.aot'], lines=expected_base)
-        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in ['closures', 'classes', 'new-classes', 'accessors', 'async', 'generics', 'generic_classes', 'layout', 'dynamic_calls', 'multilang', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'parts', 'sdk_interfaces', 'sdk_super', 'sdk_super_gc', 'sdk_mixins', 'super_fields', 'private_interfaces', 'named_mixins', 'named_mixin_relink', 'typedefs', 'typedef_relink'] else []
+        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in ['closures', 'classes', 'new-classes', 'accessors', 'async', 'generics', 'generic_classes', 'layout', 'dynamic_calls', 'multilang', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'parts', 'sdk_interfaces', 'sdk_super', 'sdk_super_gc', 'sdk_mixins', 'super_fields', 'private_interfaces', 'named_mixins', 'named_mixin_relink', 'typedefs', 'typedef_relink', 'records', 'record_super', 'record_shapes', 'record_dynamic'] else []
         output = execute(kind + '-patched', [RUNTIME, *options, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'],
                          contains=(['Scavenge('] if options else []), lines=expected_patch)
         if options:
-            report[{'closures': 'closure_scavenges', 'classes': 'class_scavenges', 'new-classes': 'new_class_scavenges', 'accessors': 'accessor_scavenges', 'async': 'async_scavenges', 'generics': 'generic_scavenges', 'generic_classes': 'generic_class_scavenges', 'layout': 'layout_scavenges', 'dynamic_calls': 'dynamic_scavenges', 'multilang': 'multilang_scavenges', 'static': 'static_scavenges', 'interfaces': 'interface_scavenges', 'mixins': 'mixin_scavenges', 'factories': 'factory_scavenges', 'late_fields': 'late_field_scavenges', 'late_references': 'late_reference_scavenges', 'operators': 'operator_scavenges', 'parts': 'parts_scavenges', 'sdk_interfaces': 'sdk_interface_scavenges', 'sdk_super': 'sdk_super_scavenges', 'sdk_super_gc': 'sdk_super_new_object_scavenges', 'sdk_mixins': 'sdk_mixin_scavenges', 'super_fields': 'super_field_scavenges', 'private_interfaces': 'private_interface_scavenges', 'named_mixins': 'named_mixin_scavenges', 'named_mixin_relink': 'named_mixin_relink_scavenges', 'typedefs': 'typedef_scavenges', 'typedef_relink': 'typedef_relink_scavenges'}[kind]] = output.count('Scavenge(')
-        if kind in ['async', 'generics', 'generic_classes', 'layout', 'globals', 'late_final', 'inference', 'signatures', 'dynamic_calls', 'sdk', 'packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors']:
+            report[{'closures': 'closure_scavenges', 'classes': 'class_scavenges', 'new-classes': 'new_class_scavenges', 'accessors': 'accessor_scavenges', 'async': 'async_scavenges', 'generics': 'generic_scavenges', 'generic_classes': 'generic_class_scavenges', 'layout': 'layout_scavenges', 'dynamic_calls': 'dynamic_scavenges', 'multilang': 'multilang_scavenges', 'static': 'static_scavenges', 'interfaces': 'interface_scavenges', 'mixins': 'mixin_scavenges', 'factories': 'factory_scavenges', 'late_fields': 'late_field_scavenges', 'late_references': 'late_reference_scavenges', 'operators': 'operator_scavenges', 'parts': 'parts_scavenges', 'sdk_interfaces': 'sdk_interface_scavenges', 'sdk_super': 'sdk_super_scavenges', 'sdk_super_gc': 'sdk_super_new_object_scavenges', 'sdk_mixins': 'sdk_mixin_scavenges', 'super_fields': 'super_field_scavenges', 'private_interfaces': 'private_interface_scavenges', 'named_mixins': 'named_mixin_scavenges', 'named_mixin_relink': 'named_mixin_relink_scavenges', 'typedefs': 'typedef_scavenges', 'typedef_relink': 'typedef_relink_scavenges', 'records': 'record_scavenges', 'record_super': 'record_super_scavenges', 'record_shapes': 'record_shape_scavenges', 'record_dynamic': 'record_dynamic_scavenges'}[kind]] = output.count('Scavenge(')
+        if kind in ['async', 'generics', 'generic_classes', 'layout', 'globals', 'late_final', 'inference', 'signatures', 'dynamic_calls', 'sdk', 'packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang']:
             # Compare with the unmodified source compiled to ordinary AOT too;
             # the transformer and hand-written expected values are not oracles
             # for scheduling and type semantics by themselves.
@@ -348,7 +367,7 @@ def main():
             for side, expected in [('baseline', expected_base), ('patch', expected_patch)]:
                 graph = json.loads((folder / side / 'source_graph.json').read_text())
                 source = destination / (kind + '-source-' + side + '.dart')
-                if kind in ['packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors']:
+                if kind in ['packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang']:
                     reference = destination / (kind + '-reference-' + side)
                     reference.mkdir()
                     def library_path(uri):
@@ -390,6 +409,24 @@ def main():
                 if actual.splitlines() != expected:
                     raise RuntimeError('Untransformed source differs from expected observable behavior')
             report[kind + '_source_aot_reference_matches'] = True
+        if kind in ['records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang']:
+            clean = execute(kind + '-patched-clean', [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'], lines=expected_patch)
+            if baseline_output.splitlines() != expected_base or clean.splitlines() != expected_patch:
+                raise RuntimeError('Record behavior differs from original-source AOT')
+            metadata = json.loads((folder / 'patch/manifest.json').read_text())
+            names = lambda field: sorted(metadata['entities'][symbol]['name'] for symbol in metadata[field])
+            if kind == 'record_shapes':
+                if names('replaced_classes') != ['Holder'] or names('replaced_globals') != ['stored'] or names('installed_functions') != ['create', 'main']:
+                    raise RuntimeError('Changed record shape must relink typed storage and callers')
+                if names('module_only_functions') != ['Holder.label', 'consume', 'make']:
+                    raise RuntimeError('Changed record signature must not enter retained slots')
+            else:
+                installed = {'records': ['Box.label', 'make'], 'record_super': ['make', 'transform'], 'record_dynamic': ['generic', 'make'], 'record_multilang': ['make']}[kind]
+                if names('replaced_classes') or names('module_only_functions') or names('installed_functions') != installed:
+                    raise RuntimeError('Record patch must preserve AOT consumers')
+                if kind in ['records', 'record_multilang'] and names('added_classes') != ['Added']:
+                    raise RuntimeError('Expected new record payload class')
+            report[kind + '_aot_consumers_and_record_semantics'] = True
         if kind in ['typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors']:
             clean = execute(kind + '-patched-clean', [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'], lines=expected_patch)
             if baseline_output.splitlines() != expected_base or clean.splitlines() != expected_patch:
@@ -929,6 +966,51 @@ void main() {{
                 contains=['LAYOUT_SIGNATURE_REJECTED_WITHOUT_MUTATION'], lines=['compute=8', 'fieldType=false', 'closed=7'])
         if digest(layout_run / 'baseline/app.aot') != layout_build['artifacts']['baseline/app.aot']['sha256']:
             raise ValueError('Layout baseline AOT binary changed')
+    if args.record_dynamic_run_dir:
+        folder = args.record_dynamic_run_dir.resolve()
+        build = json.loads((folder / 'build.json').read_text())
+        source = destination / 'unsupported-record-getter.dart'
+        source.write_text("dynamic read(dynamic value) => value.recordNeverPresent;\n@pragma('dyn-module:entry-point') dynamic main() => read((recordNeverPresent: 1));\n")
+        bytecode = destination / 'unsupported-record-getter.bytecode'
+        command = next(step['command'].copy() for step in build['steps'] if step['name'] == 'bytecode')
+        command[command.index('--output') + 1] = str(bytecode)
+        command[-1] = str(source)
+        execute('unsupported-record-getter', command, expected_exit=1, contains=['Dynamic calls are not allowed in a dynamic module'])
+        if bytecode.exists(): raise ValueError('Unknown record getter emitted bytecode')
+        report['record_dynamic_validation_kept_enabled'] = True
+    if args.records_run_dir:
+        folder = args.records_run_dir.resolve()
+        build = json.loads((folder / 'build.json').read_text())
+        metadata = json.loads((folder / 'baseline/manifest.json').read_text())
+        symbol = lambda name: next(key for key, value in metadata['entities'].items() if value['library'] == 'app:entry' and value['name'] == name)
+        make, label, box = symbol('make'), symbol('Box.label'), symbol('Box')
+        source = destination / 'record-signature-atomic.dart'
+        source.write_text(f"""import {json.dumps((folder / 'baseline/app.dart').as_uri())} as baseline;
+@pragma('dyn-module:entry-point')
+void main() {{
+  try {{
+    baseline.simurghInstall('{metadata['baseline_fingerprint']}', {{
+      '{label}': <T>(baseline.{box}<T> value) => 'BAD',
+      '{make}': () => ('wrong', label: 'wrong', box: baseline.{box}<int>(1)),
+    }});
+  }} catch (error) {{
+    if (!error.toString().contains('Patch signature mismatch')) rethrow;
+    if (baseline.{box}<int>(9).label() != 'box:9' || baseline.{make}().$1 != 5) {{
+      throw StateError('Partial record-slot mutation');
+    }}
+    print('RECORD_SIGNATURE_REJECTED_WITHOUT_MUTATION');
+    return;
+  }}
+  throw StateError('Incompatible record signature accepted');
+}}
+""")
+        bytecode = destination / 'record-signature-atomic.bytecode'
+        command = next(step['command'].copy() for step in build['steps'] if step['name'] == 'bytecode')
+        command[command.index('--output') + 1] = str(bytecode)
+        command[-1] = str(source)
+        execute('record-signature-atomic-compile', command)
+        execute('record-signature-atomic', [RUNTIME, folder / 'baseline/app.aot', bytecode], contains=['RECORD_SIGNATURE_REJECTED_WITHOUT_MUTATION'])
+        report['record_signature_rejected_atomically'] = True
     if args.signatures_run_dir:
         signature_run = args.signatures_run_dir.resolve()
         build = json.loads((signature_run / 'build.json').read_text())

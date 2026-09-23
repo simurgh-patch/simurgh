@@ -56,10 +56,24 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(len(hidden), 2)
         self.assertNotEqual(*hidden)
 
-    def test_rejects_layout_generic_async_and_shadowing_cases(self):
+    def test_generic_record_bounds_and_unsupported_cases(self):
+        supported = {
+            'generic_class_bound': (
+                'class C<T extends Iterable<(int, int)>> {} void main() { C<List<(int, int)>>(); }',
+                'class C<T extends Iterable<(int, int)>> {} void main() { C<List<int>>(); }'),
+            'generic_bound': (
+                'T f<T extends Iterable<(int, int)>>(T x) => x; void main() { f([(1, 2)]); }',
+                'T f<T extends Iterable<(int, int)>>(T x) => x; void main() { f([1]); }'),
+        }
+        for name, (valid, invalid) in supported.items():
+            with self.subTest(name=name):
+                result = self.command('baseline', self.source(name + '.dart', valid), self.root / name)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                result = self.command('baseline', self.source(name + '-invalid.dart', invalid), self.root / (name + '-invalid'))
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertIn('Static source errors', result.stderr)
+                self.assertFalse((self.root / (name + '-invalid')).exists())
         cases = {
-            'generic_class_bound': 'class C<T extends Iterable<(int, int)>> { int value = 1; } void main() {}',
-            'generic_bound': 'T f<T extends Iterable<(int, int)>>(T x) => x; void main() {}',
             'async_void': 'void main() async {}',
             'import': "import 'dart:io'; void main() {}",
             'generator_closure': 'void main() { final g = () async* { yield 1; }; g(); }',
@@ -315,15 +329,23 @@ class AotCompilerTests(unittest.TestCase):
         self.assertIn('simurghBaseline.' + self.symbol(manifest, 'shared'), module)
         self.assertIn('simurghBaseline.' + self.symbol(manifest, 'newlyWritten'), module)
 
-    def test_globals_unsupported_and_deletion_rejected(self):
-        for index, source in enumerate(['var value = (1, 2); void main() {}']):
-            result = self.command('baseline', self.source(f'bad-global-{index}.dart', source), self.root / f'bad-global-{index}')
-            self.assertEqual(result.returncode, 2, result.stdout)
-        source = self.source('global.dart', 'int value = 1; void main() {}')
+    def test_record_inferred_global_and_deletion_boundary(self):
+        source = self.source('global.dart', "var value = (1, 2); String read() => '${value.$1}:${value.$2}'; void main() { print(read()); }")
         base = self.root / 'global-base'
-        self.assertEqual(self.command('baseline', source, base).returncode, 0)
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        original = json.loads((base / 'manifest.json').read_text())
+        value = self.symbol(original, 'value')
+        self.assertEqual(original['entities'][value]['inferred_type'], '(int, int)')
+        source.write_text(source.read_text().replace('(1, 2)', '(3, 4)'))
+        patch = self.root / 'global-patch'
+        result = self.command('patch', source, base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['replaced_globals']), ['value'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['read'])
         source.write_text('void main() {}')
-        result = self.command('patch', source, base, self.root / 'global-patch')
+        result = self.command('patch', source, base, self.root / 'global-deleted')
         self.assertEqual(result.returncode, 2)
         self.assertIn('Deleted globals', result.stderr)
 
@@ -1073,6 +1095,66 @@ class AotCompilerTests(unittest.TestCase):
         manifest = json.loads((patch / 'manifest.json').read_text())
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
+
+    def test_records_preserve_aot_consumers_and_add_payload_classes(self):
+        base, patch, manifest = self.named_mixin_pair('records')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Box.label', 'make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_record_fields_super_and_async_keep_storage(self):
+        base, patch, manifest = self.named_mixin_pair('record_super')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make', 'transform'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_record_shape_changes_relink_alias_storage_and_consumers(self):
+        base, patch, manifest = self.named_mixin_pair('record_shapes')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Holder'])
+        self.assertEqual(self.names(manifest, manifest['replaced_globals']), ['stored'])
+        self.assertEqual(self.names(manifest, manifest['changed_type_aliases']), ['Row'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['create', 'main'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['Holder.label', 'consume', 'make'])
+
+    def test_record_dynamic_fields_are_retained_from_resolved_shapes(self):
+        base, patch, manifest = self.named_mixin_pair('record_dynamic')
+        original = json.loads((base / 'manifest.json').read_text())
+        self.assertTrue({'get:$1', 'get:label', 'get:callback', 'invoke:callback', 'get:absent', 'invoke:genericCallback'}.issubset(original['dynamic_selectors']))
+        self.assertNotIn('get:recordNeverPresent', original['dynamic_selectors'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['generic', 'make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_record_multilang_keeps_typed_aot_consumers(self):
+        base, patch, manifest = self.named_mixin_pair('record_multilang')
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_record_source_errors_remain_rejected(self):
+        cases = {
+            'write': 'void main() { final r = (1, label: "x"); r.label = "y"; }',
+            'field_type': '(int, {String label}) make() => (1, label: 2); void main() {}',
+            'shape': '(int, int) make() => (1,); void main() {}',
+            'duplicate': 'void main() { print((value: 1, value: 2)); }',
+        }
+        for name, source in cases.items():
+            result = self.command('baseline', self.source('record-' + name + '.dart', source), self.root / ('record-' + name + '-out'))
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('Static source errors', result.stderr)
+
+    def test_record_direct_signature_change_requires_new_baseline(self):
+        base = self.root / 'record-signature-base'
+        result = self.command('baseline', self.source('record.dart', '(int, int) make() => (1, 2); void main() { print(make()); }'), base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', self.source('record.dart', '(int, String) make() => (1, "two"); void main() { print(make()); }'), base, self.root / 'record-signature-patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Signature changed', result.stderr)
 
     def test_typedefs_keep_aot_consumers_and_native_alias_identity(self):
         base, patch, manifest = self.named_mixin_pair('typedefs')
