@@ -1,0 +1,36 @@
+{
+  "recorded_at": "2026-09-24 17:24 +08:00",
+  "scope": "Restricted host ARM64 top-level accessor relinking across Dart 3.0, 3.4 and 3.12 libraries",
+  "evidence": {
+    "mixed_run": "output/m1-aot-20260924T063727Z-uf4avdfy/build.json",
+    "native_report": "output/m1-aot-20260924T085639Z-jzdkww6n/native-checks/report.json",
+    "native_base": "output/m1-aot-20260924T085639Z-jzdkww6n/build.json",
+    "gc_run": "output/m1-aot-20260924T060348Z-6lflaw5u/build.json",
+    "prior_enospc_record": "docs/qa/aot-top-accessor-multilang-incomplete-20260924.json"
+  },
+  "space_recovery": {
+    "removed": "Rebuildable .o and .a files under .engine-workspace/engine/engine/src/out/host_release_arm64/obj/flutter/third_party/swiftshader",
+    "available_before_gib": 2.0,
+    "available_after_gib": 9.2,
+    "available_after_verification_gib": 9.0,
+    "historical_qa_and_runtime_artifacts_preserved": true
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 166,
+    "flutter_widget_tests": 7,
+    "native_checks": 20,
+    "ordinary_verify_exit_code": 0,
+    "native_verify_exit_code": 0,
+    "all_passed": true
+  },
+  "verified_behavior": [
+    "Independent original-source AOT baseline and patch output matched their respective mixed executions line for line.",
+    "Actual source, generated baseline and generated patch Kernel language versions matched 3.0, 3.4 and 3.12 ownership.",
+    "Two property adapter classes and main were relinked; native storage and the baseline AOT artifact remained unchanged.",
+    "Native verification checked build provenance, compiler fingerprints and recorded artifact hashes before execution."
+  ],
+  "m1_passed": false,
+  "mobile_cold_start_and_performance_passed": false,
+  "production_patch": false
+}

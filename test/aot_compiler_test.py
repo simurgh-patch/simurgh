@@ -1300,6 +1300,21 @@ void main() { p.value += 1; }
         self.assertIn('Signature changed', result.stderr)
         self.assertFalse((self.root / 'invalid/module.dart').exists())
 
+    def test_top_level_accessors_relink_across_language_versions(self):
+        base, patch, manifest = self.named_mixin_pair('top_accessor_multilang')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']),
+                         ['doubled', 'value'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']),
+                         ['getter doubled', 'getter value', 'setter value'])
+        self.assertEqual(manifest['replaced_globals'], [])
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(graph['library_language_versions'],
+                         {'app:entry': '3.12', 'app:legacy.dart': '3.0',
+                          'app:modern.dart': '3.4'})
+        self.assertEqual(graph['libraries']['app:legacy_part.dart']['owner'],
+                         'app:legacy.dart')
+
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
             'void f(covariant Object value) {} void main() {}',

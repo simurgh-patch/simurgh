@@ -1,0 +1,36 @@
+{
+  "recorded_at": "2026-09-24 15:07 +08:00",
+  "scope": "Three-language-version top-level accessor relinking experiment, not accepted",
+  "evidence": {
+    "mixed_run": "output/m1-aot-20260924T063727Z-uf4avdfy/build.json",
+    "failed_native_report": "output/m1-aot-20260924T064156Z-5cawk125/native-checks/report.json",
+    "failed_native_log": "output/m1-aot-20260924T064156Z-5cawk125/native-checks/top-accessor-metadata-relink-source-patch-compile.log"
+  },
+  "observations": [
+    "The restricted compiler linked a 3.0 accessor library and part, a dependent 3.4 getter, and a 3.12 entry. Baseline and patched mixed runs exited zero with first:2:4/after:3:6 and first:2.5:5.0/after:3.5:7.0.",
+    "The patch manifest versions both property adapters, keeps storage, places three helpers in the module, and rebinds main.",
+    "The baseline generated Kernel was inspected and reported the expected 3.0, 3.4 and 3.12 unit language versions.",
+    "The focused Python regression passed twice, including after the disk pressure appeared."
+  ],
+  "failures": [
+    "The unified native verifier stopped during an existing metadata source AOT compile because macOS code signing reported an internal error while free space was about 120 MiB. The failed report and log remain; temporary binaries from that failed check were removed.",
+    "An independent AOT snapshot attempt could not create a temporary directory: No space left on device.",
+    "The generated patch Kernel attempt could not open its output file: No space left on device.",
+    "scripts/verify.sh exited 1 before tests because the Flutter SDK could not write engine.stamp.tmp and engine.realm: No space left on device.",
+    "A direct Python full-suite attempt ran 166 tests in 529.915 seconds but exited 1 with 116 errors and 1 failure after output temporary directory creation hit No space left on device."
+  ],
+  "partial_verification": {
+    "compiler_dart_analysis": "passed",
+    "focused_python_test": "passed twice",
+    "python_full_suite": "failed due to disk exhaustion",
+    "native_acceptance": "incomplete"
+  },
+  "remaining_verification": [
+    "Run the complete ordinary verification script after disk space is restored.",
+    "Run the unified native verifier including the new multilang fixture and compare independent source AOT with mixed execution.",
+    "Confirm actual source, baseline and patch Kernel language versions and artifact hashes in the final report."
+  ],
+  "all_passed": false,
+  "m1_passed": false,
+  "production_patch": false
+}

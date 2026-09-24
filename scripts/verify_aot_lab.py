@@ -33,6 +33,7 @@ def main():
     parser.add_argument('--top-accessor-metadata-relink-run-dir', type=Path)
     parser.add_argument('--top-accessor-package-run-dir', type=Path)
     parser.add_argument('--top-accessor-signature-run-dir', type=Path)
+    parser.add_argument('--top-accessor-multilang-run-dir', type=Path)
     parser.add_argument('--parameters-run-dir', type=Path)
     parser.add_argument('--async-run-dir', type=Path)
     parser.add_argument('--generics-run-dir', type=Path)
@@ -129,7 +130,8 @@ def main():
                                           args.top_accessor_metadata_run_dir,
                                           args.top_accessor_metadata_relink_run_dir,
                                           args.top_accessor_package_run_dir,
-                                          args.top_accessor_signature_run_dir) if p)
+                                          args.top_accessor_signature_run_dir,
+                                          args.top_accessor_multilang_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1243,18 +1245,26 @@ void main() {{
         ('top-accessor-signature', args.top_accessor_signature_run_dir,
          ['first:2', 'after:3'], ['first:2.5', 'after:3.5'],
          ['main', 'retained']),
+        ('top-accessor-multilang', args.top_accessor_multilang_run_dir,
+         ['first:2:4', 'after:3:6'], ['first:2.5:5.0', 'after:3.5:7.0'],
+         ['main']),
     ]:
         if folder is None:
             continue
         folder = folder.resolve()
         metadata = json.loads((folder / 'patch/manifest.json').read_text())
         names = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['installed_functions'])
-        relink = kind in {'top-accessor-metadata-relink', 'top-accessor-signature'}
+        relink = kind in {'top-accessor-metadata-relink', 'top-accessor-signature',
+                          'top-accessor-multilang'}
         replaced = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['replaced_classes'])
         module_only = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['module_only_functions'])
-        if (names != installed or replaced != (['value'] if relink else []) or
+        expected_replaced = ['doubled', 'value'] if kind == 'top-accessor-multilang' else ['value'] if relink else []
+        expected_module_only = (['getter doubled', 'getter value', 'setter value']
+                                if kind == 'top-accessor-multilang' else
+                                ['getter value', 'setter value'] if relink else [])
+        if (names != installed or replaced != expected_replaced or
                 metadata['replaced_globals'] or
-                module_only != (['getter value', 'setter value'] if relink else [])):
+                module_only != expected_module_only):
             raise ValueError(f'{kind} did not retain AOT property consumers and storage')
         for side, expected in [('baseline', expected_base), ('patch', expected_patch)]:
             graph = json.loads((folder / side / 'source_graph.json').read_text())
@@ -1294,6 +1304,52 @@ void main() {{
             report.setdefault(f'{kind}_source_aot', {})[side] = {
                 'executable_sha256': digest(executable),
                 'source_graph_sha256': digest(folder / side / 'source_graph.json'),
+            }
+            if kind == 'top-accessor-multilang':
+                expected_versions = {'app:entry': '3.12', 'app:legacy.dart': '3.0',
+                                     'app:modern.dart': '3.4'}
+                if graph['library_language_versions'] != expected_versions or \
+                        graph['libraries']['app:legacy_part.dart']['owner'] != 'app:legacy.dart':
+                    raise ValueError('Top-accessor source language ownership changed')
+                inspector = ROOT / 'compiler/bin/inspect_kernel_languages.dart'
+                packages = ROOT / 'compiler/.dart_tool/package_config.json'
+                source_kernel = destination / f'{kind}-source-{side}.dill'
+                execute(f'{kind}-source-{side}-kernel',
+                        [source_dart, 'compile', 'kernel', reference / 'app.dart', '-o', source_kernel])
+                source_versions = json.loads(execute(f'{kind}-source-{side}-languages',
+                    [source_dart, '--packages=' + str(packages), inspector, source_kernel, reference]))
+                for uri, version in expected_versions.items():
+                    filename = 'app.dart' if uri == 'app:entry' else uri.removeprefix('app:')
+                    if source_versions.get(filename) != version:
+                        raise ValueError('Original top-accessor source Kernel language changed')
+                report.setdefault(f'{kind}_source_kernel_languages', {})[side] = source_versions
+        if kind == 'top-accessor-multilang':
+            inspector = ROOT / 'compiler/bin/inspect_kernel_languages.dart'
+            packages = ROOT / 'compiler/.dart_tool/package_config.json'
+            baseline_graph = json.loads((folder / 'baseline/source_graph.json').read_text())
+            baseline_manifest = json.loads((folder / 'baseline/manifest.json').read_text())
+            baseline_versions = json.loads(execute(f'{kind}-baseline-kernel-languages',
+                [source_dart, '--packages=' + str(packages), inspector,
+                 folder / 'baseline/no-aot.dill', folder / 'baseline']))
+            for uri, filename in baseline_manifest['emitted_libraries'].items():
+                if baseline_versions.get(filename) != baseline_graph['library_language_versions'][uri]:
+                    raise ValueError('Baseline top-accessor Kernel language changed')
+            sdk = source_dart.parent.parent
+            compiler = ROOT / '.engine-workspace/engine/engine/src/flutter/third_party/dart/pkg/vm/bin/gen_kernel.dart'
+            patch_kernel = destination / f'{kind}-patch.dill'
+            execute(f'{kind}-patch-kernel', [source_dart, '--packages=' + str(packages), compiler,
+                '--no-aot', '--platform', sdk / 'lib/_internal/vm_platform_strong.dill', '--packages', packages,
+                '-Ddart.vm.product=true', '-Ddart.vm.profile=false', '--output', patch_kernel,
+                folder / 'patch/module.dart'])
+            patch_versions = json.loads(execute(f'{kind}-patch-kernel-languages',
+                [source_dart, '--packages=' + str(packages), inspector, patch_kernel, folder / 'patch']))
+            patch_graph = json.loads((folder / 'patch/source_graph.json').read_text())
+            for uri, version in patch_graph['library_language_versions'].items():
+                filename = 'unit_' + hashlib.sha256(uri.encode()).hexdigest() + '.dart'
+                if patch_versions.get(filename) != version:
+                    raise ValueError('Patched top-accessor Kernel language changed')
+            report[f'{kind}_generated_kernel_languages'] = {
+                'baseline': baseline_versions, 'patch': patch_versions,
             }
         baseline = execute(f'{kind}-baseline', [RUNTIME, folder / 'baseline/app.aot'],
                            lines=expected_base)
