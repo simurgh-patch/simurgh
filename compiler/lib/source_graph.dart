@@ -203,6 +203,16 @@ class _Library {
   final parts = <String>[];
 }
 
+class _TopProperty {
+  _TopProperty(this.ownerUri, this.name, this.symbol, this.member);
+  final String ownerUri;
+  final String name;
+  final String symbol;
+  final String member;
+  (_Library, FunctionDeclaration)? getter;
+  (_Library, FunctionDeclaration)? setter;
+}
+
 class _Edit {
   _Edit(this.start, this.end, this.text);
   final int start;
@@ -1040,11 +1050,61 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         aliases.add((library, declaration, element));
       }
     }
+    final properties = <String, _TopProperty>{};
     for (final library in sorted) {
       for (final declaration
           in resolved[library.uri]!.unit.declarations
               .whereType<FunctionDeclaration>()) {
         final name = declaration.name.lexeme;
+        if (declaration.isGetter || declaration.isSetter) {
+          if (declaration.externalKeyword != null ||
+              declaration.metadata.isNotEmpty ||
+              declaration.functionExpression.body is EmptyFunctionBody) {
+            _reject('Unsupported top-level accessor declaration: $name');
+          }
+          final propertyId = _hash('${library.ownerUri}::property::$name');
+          final adapter = '${entityPrefix}property_$propertyId';
+          final property = properties.putIfAbsent(adapter, () {
+            records[adapter] = {
+              'library': library.ownerUri,
+              'name': name,
+              'entity': propertyId,
+              'kind': 'class',
+              'generated': 'top-accessor-adapter',
+            };
+            return _TopProperty(
+              library.ownerUri,
+              name,
+              adapter,
+              _privateMember(library.ownerUri, name),
+            );
+          });
+          final isGetter = declaration.isGetter;
+          if (isGetter ? property.getter != null : property.setter != null) {
+            _reject(
+              'Duplicate top-level accessor in ${library.ownerUri}: $name',
+            );
+          }
+          if (isGetter) {
+            property.getter = (library, declaration);
+          } else {
+            property.setter = (library, declaration);
+          }
+          final kind = isGetter ? 'getter' : 'setter';
+          final id = _hash('${library.ownerUri}::top-$kind::$name');
+          final helper = '${entityPrefix}top_${kind}_$id';
+          final element = declaration.declaredFragment?.element;
+          if (element == null) _reject('Unresolved top-level accessor: $name');
+          entities[element] = '$adapter.${property.member}';
+          records[helper] = {
+            'library': library.ownerUri,
+            'name': '$kind $name',
+            'entity': id,
+            'kind': 'top-$kind',
+            'owner': adapter,
+          };
+          continue;
+        }
         final id = _hash('${library.ownerUri}::function::$name');
         final symbol = library.ownerUri == 'app:entry' && name == 'main'
             ? 'main'
@@ -1118,10 +1178,71 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       );
     }
 
+    for (final property in properties.values) {
+      final wrapper = StringBuffer('class ${property.symbol} {\n');
+      for (final (kind, entry) in [
+        ('getter', property.getter),
+        ('setter', property.setter),
+      ]) {
+        if (entry == null) continue;
+        final (library, declaration) = entry;
+        final element = declaration.declaredFragment!.element;
+        final id = _hash('${property.ownerUri}::top-$kind::${property.name}');
+        final helper = '${entityPrefix}top_${kind}_$id';
+        final visitor = _References(
+          entities,
+          classes: classes,
+          libraryUri: property.ownerUri,
+        );
+        declaration.returnType?.accept(visitor);
+        declaration.functionExpression.accept(visitor);
+        final resultType = classes.typeText(element.returnType);
+        final parameters = declaration.functionExpression.parameters;
+        if (kind == 'getter') {
+          wrapper.writeln(
+            'static $resultType get ${property.member} => $helper();',
+          );
+        } else {
+          if (parameters == null || parameters.parameters.length != 1) {
+            _reject(
+              'Top-level setter requires one parameter: ${property.name}',
+            );
+          }
+          final args = forwardArguments(parameters.parameters);
+          final parameterText = _rewrite(
+            library.source,
+            parameters,
+            visitor.edits
+                .where(
+                  (e) =>
+                      e.start >= parameters.offset && e.end <= parameters.end,
+                )
+                .toList(),
+          );
+          wrapper.writeln(
+            'static set ${property.member}$parameterText { $helper($args); }',
+          );
+        }
+        final edits = [
+          ...visitor.edits,
+          _Edit(
+            declaration.propertyKeyword!.offset,
+            declaration.name.end,
+            '${declaration.returnType == null ? '$resultType ' : ''}$helper${kind == 'getter' ? '()' : ''}',
+          ),
+        ];
+        records[helper]!['references'] = visitor.references.toList()..sort();
+        source.writeln(_rewrite(library.source, declaration, edits));
+      }
+      wrapper.writeln('}');
+      source.writeln(wrapper);
+    }
+
     for (final library in sorted) {
       for (final declaration
           in resolved[library.uri]!.unit.declarations
               .whereType<FunctionDeclaration>()) {
+        if (declaration.isGetter || declaration.isSetter) continue;
         final symbol = entities[declaration.declaredFragment!.element]!;
         final visitor = _References(
           entities,

@@ -27,6 +27,8 @@ def main():
     parser.add_argument('--classes-run-dir', type=Path)
     parser.add_argument('--new-classes-run-dir', type=Path)
     parser.add_argument('--accessors-run-dir', type=Path)
+    parser.add_argument('--top-accessors-run-dir', type=Path)
+    parser.add_argument('--top-accessor-gc-run-dir', type=Path)
     parser.add_argument('--parameters-run-dir', type=Path)
     parser.add_argument('--async-run-dir', type=Path)
     parser.add_argument('--generics-run-dir', type=Path)
@@ -119,6 +121,7 @@ def main():
         return process.stdout
 
     folders = [run, gc_run] + [p.resolve() for p in [args.covariant_run_dir, args.covariant_edges_run_dir, args.covariant_fields_run_dir, args.covariant_mixins_run_dir, args.covariant_relink_run_dir, args.covariant_multilang_run_dir, args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
+    folders.extend(p.resolve() for p in (args.top_accessors_run_dir, args.top_accessor_gc_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1211,6 +1214,59 @@ void main() {{
             if actual.strip() != expected + '._value:_value:' + expected:
                 raise ValueError('Enum display decoding escaped its generated namespace')
         report['enum_display_name_guards'] = True
+    for kind, folder, expected_base, expected_patch, installed in [
+        ('top-accessors', args.top_accessors_run_dir,
+         ['initial:1:5:11', 'compound:3:8', 'retained:3:13', 'callback:7'],
+         ['initial:11:5:21', 'compound:13:8', 'retained:36:46', 'callback:60'],
+         ['getter _secret', 'getter callback', 'getter value', 'setter value']),
+        ('top-accessor-gc', args.top_accessor_gc_run_dir,
+         ['allocation:12720', 'captured:10', 'saved:11', 'generic:5:ok'],
+         ['allocation:12720', 'captured:20', 'saved:31', 'generic:5:ok'],
+         ['getter producer', 'setter writer']),
+    ]:
+        if folder is None:
+            continue
+        folder = folder.resolve()
+        metadata = json.loads((folder / 'patch/manifest.json').read_text())
+        names = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['installed_functions'])
+        if (names != installed or metadata['replaced_classes'] or
+                metadata['replaced_globals'] or metadata['module_only_functions']):
+            raise ValueError(f'{kind} did not retain AOT property consumers and storage')
+        for side, expected in [('baseline', expected_base), ('patch', expected_patch)]:
+            graph = json.loads((folder / side / 'source_graph.json').read_text())
+            reference = destination / f'{kind}-reference-{side}'
+            reference.mkdir()
+            for uri, record in graph['libraries'].items():
+                if not uri.startswith('app:'):
+                    raise ValueError(f'{kind} reference contains an unexpected library: {uri}')
+                path = reference / ('app.dart' if uri == 'app:entry' else uri.removeprefix('app:'))
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(record['source'])
+            source_dart = RUNTIME.parent.parent / 'host_release_arm64/dart-sdk/bin/dart'
+            executable = destination / f'{kind}-source-{side}'
+            execute(f'{kind}-source-{side}-compile',
+                    [source_dart, 'compile', 'exe', reference / 'app.dart', '-o', executable])
+            original = execute(f'{kind}-source-{side}', [executable], lines=expected)
+            if original.splitlines() != expected:
+                raise ValueError(f'{kind} original source output differs from the oracle')
+            report.setdefault(f'{kind}_source_aot', {})[side] = {
+                'executable_sha256': digest(executable),
+                'source_graph_sha256': digest(folder / side / 'source_graph.json'),
+            }
+        baseline = execute(f'{kind}-baseline', [RUNTIME, folder / 'baseline/app.aot'],
+                           lines=expected_base)
+        if baseline.splitlines() != expected_base:
+            raise ValueError(f'{kind} baseline output differs from original AOT')
+        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind == 'top-accessor-gc' else []
+        patched = execute(f'{kind}-patched',
+                          [RUNTIME, *options, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'],
+                          contains=['Scavenge('] if options else (), lines=expected_patch)
+        observed = [line for line in patched.splitlines() if line in expected_patch]
+        if observed != expected_patch:
+            raise ValueError(f'{kind} patched output differs from original AOT')
+        if options:
+            report['top_accessor_scavenges'] = patched.count('Scavenge(')
+        report[f'{kind}_aot_consumers_retained'] = True
     if digest(run / 'baseline/app.aot') != aot_hash:
         raise ValueError('Baseline AOT binary changed')
     report['baseline_aot_unchanged'] = True

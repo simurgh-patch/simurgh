@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-24 11:16 +08:00
+最后实质更新：2026-09-24 12:23 +08:00
 
 ## 当前状态
 
@@ -187,3 +187,5 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 - 2026-09-24 10:25 +08:00：完成协变主线：真实成员/接口/mixin保留covariant、继承窄化与tear-off检查，helper仅按token区间去掉成员限定关键字并保留类型/注解；显式/推断/late/abstract字段保持原生语义。六组原始源码独立AOT对照覆盖setter/index/super/泛型、mixin/on、SDK ListBase、noSuchMethod、record/函数参数、类/存储重连、新增类及跨版本parts，完整TypeError文本一致，泛型receiver跨198次Scavenge仍正确。固定analyzer.toSource遗漏字段covariant导致首轮字段Kernel失败，改用声明原文和token类形状比较；修饰符变化重连而纯注释/空白不重连。额外独立AOT暴露推断abstract字段变具体导致from-nsm→null，主动停止普通/原生初次全集（均143），保留失败证据后修复并补原生fixture，独立源码AOT/混合及定向复测通过，再冻结重跑。最终native首次调度因runner未生成退出2，未构建，保留launch-error并确认文件后重发。随后package:meta原生回归发现文档注释独立token链引起空值断言，保留失败并停止普通检查；改为metadata或正文token起点，文档注释/真实meta包/注解重连3项定向通过后重冻并重跑。任务中断后普通verify.sh仅有部分Python进度，保留旧日志并在冻结输入未变时完整重跑；最终完整verify.sh为16 Dart+159 Python+7 Flutter共182项，331项原生检查、编译器分析/19文件格式和37组当前源码/制品哈希全部通过，Kernel注解/helper偏移及3.0/3.4/3.12版本已验。证据docs/qa/aot-covariant-20260923.json，历史原生全集未重跑，无运行时补丁变更。完整Flutter/移动冷启动/签名回退/真机性能仍未完成，生产门禁关闭；下一步推进剩余语言/SDK链接与Flutter核心接入。本轮按约定提交Important Changes并推送main，实际以Git核对；其他设计任务PROGRESS修改保留。
 
 - 2026-09-24 11:16 +08:00：继续 M1 顶层访问器接入前的源码图基础工作：复合赋值、空值赋值及自增现在同时收集 analyzer 的 getter/read 与 setter/write 元素，含导入前缀；相同顶层变量符号继续共享链接，不同执行符号显式失败，避免静默只记录写边。新增真实 analyzer 解析回归，自动顶层 getter/setter 替换仍未实现。`scripts/verify.sh` 实际退出0：16 Dart＋160 Python＋7 Flutter共183项，根项目、编译器和样例分析/格式检查通过。当前编译器指纹下重建顶层变量样例，baseline/patch、Kernel、快照、字节码、两侧混合执行8步均退出0；两侧输出分别与独立原始源码AOT逐字一致，证据output/m1-aot-20260924T025300Z-9e511efj（状态仍为executed-not-m1-accepted）。`doctor --devices` 显示iOS真机1台、Android ARM64真机0台，空间预算仅约7.5 GiB可用而要求200 GiB；本轮没有运行真机、移动冷启动或性能验收，没有完整原生全集。下一步实现原库顶层访问器的成对稳定身份、原生属性wrapper和独立读写重连，覆盖跨库/part/推断类型与GC后再进入移动验证；生产门禁保持关闭。
+
+- 2026-09-24 12:23 +08:00：M1受限顶层访问器主线落地：按所属库和属性名生成稳定静态属性包装类，getter/setter分别下沉为可安装的类型化函数入口；旧AOT调用方保持原生属性语法与赋值、复合赋值、空值赋值、自增、返回函数调用的求值行为。跨库同名、导入前缀、part内分开的读写、私有访问器和单边getter/setter已由回归覆盖；带注解及external声明明确拒绝。两组跟踪原始源码样例重建并通过Kernel、快照、字节码及混合执行，19/19项统一原生检查含独立源码AOT、构建指纹/制品哈希和旧AOT未重建核对；闭包跨await及实际31次Scavenge输出一致。完整`scripts/verify.sh`退出0：16 Dart＋162 Python＋7 Flutter共185项，根项目/样例/编译器分析及格式检查通过。证据docs/qa/aot-top-accessors-20260924.json；构建卷仅约1.2 GiB可用。本轮没有重跑历史原生全集或移动引擎构建；package访问器、注解保留、多语言版本及签名/布局变化仍需后续验证。完整Flutter、Android/iOS真机冷启动、签名回退及性能门禁未验收，生产命令保持关闭；下一步扩大链接边界并处理设备/构建空间条件。

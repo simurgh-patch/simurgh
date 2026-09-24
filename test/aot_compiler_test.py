@@ -1179,6 +1179,54 @@ void main() { p.value += 1; }
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(json.loads(result.stdout), expected)
 
+    def test_top_level_accessors_link_separately_across_libraries_and_parts(self):
+        base, patch, manifest = self.named_mixin_pair('top_accessors')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['getter _secret', 'getter callback', 'getter value', 'setter value'])
+        installed = [manifest['entities'][symbol] for symbol in manifest['installed_functions']]
+        self.assertEqual({entity['library'] for entity in installed}, {'app:counter.dart'})
+        self.assertEqual({entity['kind'] for entity in installed}, {'top-getter', 'top-setter'})
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        owner = graph['libraries']['app:counter_part.dart']['owner']
+        self.assertEqual(owner, 'app:counter.dart')
+        adapters = [entity for entity in manifest['entities'].values()
+                    if entity.get('generated') == 'top-accessor-adapter']
+        self.assertEqual(sorted((entry['library'], entry['name']) for entry in adapters),
+                         [('app:counter.dart', '_secret'), ('app:counter.dart', 'callback'),
+                          ('app:counter.dart', 'value'), ('app:other.dart', 'value')])
+
+    def test_top_level_accessor_inference_and_unsupported_metadata(self):
+        source = self.source('inferred.dart', 'get value => 1; void main() { print(value); }')
+        base = self.root / 'inferred-base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('static dynamic get value', (base / 'app.dart').read_text())
+        source.write_text('get value => 2; void main() { print(value); }')
+        result = self.command('patch', source, base, self.root / 'inferred-patch')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((self.root / 'inferred-patch/manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['getter value'])
+        setter = self.source('setter.dart',
+                             'int state = 0; set value(int next) { state = next; } '
+                             'void main() { value = 3; print(state); }')
+        setter_base = self.root / 'setter-base'
+        result = self.command('baseline', setter, setter_base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        setter.write_text(setter.read_text().replace('state = next', 'state = next * 2'))
+        result = self.command('patch', setter, setter_base, self.root / 'setter-patch')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        setter_manifest = json.loads((self.root / 'setter-patch/manifest.json').read_text())
+        self.assertEqual(self.names(setter_manifest, setter_manifest['installed_functions']),
+                         ['setter value'])
+        annotated = self.source('annotated.dart', "@pragma('vm:never-inline') int get value => 1; void main() { print(value); }")
+        result = self.command('baseline', annotated, self.root / 'annotated-base')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Unsupported top-level accessor declaration', result.stderr)
+        self.assertFalse((self.root / 'annotated-base/app.dart').exists())
+
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
             'void f(covariant Object value) {} void main() {}',

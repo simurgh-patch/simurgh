@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-09-24 12:23 +08:00",
+  "scope": "Restricted top-level getter/setter body updates on host ARM64 with AOT callers and bytecode helpers",
+  "evidence": {
+    "base": "output/m1-aot-20260924T034955Z-yz9i2f31/build.json",
+    "gc_base": "output/m1-aot-20260924T035049Z-zm6uksfe/build.json",
+    "top_accessors": "output/m1-aot-20260924T033134Z-8wsjyju7/build.json",
+    "top_accessor_gc": "output/m1-aot-20260924T035152Z-fvl0b2dg/build.json",
+    "native_report": "output/m1-aot-20260924T034955Z-yz9i2f31/native-checks/report.json"
+  },
+  "compiler_sha256": "76bdd8e9c37f376ff6173bf0827eadf761a700952545aab0e8bb532b7433fe8d",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 162,
+    "flutter_widget_tests": 7,
+    "native_checks": 19,
+    "top_accessor_scavenges": 31,
+    "all_passed": true
+  },
+  "observations": [
+    "Getter and setter bodies install independently while unchanged AOT callers, generated wrappers and global storage remain in the baseline.",
+    "Same-named accessors in different libraries, a getter and setter split across a part, private access, compound assignment and a getter-returned callback match independently compiled original-source AOT.",
+    "Old AOT retains bytecode-created closures across observed young-generation GC and an await; generic function results match original-source AOT.",
+    "Annotated and external top-level accessors are rejected by this restricted compiler."
+  ],
+  "not_accepted": [
+    "Full M1 language/runtime compatibility and the historical native suite were not rerun.",
+    "Flutter cold-start activation, Android/iOS physical-device execution, signing, rollback and performance gates remain unverified.",
+    "Package accessors, annotation preservation, broader language-version combinations and accessor signature/layout changes need separate validation."
+  ],
+  "m1_passed": false,
+  "production_patch": false
+}
