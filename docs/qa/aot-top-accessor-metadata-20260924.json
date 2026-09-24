@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-09-24 13:17 +08:00",
+  "scope": "Restricted top-level getter/setter annotations and metadata-only relinking on host ARM64",
+  "evidence": {
+    "base": "output/m1-aot-20260924T045021Z-sh8mqpjg/build.json",
+    "gc_base": "output/m1-aot-20260924T044822Z-abd_ylys/build.json",
+    "accessor_metadata": "output/m1-aot-20260924T043148Z-dc1cni4s/build.json",
+    "metadata_relink": "output/m1-aot-20260924T044529Z-hwd_q9y2/build.json",
+    "native_report": "output/m1-aot-20260924T045021Z-sh8mqpjg/native-checks/report.json"
+  },
+  "compiler_sha256": "de05a271ac8b0ba831d7f8db5b911f7cb7c1500d4ecd51e751def637a4002d7d",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 163,
+    "flutter_widget_tests": 7,
+    "native_checks": 33,
+    "all_passed": true
+  },
+  "observations": [
+    "Supported pragma, generic constant annotations, and setter-parameter annotations match original source at wrapper and helper Kernel sites.",
+    "A getter annotation-only change versions the property wrapper and rebinds retained AOT callers without replacing global storage.",
+    "Both baseline and patched mixed runs match separately compiled original-source AOT."
+  ],
+  "failed_attempts": [
+    "The first unified run used a non-accessor fixture path and failed its manifest check; its report remains in output/m1-aot-20260924T044734Z-l2lhly32/native-checks.",
+    "An earlier successful report placed relink metadata under the setter key due to a verifier variable shadowing bug; the original report remains in native-checks-before-report-key-fix, and the corrected report was rerun."
+  ],
+  "not_accepted": [
+    "Full M1 language/runtime compatibility and the historical native suite were not rerun.",
+    "Flutter cold-start activation, Android/iOS physical-device execution, signing, rollback and performance gates remain unverified.",
+    "Package accessors, broader language-version combinations and accessor signature/layout changes need separate validation."
+  ],
+  "m1_passed": false,
+  "production_patch": false
+}

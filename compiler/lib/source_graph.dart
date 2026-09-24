@@ -1058,7 +1058,6 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         final name = declaration.name.lexeme;
         if (declaration.isGetter || declaration.isSetter) {
           if (declaration.externalKeyword != null ||
-              declaration.metadata.isNotEmpty ||
               declaration.functionExpression.body is EmptyFunctionBody) {
             _reject('Unsupported top-level accessor declaration: $name');
           }
@@ -1194,10 +1193,29 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
           classes: classes,
           libraryUri: property.ownerUri,
         );
+        for (final annotation in declaration.metadata) {
+          annotation.accept(visitor);
+        }
         declaration.returnType?.accept(visitor);
         declaration.functionExpression.accept(visitor);
         final resultType = classes.typeText(element.returnType);
         final parameters = declaration.functionExpression.parameters;
+        final annotations = declaration.metadata
+            .map(
+              (annotation) => _rewrite(
+                library.source,
+                annotation,
+                visitor.edits
+                    .where(
+                      (edit) =>
+                          edit.start >= annotation.offset &&
+                          edit.end <= annotation.end,
+                    )
+                    .toList(),
+              ),
+            )
+            .join('\n');
+        if (annotations.isNotEmpty) wrapper.writeln(annotations);
         if (kind == 'getter') {
           wrapper.writeln(
             'static $resultType get ${property.member} => $helper();',

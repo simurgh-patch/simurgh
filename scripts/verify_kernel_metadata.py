@@ -57,13 +57,20 @@ def verify_metadata(kind, folder, destination, execute, report, root, runtime):
         return entity['library'] + '::class:' + entity['name']
 
     def method_path(entity):
+        if entity['kind'].startswith('top-'):
+            return entity['library'] + '::function:' + entity['name']
         owner = entities[entity['owner']]
         kind = {'getter': 'Getter', 'setter': 'Setter', 'operator': 'Operator'}.get(entity['kind'].split('-')[-1], 'Method')
         member = entity['name'][len(owner['name']) + 1:]
         return class_path(entity['owner']) + '/' + kind + ':' + member
 
     for symbol in manifest['replaced_classes']:
-        remove(class_path(symbol))
+        entity = entities[symbol]
+        if entity.get('generated') == 'top-accessor-adapter':
+            for accessor_kind in ['getter', 'setter']:
+                remove(entity['library'] + '::function:' + accessor_kind + ' ' + entity['name'])
+        else:
+            remove(class_path(symbol))
     for symbol in manifest['replaced_globals']:
         entity = entities[symbol]
         remove(entity['library'] + '::global:' + entity['name'])

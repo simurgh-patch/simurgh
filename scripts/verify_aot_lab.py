@@ -29,6 +29,8 @@ def main():
     parser.add_argument('--accessors-run-dir', type=Path)
     parser.add_argument('--top-accessors-run-dir', type=Path)
     parser.add_argument('--top-accessor-gc-run-dir', type=Path)
+    parser.add_argument('--top-accessor-metadata-run-dir', type=Path)
+    parser.add_argument('--top-accessor-metadata-relink-run-dir', type=Path)
     parser.add_argument('--parameters-run-dir', type=Path)
     parser.add_argument('--async-run-dir', type=Path)
     parser.add_argument('--generics-run-dir', type=Path)
@@ -121,7 +123,9 @@ def main():
         return process.stdout
 
     folders = [run, gc_run] + [p.resolve() for p in [args.covariant_run_dir, args.covariant_edges_run_dir, args.covariant_fields_run_dir, args.covariant_mixins_run_dir, args.covariant_relink_run_dir, args.covariant_multilang_run_dir, args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
-    folders.extend(p.resolve() for p in (args.top_accessors_run_dir, args.top_accessor_gc_run_dir) if p)
+    folders.extend(p.resolve() for p in (args.top_accessors_run_dir, args.top_accessor_gc_run_dir,
+                                          args.top_accessor_metadata_run_dir,
+                                          args.top_accessor_metadata_relink_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1223,14 +1227,24 @@ void main() {{
          ['allocation:12720', 'captured:10', 'saved:11', 'generic:5:ok'],
          ['allocation:12720', 'captured:20', 'saved:31', 'generic:5:ok'],
          ['getter producer', 'setter writer']),
+        ('top-accessor-metadata', args.top_accessor_metadata_run_dir,
+         ['first:2', 'after:5'], ['first:12', 'after:40'],
+         ['getter value', 'setter value']),
+        ('top-accessor-metadata-relink', args.top_accessor_metadata_relink_run_dir,
+         ['first:2', 'after:5'], ['first:2', 'after:5'],
+         ['main', 'retained']),
     ]:
         if folder is None:
             continue
         folder = folder.resolve()
         metadata = json.loads((folder / 'patch/manifest.json').read_text())
         names = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['installed_functions'])
-        if (names != installed or metadata['replaced_classes'] or
-                metadata['replaced_globals'] or metadata['module_only_functions']):
+        relink = kind == 'top-accessor-metadata-relink'
+        replaced = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['replaced_classes'])
+        module_only = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['module_only_functions'])
+        if (names != installed or replaced != (['value'] if relink else []) or
+                metadata['replaced_globals'] or
+                module_only != (['getter value', 'setter value'] if relink else [])):
             raise ValueError(f'{kind} did not retain AOT property consumers and storage')
         for side, expected in [('baseline', expected_base), ('patch', expected_patch)]:
             graph = json.loads((folder / side / 'source_graph.json').read_text())
@@ -1266,6 +1280,8 @@ void main() {{
             raise ValueError(f'{kind} patched output differs from original AOT')
         if options:
             report['top_accessor_scavenges'] = patched.count('Scavenge(')
+        if kind.startswith('top-accessor-metadata'):
+            verify_metadata(kind, folder, destination, execute, report, ROOT, RUNTIME)
         report[f'{kind}_aot_consumers_retained'] = True
     if digest(run / 'baseline/app.aot') != aot_hash:
         raise ValueError('Baseline AOT binary changed')

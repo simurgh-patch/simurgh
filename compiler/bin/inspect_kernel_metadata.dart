@@ -162,6 +162,8 @@ void main(List<String> args) {
     if (owner == null) continue;
     for (final cls in lib.classes) {
       final path = '$owner::class:${normalize(cls.name)}';
+      final entity = entities[cls.name] as Map?;
+      final topProperty = entity?['generated'] == 'top-accessor-adapter';
       classTypeParameters[path] = cls.typeParameters.length;
       collect(path, cls, declarations);
       for (final e in cls.typeParameters.indexed) {
@@ -180,7 +182,9 @@ void main(List<String> args) {
         function(key, constructor.function, declarations);
       }
       for (final method in cls.procedures) {
-        final key = '$path/${method.kind.name}:${normalize(method.name.text)}';
+        final key = topProperty
+            ? '$owner::function:${method.kind.name.toLowerCase()} ${entity!['name']}'
+            : '$path/${method.kind.name}:${normalize(method.name.text)}';
         collect(key, method, declarations);
         function(key, method.function, declarations);
       }
@@ -200,9 +204,17 @@ void main(List<String> args) {
       );
     }
     for (final method in lib.procedures) {
-      final isHelper = method.name.text.contains('msbEntity_method_');
+      final isHelper =
+          method.name.text.contains('msbEntity_method_') ||
+          method.name.text.contains('msbEntity_top_getter_') ||
+          method.name.text.contains('msbEntity_top_setter_');
       final output = isHelper ? helpers : declarations;
-      final path = '$owner::function:${normalize(method.name.text)}';
+      final topKind = switch (method.kind.name) {
+        'Getter' => 'getter ',
+        'Setter' => 'setter ',
+        _ => '',
+      };
+      final path = '$owner::function:$topKind${normalize(method.name.text)}';
       // The module's loader is generated infrastructure, not the source main.
       if (method.name.text == 'main' &&
           lib.fileUri.path.endsWith('/module.dart'))
@@ -214,18 +226,22 @@ void main(List<String> args) {
             ? method.name.text.substring('simurghPatch_'.length)
             : method.name.text;
         final entity = entities[symbol] as Map;
-        final cls = entities[entity['owner']] as Map;
-        final kind = (entity['kind'] as String).endsWith('getter')
-            ? 'Getter'
-            : (entity['kind'] as String).endsWith('setter')
-            ? 'Setter'
-            : (entity['kind'] as String).endsWith('operator')
-            ? 'Operator'
-            : 'Method';
-        final member = (entity['name'] as String).substring(
-          (cls['name'] as String).length + 1,
-        );
-        bodyPath = "$owner::class:${cls['name']}/$kind:$member";
+        if ((entity['kind'] as String).startsWith('top-')) {
+          bodyPath = '$owner::function:${entity['name']}';
+        } else {
+          final cls = entities[entity['owner']] as Map;
+          final kind = (entity['kind'] as String).endsWith('getter')
+              ? 'Getter'
+              : (entity['kind'] as String).endsWith('setter')
+              ? 'Setter'
+              : (entity['kind'] as String).endsWith('operator')
+              ? 'Operator'
+              : 'Method';
+          final member = (entity['name'] as String).substring(
+            (cls['name'] as String).length + 1,
+          );
+          bodyPath = "$owner::class:${cls['name']}/$kind:$member";
+        }
       }
       function(
         path,

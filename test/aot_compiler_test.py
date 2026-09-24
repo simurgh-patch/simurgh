@@ -1198,7 +1198,7 @@ void main() { p.value += 1; }
                          [('app:counter.dart', '_secret'), ('app:counter.dart', 'callback'),
                           ('app:counter.dart', 'value'), ('app:other.dart', 'value')])
 
-    def test_top_level_accessor_inference_and_unsupported_metadata(self):
+    def test_top_level_accessor_inference_and_metadata(self):
         source = self.source('inferred.dart', 'get value => 1; void main() { print(value); }')
         base = self.root / 'inferred-base'
         result = self.command('baseline', source, base)
@@ -1221,11 +1221,40 @@ void main() { p.value += 1; }
         setter_manifest = json.loads((self.root / 'setter-patch/manifest.json').read_text())
         self.assertEqual(self.names(setter_manifest, setter_manifest['installed_functions']),
                          ['setter value'])
-        annotated = self.source('annotated.dart', "@pragma('vm:never-inline') int get value => 1; void main() { print(value); }")
+        base, patch, manifest = self.named_mixin_pair('top_accessor_metadata')
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['getter value', 'setter value'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        getter = next(entity for entity in graph['entities'].values()
+                      if entity['name'] == 'getter value')
+        label = self.symbol(graph, 'label')
+        self.assertIn(label, getter['references'])
+        self.assertEqual((base / 'app.dart').read_text().count('vm:never-inline'), 2)
+        annotated = self.source('annotated.dart',
+                                "@pragma('vm:unknown') int get value => 1; "
+                                'void main() { print(value); }')
         result = self.command('baseline', annotated, self.root / 'annotated-base')
         self.assertEqual(result.returncode, 2, result.stdout)
-        self.assertIn('Unsupported top-level accessor declaration', result.stderr)
+        self.assertIn('Unsupported compiler pragma', result.stderr)
         self.assertFalse((self.root / 'annotated-base/app.dart').exists())
+
+    def test_top_level_accessor_metadata_change_relinks_consumers(self):
+        base = self.root / 'base'
+        patch = self.root / 'patch'
+        baseline = ROOT / 'compiler/fixtures/aot_top_accessor_metadata_baseline/app.dart'
+        candidate = ROOT / 'compiler/fixtures/aot_top_accessor_metadata_relink_patch/app.dart'
+        result = self.command('baseline', baseline, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', candidate, base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['value'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main', 'retained'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']),
+                         ['getter value', 'setter value'])
+        self.assertEqual(manifest['replaced_globals'], [])
 
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
