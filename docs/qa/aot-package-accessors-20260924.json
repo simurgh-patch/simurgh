@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-09-24 13:55 +08:00",
+  "scope": "Package-library and part top-level accessors consumed by unchanged AOT on host ARM64",
+  "evidence": {
+    "base": "output/m1-aot-20260924T052610Z-8abt1rs4/build.json",
+    "gc_base": "output/m1-aot-20260924T052610Z-8upmn4u7/build.json",
+    "package_accessors": "output/m1-aot-20260924T052302Z-9jhcj25e/build.json",
+    "native_report": "output/m1-aot-20260924T052610Z-8abt1rs4/native-checks/report.json"
+  },
+  "compiler_sha256": "de05a271ac8b0ba831d7f8db5b911f7cb7c1500d4ecd51e751def637a4002d7d",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 164,
+    "flutter_widget_tests": 7,
+    "native_checks": 39,
+    "all_passed": true
+  },
+  "observations": [
+    "The package getter and setter, split across package:piece/piece.dart and its part, install as separate helpers under the owning library.",
+    "Application and package callers remain in baseline AOT; shared storage and the baseline AOT binary are unchanged.",
+    "Archived baseline and patch package sources compile independently to ordinary AOT and match mixed-run output exactly: first:1:1/after:3:3 and first:11:11/after:36:36.",
+    "The unified native report also rechecks existing accessor metadata and metadata-only relinking under the same compiler fingerprint."
+  ],
+  "environment": {
+    "doctor_exit_code": 2,
+    "ios_physical_detected": 2,
+    "android_arm64_physical_detected": 0,
+    "free_space_approx_mib": 902,
+    "engine_workspace_budget_gib": 200
+  },
+  "not_accepted": [
+    "Full M1 language/runtime compatibility and the historical native suite were not rerun.",
+    "Android/iOS physical-device execution, Flutter cold-start activation, signing, rollback and performance gates remain unverified.",
+    "Cross-language-version accessors and accessor signature/layout changes require separate validation."
+  ],
+  "m1_passed": false,
+  "production_patch": false
+}

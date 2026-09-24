@@ -31,6 +31,7 @@ def main():
     parser.add_argument('--top-accessor-gc-run-dir', type=Path)
     parser.add_argument('--top-accessor-metadata-run-dir', type=Path)
     parser.add_argument('--top-accessor-metadata-relink-run-dir', type=Path)
+    parser.add_argument('--top-accessor-package-run-dir', type=Path)
     parser.add_argument('--parameters-run-dir', type=Path)
     parser.add_argument('--async-run-dir', type=Path)
     parser.add_argument('--generics-run-dir', type=Path)
@@ -125,7 +126,8 @@ def main():
     folders = [run, gc_run] + [p.resolve() for p in [args.covariant_run_dir, args.covariant_edges_run_dir, args.covariant_fields_run_dir, args.covariant_mixins_run_dir, args.covariant_relink_run_dir, args.covariant_multilang_run_dir, args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
     folders.extend(p.resolve() for p in (args.top_accessors_run_dir, args.top_accessor_gc_run_dir,
                                           args.top_accessor_metadata_run_dir,
-                                          args.top_accessor_metadata_relink_run_dir) if p)
+                                          args.top_accessor_metadata_relink_run_dir,
+                                          args.top_accessor_package_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1233,6 +1235,9 @@ void main() {{
         ('top-accessor-metadata-relink', args.top_accessor_metadata_relink_run_dir,
          ['first:2', 'after:5'], ['first:2', 'after:5'],
          ['main', 'retained']),
+        ('top-accessor-package', args.top_accessor_package_run_dir,
+         ['first:1:1', 'after:3:3'], ['first:11:11', 'after:36:36'],
+         ['getter value', 'setter value']),
     ]:
         if folder is None:
             continue
@@ -1251,11 +1256,29 @@ void main() {{
             reference = destination / f'{kind}-reference-{side}'
             reference.mkdir()
             for uri, record in graph['libraries'].items():
-                if not uri.startswith('app:'):
+                if uri == 'app:entry':
+                    path = reference / 'app.dart'
+                elif kind == 'top-accessor-package' and uri.startswith('package:'):
+                    name, relative = uri.removeprefix('package:').split('/', 1)
+                    path = reference / 'packages' / name / 'lib' / relative
+                elif uri.startswith('app:'):
+                    path = reference / uri.removeprefix('app:')
+                else:
                     raise ValueError(f'{kind} reference contains an unexpected library: {uri}')
-                path = reference / ('app.dart' if uri == 'app:entry' else uri.removeprefix('app:'))
+                if not path.resolve().is_relative_to(reference.resolve()):
+                    raise ValueError(f'{kind} reference path escapes archive: {uri}')
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(record['source'])
+            if kind == 'top-accessor-package':
+                if set(graph['packages']) != {'piece'} or graph['entry_package_uri'] is not None:
+                    raise ValueError('Top-accessor package archive changed')
+                config = reference / '.dart_tool/package_config.json'
+                config.parent.mkdir()
+                config.write_text(json.dumps({'configVersion': 2, 'packages': [
+                    {'name': name, 'rootUri': (reference / 'packages' / name).as_uri() + '/',
+                     'packageUri': 'lib/', 'languageVersion': package['language_version']}
+                    for name, package in graph['packages'].items()
+                ]}, indent=2))
             source_dart = RUNTIME.parent.parent / 'host_release_arm64/dart-sdk/bin/dart'
             executable = destination / f'{kind}-source-{side}'
             execute(f'{kind}-source-{side}-compile',

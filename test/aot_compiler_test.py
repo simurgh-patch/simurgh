@@ -94,14 +94,14 @@ class AotCompilerTests(unittest.TestCase):
             (Path(directory) == source and name in {'pubspec.yaml', 'pubspec.lock'})
         })
 
-    def package_fixture(self, name, side='baseline'):
-        source = ROOT / f'compiler/fixtures/aot_packages_{side}'
+    def package_fixture(self, name, side='baseline', fixture='packages', language_version='3.0'):
+        source = ROOT / f'compiler/fixtures/aot_{fixture}_{side}'
         target = self.root / name
         self.copy_configured_fixture(source, target)
         entries = [{'name': folder.name, 'rootUri': '../packages/' + folder.name,
-                    'packageUri': 'lib/', 'languageVersion': '3.0'}
+                    'packageUri': 'lib/', 'languageVersion': language_version}
                    for folder in sorted((target / 'packages').iterdir())]
-        entries.append({'name': 'package_probe', 'rootUri': '../', 'packageUri': 'lib/', 'languageVersion': '3.0'})
+        entries.append({'name': 'package_probe', 'rootUri': '../', 'packageUri': 'lib/', 'languageVersion': language_version})
         config = target / '.dart_tool/package_config.json'
         config.parent.mkdir()
         config.write_text(json.dumps({'configVersion': 2, 'packages': entries}))
@@ -1255,6 +1255,27 @@ void main() { p.value += 1; }
         self.assertEqual(self.names(manifest, manifest['module_only_functions']),
                          ['getter value', 'setter value'])
         self.assertEqual(manifest['replaced_globals'], [])
+
+    def test_package_accessors_link_through_part_and_aot_consumers(self):
+        original = self.package_fixture('package-accessors-base', fixture='package_accessors', language_version='3.12')
+        changed = self.package_fixture('package-accessors-patch', 'patch', 'package_accessors', '3.12')
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', original / 'app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', changed / 'app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['getter value', 'setter value'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        for symbol in manifest['installed_functions']:
+            self.assertEqual(manifest['entities'][symbol]['library'], 'package:piece/piece.dart')
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(graph['libraries']['package:piece/src/accessors.dart']['owner'],
+                         'package:piece/piece.dart')
+        self.assertEqual(graph['packages']['piece']['version'], '1.0.0')
 
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
