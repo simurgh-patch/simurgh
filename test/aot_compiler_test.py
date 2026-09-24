@@ -1150,6 +1150,35 @@ class AotCompilerTests(unittest.TestCase):
         manifest = json.loads((self.root / 'formatting/manifest.json').read_text())
         self.assertEqual(manifest['replaced_classes'], [])
 
+    def test_compound_property_references_include_getter_and_setter(self):
+        library = self.source('property.dart', '''
+int _state = 1;
+int get value => _state;
+set value(int next) { _state = next; }
+void probe() {
+  value += 2;
+  value ??= 3;
+  value++;
+  value = 4;
+  print(value);
+}
+''')
+        entry = self.source('entry.dart', '''
+import 'property.dart' as p;
+void main() { p.value += 1; }
+''')
+        script = ROOT / 'compiler/test/property_references.dart'
+        for path, expected in [
+            (library, [['getter', 'setter']] * 3 + [['setter'], ['getter']]),
+            (entry, [['getter', 'setter']]),
+        ]:
+            with self.subTest(path=path.name):
+                result = subprocess.run(
+                    [str(DART), f'--packages={CONFIG}', str(script), str(path)],
+                    cwd=ROOT, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(json.loads(result.stdout), expected)
+
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
             'void f(covariant Object value) {} void main() {}',

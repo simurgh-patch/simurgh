@@ -210,6 +210,28 @@ class _Edit {
   final String text;
 }
 
+// A compound property update can invoke two independently defined accessors.
+Set<Element> propertyReferenceElements(SimpleIdentifier node) {
+  AstNode target = node;
+  final parent = node.parent;
+  if (parent is PrefixedIdentifier && parent.identifier == node)
+    target = parent;
+  if (parent is PropertyAccess && parent.propertyName == node) target = parent;
+  final operation = target.parent;
+  if (((operation is AssignmentExpression &&
+              operation.leftHandSide == target) ||
+          (operation is PrefixExpression && operation.operand == target) ||
+          (operation is PostfixExpression && operation.operand == target)) &&
+      operation is CompoundAssignmentExpression) {
+    final elements = <Element>{
+      if (operation.readElement != null) operation.readElement!,
+      if (operation.writeElement != null) operation.writeElement!,
+    };
+    if (elements.isNotEmpty) return elements;
+  }
+  return {if (node.element != null) node.element!};
+}
+
 class _References extends RecursiveAstVisitor<void> {
   _References(
     this.entities, {
@@ -256,24 +278,22 @@ class _References extends RecursiveAstVisitor<void> {
   }
 
   Element? referencedElement(SimpleIdentifier node) {
-    AstNode target = node;
-    final parent = node.parent;
-    if (parent is PrefixedIdentifier && parent.identifier == node)
-      target = parent;
-    if (parent is PropertyAccess && parent.propertyName == node)
-      target = parent;
-    final assignment = target.parent;
-    if ((assignment is AssignmentExpression &&
-            assignment.leftHandSide == target) ||
-        (assignment is PrefixExpression && assignment.operand == target) ||
-        (assignment is PostfixExpression && assignment.operand == target)) {
-      if (assignment is CompoundAssignmentExpression) {
-        return assignment.writeElement ??
-            assignment.readElement ??
-            node.element;
-      }
+    final elements = propertyReferenceElements(node);
+    return elements.isEmpty ? node.element : elements.last;
+  }
+
+  String? propertySymbol(SimpleIdentifier node) {
+    final symbols = {
+      for (final element in propertyReferenceElements(node))
+        if (entities[element] != null) entities[element]!,
+    };
+    if (symbols.length > 1) {
+      _reject(
+        'Distinct property accessors require separate links: ${node.name}',
+      );
     }
-    return node.element;
+    references.addAll(symbols);
+    return symbols.isEmpty ? null : symbols.single;
   }
 
   void replace(int start, int end, String symbol) {
@@ -425,7 +445,7 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
-    final symbol = entities[referencedElement(node.identifier)];
+    final symbol = propertySymbol(node.identifier);
     if (symbol != null && node.prefix.element is PrefixElement) {
       replace(node.offset, node.end, symbol);
       return;
@@ -436,7 +456,7 @@ class _References extends RecursiveAstVisitor<void> {
   @override
   void visitSimpleIdentifier(SimpleIdentifier node) {
     final element = referencedElement(node);
-    final symbol = entities[element];
+    final symbol = propertySymbol(node);
     if (symbol != null) {
       replaceIdentifier(node, symbol);
     } else {
