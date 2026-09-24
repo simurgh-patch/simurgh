@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
@@ -14,6 +13,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
+import 'package:analyzer/src/dart/analysis/analysis_context_collection.dart';
 import 'package:crypto/crypto.dart';
 import 'package:package_config/package_config.dart';
 import 'package:yaml/yaml.dart';
@@ -764,6 +764,14 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
   final packageRecords = <String, Map<String, Object?>>{};
   final packageInputs = <File, String>{};
   final packageHooks = <File>[];
+  final conditionalSources = <String, String>{};
+  final conditionalInputs = <File, String>{};
+  final collection = AnalysisContextCollectionImpl(
+    includedPaths: [entry.path],
+    declaredVariables: {'dart.library.io': 'true'},
+  );
+  final session = collection.contexts.single.currentSession;
+  final resolved = <String, ResolvedUnitResult>{};
 
   void recordPackage(Package package) {
     if (packageRecords.containsKey(package.name)) return;
@@ -813,7 +821,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     );
   }
 
-  void discover(File file, {_Library? partOwner}) {
+  Future<void> discover(File file, {_Library? partOwner}) async {
     file = File(file.resolveSymbolicLinksSync());
     if (partOwner != null) {
       final previous = partOwners[file.path];
@@ -830,6 +838,11 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       _reject('Invalid Dart source in $uri: ${parsed.errors}');
     final library = _Library(file, uri, source, parsed.unit);
     libraries[file.path] = library; // Insert before traversal to handle cycles.
+    final result = await session.getResolvedUnit(file.path);
+    if (result is! ResolvedUnitResult || result.content != source) {
+      _reject('Source resolution failed or changed during analysis: $uri');
+    }
+    resolved[uri] = result;
     for (
       var token = parsed.unit.beginToken;
       !token.isEof;
@@ -854,7 +867,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         );
       }
     }
-    for (final directive in parsed.unit.directives) {
+    for (final directive in result.unit.directives) {
       if (directive is LibraryDirective && directive.metadata.isEmpty) continue;
       if (directive is PartOfDirective && directive.metadata.isEmpty) {
         if (!partOwners.containsKey(file.path)) {
@@ -869,14 +882,99 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       }
       final isPart = directive is PartDirective;
       if (directive.metadata.isNotEmpty ||
-          (directive is NamespaceDirective &&
-              directive.configurations.isNotEmpty) ||
           (directive is ImportDirective && directive.deferredKeyword != null)) {
         _reject(
-          'Conditional, annotated or deferred imports/exports are not implemented: $uri',
+          'Annotated or deferred imports/exports are not implemented: $uri',
         );
       }
-      final target = (directive as UriBasedDirective).uri.stringValue;
+      String? target = (directive as UriBasedDirective).uri.stringValue;
+      if (directive is NamespaceDirective &&
+          directive.configurations.isNotEmpty) {
+        for (final configuration in directive.configurations) {
+          if (!{
+            'dart.library.io',
+            'dart.library.html',
+          }.contains(configuration.name.toSource())) {
+            _reject('Unsupported conditional environment in $uri');
+          }
+        }
+        for (final candidate in [
+          directive.uri.stringValue,
+          ...directive.configurations.map(
+            (configuration) => configuration.uri.stringValue,
+          ),
+        ]) {
+          final candidateUri = candidate == null
+              ? null
+              : Uri.tryParse(candidate);
+          if (candidateUri == null) {
+            _reject('Invalid conditional import/export URI in $uri');
+          }
+          if (candidateUri.scheme == 'dart') continue;
+          File candidateFile;
+          if (candidateUri.scheme == 'package') {
+            final location = packageConfig.resolve(candidateUri);
+            if (location == null || location.scheme != 'file') {
+              _reject('Unresolved conditional package import: $candidate');
+            }
+            candidateFile = File(
+              File.fromUri(location).resolveSymbolicLinksSync(),
+            );
+            if (packageConfig.toPackageUri(candidateFile.uri) != candidateUri) {
+              _reject(
+                'Conditional package import escapes its library root: $candidate',
+              );
+            }
+          } else if (!candidateUri.hasScheme &&
+              !candidateUri.hasAuthority &&
+              !candidateUri.hasQuery &&
+              !candidateUri.hasFragment &&
+              !candidateUri.path.startsWith('/') &&
+              candidateUri.path.endsWith('.dart')) {
+            candidateFile = File(
+              File.fromUri(
+                file.uri.resolveUri(candidateUri),
+              ).resolveSymbolicLinksSync(),
+            );
+          } else {
+            _reject('Unsupported conditional import/export URI: $candidate');
+          }
+          final candidateSource = candidateFile.readAsStringSync();
+          conditionalSources[logicalUri(candidateFile)] = candidateSource;
+          conditionalInputs[candidateFile] = candidateSource;
+        }
+        final selected = switch (directive) {
+          ImportDirective() => directive.libraryImport?.importedLibrary,
+          ExportDirective() => directive.libraryExport?.exportedLibrary,
+        };
+        if (selected == null) {
+          _reject('Unresolved conditional import/export in $uri');
+        }
+        final selectedUri = selected.uri;
+        if (selectedUri.scheme == 'dart') {
+          target = selectedUri.toString();
+        } else {
+          final sourceUri = selected.firstFragment.source.uri;
+          final resolvedUri = sourceUri.scheme == 'package'
+              ? packageConfig.resolve(sourceUri)
+              : sourceUri;
+          if (resolvedUri == null || resolvedUri.scheme != 'file') {
+            _reject('Unsupported conditional import/export target: $sourceUri');
+          }
+          final selectedFile = File(
+            File.fromUri(resolvedUri).resolveSymbolicLinksSync(),
+          );
+          if (sourceUri.scheme == 'package' &&
+              packageConfig.toPackageUri(selectedFile.uri) != sourceUri) {
+            _reject(
+              'Conditional package import escapes its library root: $sourceUri',
+            );
+          }
+          library.dependencies.add(logicalUri(selectedFile));
+          await discover(selectedFile);
+          continue;
+        }
+      }
       if (linkedSdkLibraries.contains(target)) {
         if (isPart)
           _reject('Part must resolve to a local Dart source file: $target');
@@ -901,7 +999,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
         (isPart ? library.parts : library.dependencies).add(
           logicalUri(dependency),
         );
-        discover(dependency, partOwner: isPart ? library : null);
+        await discover(dependency, partOwner: isPart ? library : null);
         continue;
       }
       if (parsedUri == null ||
@@ -918,24 +1016,21 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       (isPart ? library.parts : library.dependencies).add(
         logicalUri(canonical),
       );
-      discover(canonical, partOwner: isPart ? library : null);
+      await discover(canonical, partOwner: isPart ? library : null);
     }
   }
 
-  discover(entry);
+  try {
+    await discover(entry);
+  } catch (_) {
+    await collection.dispose();
+    rethrow;
+  }
   final sorted = libraries.values.toList()
     ..sort((a, b) => a.uri.compareTo(b.uri));
-  final collection = AnalysisContextCollection(includedPaths: [entry.path]);
   try {
-    final session = collection.contexts.single.currentSession;
-    final resolved = <String, ResolvedUnitResult>{};
     for (final library in sorted) {
-      final result = await session.getResolvedUnit(library.file.path);
-      if (result is! ResolvedUnitResult || result.content != library.source) {
-        _reject(
-          'Source resolution failed or changed during analysis: ${library.uri}',
-        );
-      }
+      final result = resolved[library.uri]!;
       final errors = result.diagnostics.where(
         (d) => d.severity == Severity.error,
       );
@@ -1341,6 +1436,11 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (library.file.readAsStringSync() != library.source)
         _reject('Source graph changed during compilation');
     }
+    for (final input in conditionalInputs.entries) {
+      if (input.key.readAsStringSync() != input.value) {
+        _reject('Conditional source changed during compilation');
+      }
+    }
     if (foundConfig != null &&
         foundConfig.file.readAsStringSync() != configText) {
       _reject('Package configuration changed during compilation');
@@ -1361,6 +1461,15 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       'language_version': languageVersion,
       'library_language_versions': languageVersions,
       'packages': {for (final name in packageNames) name: packageRecords[name]},
+      if (conditionalSources.isNotEmpty)
+        'conditional_sources': {
+          for (final name in (conditionalSources.keys.toList()..sort()))
+            if (!sorted.any((library) => library.uri == name))
+              name: {
+                'source': conditionalSources[name],
+                'source_sha256': _hash(conditionalSources[name]!),
+              },
+        },
       'libraries': {
         for (final library in sorted)
           library.uri: {

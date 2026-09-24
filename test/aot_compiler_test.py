@@ -1315,6 +1315,70 @@ void main() { p.value += 1; }
         self.assertEqual(graph['libraries']['app:legacy_part.dart']['owner'],
                          'app:legacy.dart')
 
+    def test_conditional_imports_and_exports_link_selected_vm_branch(self):
+        base, patch, manifest = self.named_mixin_pair('conditional')
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['label', 'value'])
+        self.assertNotIn('main', self.names(manifest, manifest['installed_functions']))
+        graph = json.loads((base / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['libraries']),
+                         {'app:entry', 'app:barrel.dart', 'app:vm_impl.dart', 'app:vm_public.dart'})
+        self.assertEqual(set(graph['conditional_sources']),
+                         {'app:default_impl.dart', 'app:default_public.dart'})
+        self.assertEqual(graph['libraries']['app:entry']['dependencies'],
+                         ['app:barrel.dart', 'app:vm_impl.dart'])
+        self.assertEqual(graph['libraries']['app:barrel.dart']['dependencies'],
+                         ['app:vm_public.dart'])
+
+        changed = self.root / 'conditional-inactive-change'
+        shutil.copytree(ROOT / 'compiler/fixtures/aot_conditional_baseline', changed)
+        (changed / 'default_impl.dart').write_text('int value() => -2;\n')
+        result = self.command('baseline', changed / 'app.dart', self.root / 'conditional-inactive-out')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        changed_graph = json.loads((self.root / 'conditional-inactive-out/source_graph.json').read_text())
+        self.assertNotEqual(graph['conditional_sources'], changed_graph['conditional_sources'])
+
+        html = self.root / 'conditional-html'
+        shutil.copytree(ROOT / 'compiler/fixtures/aot_conditional_baseline', html)
+        (html / 'app.dart').write_text(
+            "import 'default_impl.dart' if (dart.library.html) 'vm_impl.dart' as impl; "
+            "void main() { print(impl.value()); }\n")
+        result = self.command('baseline', html / 'app.dart', self.root / 'conditional-html-out')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        html_graph = json.loads((self.root / 'conditional-html-out/source_graph.json').read_text())
+        self.assertIn('app:default_impl.dart', html_graph['libraries'])
+        self.assertEqual(set(html_graph['conditional_sources']), {'app:vm_impl.dart'})
+
+        package = self.package_fixture('conditional-package')
+        utility = package / 'packages/utility/lib'
+        (utility / 'default.dart').write_text('int value() => -1;\n')
+        (utility / 'vm.dart').write_text('int value() => 3;\n')
+        (package / 'app.dart').write_text(
+            "import 'package:utility/default.dart' if (dart.library.io) "
+            "'package:utility/vm.dart' as choice; "
+            "void main() { print(choice.value()); }\n")
+        result = self.command('baseline', package / 'app.dart', self.root / 'conditional-package-out')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        package_graph = json.loads((self.root / 'conditional-package-out/source_graph.json').read_text())
+        self.assertIn('package:utility/vm.dart', package_graph['libraries'])
+        self.assertEqual(set(package_graph['conditional_sources']),
+                         {'package:utility/default.dart'})
+
+        unsupported = self.source('conditional-unknown.dart',
+                                  "import 'default_impl.dart' if (dart.library.ffi) 'vm_impl.dart'; void main() {}")
+        result = self.command('baseline', unsupported, self.root / 'conditional-unknown-out')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Unsupported conditional environment', result.stderr)
+
+        escaped = self.root / 'conditional-escaped'
+        shutil.copytree(ROOT / 'compiler/fixtures/aot_conditional_baseline', escaped)
+        outside = self.source('outside.dart', 'int value() => 9;')
+        (escaped / 'vm_impl.dart').unlink()
+        (escaped / 'vm_impl.dart').symlink_to(outside)
+        result = self.command('baseline', escaped / 'app.dart', self.root / 'conditional-escaped-out')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('escapes entry source root', result.stderr)
+
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
             'void f(covariant Object value) {} void main() {}',

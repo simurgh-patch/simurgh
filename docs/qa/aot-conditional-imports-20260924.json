@@ -1,0 +1,75 @@
+{
+  "recorded_at": "2026-09-24 18:31 +08:00",
+  "scope": "Pinned VM conditional import/export source graph and host ARM64 mixed execution",
+  "evidence": {
+    "base": "output/m1-aot-20260924T100319Z-_n3e2mwl/build.json",
+    "gc": "output/m1-aot-20260924T100348Z-7rqo00sb/build.json",
+    "conditional": "output/m1-aot-20260924T100417Z-vez467of/build.json",
+    "native_report": "output/m1-aot-20260924T100319Z-_n3e2mwl/native-checks/report.json",
+    "ordinary_log": "output/conditional-final-verification.log",
+    "native_log": "output/conditional-final-native.log",
+    "frozen_inputs": "output/conditional-frozen-inputs.json"
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 167,
+    "flutter_widget_tests": 7,
+    "native_checks": 13,
+    "ordinary_exit_code": 0,
+    "native_exit_code": 0,
+    "compiler_analysis": "passed",
+    "all_passed": true
+  },
+  "compiler_sha256": "c37f285f33ae9251efc0b4bfd8ff3d2d1b7bf6ef13b8da673767008a9b4b89f0",
+  "input_sha256": {
+    "compiler/lib/source_graph.dart": "167ec075395ba774a8ddb92200860730b71cfe5216e32a9099aa3dd4d03e91ab",
+    "compiler/lib/class_lowering.dart": "962d6a35310e0de358da0769eee55c0ed6a046ce989e2d808ec272602db13a94",
+    "compiler/bin/aot_patch.dart": "b9719b174b4f46533827872f12d965501203ae64133fb940df4e917d9949ee0d",
+    "scripts/verify_aot_lab.py": "ab5a23abf6c0b00505984cee3acc1fb241e5d78cc081e709781f149428d9e0e5",
+    "test/aot_compiler_test.py": "2551c948dd34a286a55670d85bf97375fb3a9dc8bd86c53e22a3eaf3c12c6209",
+    "toolchain.lock.json": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "compiler/fixtures/aot_conditional_baseline/default_impl.dart": "485ea96f736ab2d380545cc62fba472d7661aab5d1f61aab9eaab4aa3b74a088",
+    "compiler/fixtures/aot_conditional_baseline/vm_impl.dart": "6db7d0caf38721a2079a76cac1fe462a921daf13eb12cb562e272dc5dcaa3dd0",
+    "compiler/fixtures/aot_conditional_baseline/default_public.dart": "6b8021826dd9a802aca605037d7e9acb7a78d25c777bb0b50f7c8e3227b7194f",
+    "compiler/fixtures/aot_conditional_baseline/vm_public.dart": "63aefa98d816c66a0ee1f9d6925e114aeded846764de82b8b0f05f451c8e9092",
+    "compiler/fixtures/aot_conditional_baseline/barrel.dart": "9f06e9b1deb331ed5640a1efb0d4ffd8d664c5c4433a302c31132daed22c8ddf",
+    "compiler/fixtures/aot_conditional_baseline/app.dart": "e9b55e1bdf680e241904546352471911497135328eb859485e0ad5446f1deb79",
+    "compiler/fixtures/aot_conditional_patch/default_impl.dart": "485ea96f736ab2d380545cc62fba472d7661aab5d1f61aab9eaab4aa3b74a088",
+    "compiler/fixtures/aot_conditional_patch/vm_impl.dart": "15d5fc8642e60424235bd797c9528bf9fbdc23ed016b97678e0a008a2229d72b",
+    "compiler/fixtures/aot_conditional_patch/default_public.dart": "6b8021826dd9a802aca605037d7e9acb7a78d25c777bb0b50f7c8e3227b7194f",
+    "compiler/fixtures/aot_conditional_patch/vm_public.dart": "e6e00fb5b85ce048857eefba37fd56ef3ef25b5c9c7daceae964ce52a67f8628",
+    "compiler/fixtures/aot_conditional_patch/barrel.dart": "9f06e9b1deb331ed5640a1efb0d4ffd8d664c5c4433a302c31132daed22c8ddf",
+    "compiler/fixtures/aot_conditional_patch/app.dart": "e9b55e1bdf680e241904546352471911497135328eb859485e0ad5446f1deb79"
+  },
+  "native_report_sha256": "72d40ac8dc12454e876cf8655661ba864c931d4352315d604bd53b63805dac32",
+  "ordinary_log_sha256": "d27039077cfadcdf7723afc56beb3ecea8188020785c9a121e18ece2fb1ef37b",
+  "source_aot": {
+    "baseline": {
+      "executable_sha256": "4ea687ca6ee52fa84cc9bf6c33bb8e30c3108ae681322cc2e05225806629b290",
+      "source_graph_sha256": "721ab0a299da6ef305bbbd862fe128348fee6cf0c71a4e2ee88379ce802a19ff"
+    },
+    "patch": {
+      "executable_sha256": "e13e91ff000fd8b6ff53c365c4ed8efcf518eb4410db0c34a3613c76315077c0",
+      "source_graph_sha256": "61f5923952d31975acf722326556fd660e92f9e5b53a142e10ab69e62ff022e4"
+    }
+  },
+  "observed_scavenges": 21,
+  "verified": [
+    "Conditional imports and exports select the VM branch; unchanged main remains AOT while label/value bodies are installed from bytecode.",
+    "Original-source baseline and patch are independently reconstructed from active and inactive source archives, compiled to AOT and compared byte-for-byte with mixed output.",
+    "Regression covers html fallback, package URI resolution, inactive source fingerprint changes, unknown environment rejection and symlink escape rejection.",
+    "All three final build artifact inventories and frozen compiler/test inputs were verified unchanged."
+  ],
+  "failures_and_fixes": [
+    "The first targeted command used an unavailable Python module path; rerun with PYTHONPATH=test.",
+    "Default analyzer environment selected inactive/default libraries, causing No function body changes; set the pinned VM io condition explicitly.",
+    "The package branch exposed analyzer package source URIs; resolve through the package configuration and verify canonical containment."
+  ],
+  "limitations": [
+    "Only dart.library.io and dart.library.html conditions are supported, for the pinned VM target. Other condition names and deferred imports fail closed.",
+    "All named local branch files must exist within source/package roots. Inactive branches are archived, not lowered.",
+    "Historical native suites were not rerun. Mobile engines still predate the current runtime patch identity; mobile cold start and device performance are unverified."
+  ],
+  "m1_passed": false,
+  "production_patch": false
+}
