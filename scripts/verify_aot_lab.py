@@ -32,6 +32,7 @@ def main():
     parser.add_argument('--top-accessor-metadata-run-dir', type=Path)
     parser.add_argument('--top-accessor-metadata-relink-run-dir', type=Path)
     parser.add_argument('--top-accessor-package-run-dir', type=Path)
+    parser.add_argument('--top-accessor-signature-run-dir', type=Path)
     parser.add_argument('--parameters-run-dir', type=Path)
     parser.add_argument('--async-run-dir', type=Path)
     parser.add_argument('--generics-run-dir', type=Path)
@@ -127,7 +128,8 @@ def main():
     folders.extend(p.resolve() for p in (args.top_accessors_run_dir, args.top_accessor_gc_run_dir,
                                           args.top_accessor_metadata_run_dir,
                                           args.top_accessor_metadata_relink_run_dir,
-                                          args.top_accessor_package_run_dir) if p)
+                                          args.top_accessor_package_run_dir,
+                                          args.top_accessor_signature_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1238,13 +1240,16 @@ void main() {{
         ('top-accessor-package', args.top_accessor_package_run_dir,
          ['first:1:1', 'after:3:3'], ['first:11:11', 'after:36:36'],
          ['getter value', 'setter value']),
+        ('top-accessor-signature', args.top_accessor_signature_run_dir,
+         ['first:2', 'after:3'], ['first:2.5', 'after:3.5'],
+         ['main', 'retained']),
     ]:
         if folder is None:
             continue
         folder = folder.resolve()
         metadata = json.loads((folder / 'patch/manifest.json').read_text())
         names = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['installed_functions'])
-        relink = kind == 'top-accessor-metadata-relink'
+        relink = kind in {'top-accessor-metadata-relink', 'top-accessor-signature'}
         replaced = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['replaced_classes'])
         module_only = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['module_only_functions'])
         if (names != installed or replaced != (['value'] if relink else []) or

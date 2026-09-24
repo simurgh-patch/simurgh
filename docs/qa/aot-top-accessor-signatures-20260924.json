@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-09-24 14:32 +08:00",
+  "scope": "Restricted top-level getter/setter type changes with class-version relinking on host ARM64",
+  "evidence": {
+    "base": "output/m1-aot-20260924T060348Z-f69t8n0t/build.json",
+    "gc_base": "output/m1-aot-20260924T060348Z-6lflaw5u/build.json",
+    "accessor_signature": "output/m1-aot-20260924T060105Z-qq0wjs9c/build.json",
+    "native_report": "output/m1-aot-20260924T060348Z-f69t8n0t/native-checks/report.json",
+    "failed_direct_signature_probe": "output/m1-aot-20260924T055954Z-vw7faj16/generate-patch.log"
+  },
+  "compiler_sha256": "de05a271ac8b0ba831d7f8db5b911f7cb7c1500d4ecd51e751def637a4002d7d",
+  "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+  "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 165,
+    "flutter_widget_tests": 7,
+    "native_checks": 45,
+    "all_passed": true
+  },
+  "observations": [
+    "Changing getter return and setter parameter types from int to num versions the property wrapper and moves both helpers into the module.",
+    "Main and retained callers rebind; global storage and baseline AOT binary remain unchanged.",
+    "Independent original-source AOT matches mixed execution on both sides: first:2/after:3 and first:2.5/after:3.5.",
+    "A separate direct public function signature change exits nonzero and produces no module file in the regression test."
+  ],
+  "failed_attempts": [
+    "The initial exploratory candidate also changed retained() from int to num and was rejected with Signature changed; its run and log remain under failed_direct_signature_probe. The final accepted fixture preserves that function signature."
+  ],
+  "not_accepted": [
+    "Full M1 language/runtime compatibility and the historical native suite were not rerun.",
+    "Flutter cold-start activation, Android/iOS physical-device execution, signing, rollback and performance gates remain unverified.",
+    "Broader accessor type relationships and mixed language-version boundaries need separate validation."
+  ],
+  "m1_passed": false,
+  "production_patch": false
+}

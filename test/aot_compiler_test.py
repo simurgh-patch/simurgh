@@ -1277,6 +1277,29 @@ void main() { p.value += 1; }
                          'package:piece/piece.dart')
         self.assertEqual(graph['packages']['piece']['version'], '1.0.0')
 
+    def test_top_level_accessor_signature_relinks_without_changing_global_storage(self):
+        baseline = ROOT / 'compiler/fixtures/aot_top_accessor_signature_baseline/app.dart'
+        candidate = ROOT / 'compiler/fixtures/aot_top_accessor_signature_patch/app.dart'
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', baseline, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', candidate, base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['value'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main', 'retained'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']),
+                         ['getter value', 'setter value'])
+        self.assertEqual(manifest['replaced_globals'], [])
+
+        changed = self.source('changed-signature.dart',
+                              candidate.read_text().replace('num retained() => value;',
+                                                            'int retained() => value.floor();'))
+        result = self.command('patch', changed, base, self.root / 'invalid')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Signature changed', result.stderr)
+        self.assertFalse((self.root / 'invalid/module.dart').exists())
+
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [
             'void f(covariant Object value) {} void main() {}',
