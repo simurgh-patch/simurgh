@@ -157,6 +157,23 @@ String signatureMetadata(FunctionDeclaration function) {
   return visitor.values.join('\n');
 }
 
+// Analyzer's source printer omits some semantic field modifiers (including
+// covariant). Compare lexical tokens so those changes invalidate a class while
+// whitespace/comments do not. Never emit this representation as Dart source.
+String declarationTokens(CompilationUnitMember declaration) {
+  final lexemes = <String>[];
+  // Documentation comments have a separate token chain; start at metadata
+  // (when present) or the declaration itself, keeping annotation semantics.
+  final first = declaration.metadata.isEmpty
+      ? declaration.firstTokenAfterCommentAndMetadata
+      : declaration.metadata.first.beginToken;
+  for (var token = first; ; token = token.next!) {
+    lexemes.add(token.lexeme);
+    if (identical(token, declaration.endToken)) break;
+  }
+  return jsonEncode(lexemes);
+}
+
 class Program {
   Program(this.source, this.identity) {
     final parsed = parseString(content: source, throwIfDiagnostics: false);
@@ -318,7 +335,7 @@ class Program {
     'dynamic_retention_root_count': dynamicRoots.length,
     'class_shapes': {
       for (final entry in classes.entries)
-        entry.key: hash(entry.value.toSource()),
+        entry.key: hash(declarationTokens(entry.value)),
     },
     'functions': {
       for (final entry in functions.entries)
@@ -573,7 +590,7 @@ void writeLinkedSources(
     final buffer = entity == null
         ? infrastructure
         : bodies[(entity as Map)['library']]!;
-    buffer.writeln(declaration.toSource());
+    buffer.writeln(text.substring(declaration.offset, declaration.end));
   }
   final facade = StringBuffer(
     '// @dart=${program.languageVersion}\n$imports\n',
@@ -601,7 +618,7 @@ void baseline(Program program, Directory output) {
     generated.writeln(declaration.toSource());
   }
   for (final declaration in program.classes.values) {
-    generated.writeln(declaration.toSource());
+    generated.writeln(nodeText(program, declaration));
   }
   var index = 0;
   final names = program.functions.keys.toList()..sort();
@@ -858,8 +875,8 @@ Future<void> patch(Program program, Directory base, Directory output) async {
   final changedGlobals = replacedGlobals.toList()..sort();
   final replacedClasses = <String>{
     for (final name in originalClasses)
-      if (original.classes[name]!.toSource() !=
-          program.classes[name]!.toSource())
+      if (declarationTokens(original.classes[name]!) !=
+          declarationTokens(program.classes[name]!))
         name,
   };
   final structuralChanges = replacedClasses.toList()..sort();

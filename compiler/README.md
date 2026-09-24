@@ -455,8 +455,8 @@ adapter. `aot_operator_checks` covers invalid dynamic index/RHS checking order.
 Use `--operators-run-dir`, `--operator-removal-run-dir` and
 `--operator-checks-run-dir` for original-
 source AOT comparisons and retained-consumer/class-dependency assertions.
-Operators requiring unsupported SDK super calls, explicit covariant parameters,
-and broader mixed-library/Isolate combinations remain outside verified scope.
+Operators requiring unsupported SDK super calls and broader mixed-library/Isolate
+combinations remain outside verified scope. Covariant cases are covered below.
 
 
 ## Part files and owning-library identity
@@ -772,7 +772,7 @@ The explicit compiler-pragma subset is `vm:never-inline`, `vm:prefer-inline`,
 `package:meta` dependency; this does not claim WebAssembly support. Unknown
 pragmas, including ones hidden behind constant aliases, are rejected. Directive
 metadata on libraries, imports, exports and parts remains unsupported; existing
-external/native/covariant restrictions still apply. No runtime
+external/native restrictions still apply. No runtime
 reflection facility is added.
 
 The four `aot_metadata*` fixture pairs exercise declaration sites, real
@@ -817,3 +817,34 @@ from actual Kernel, and compares declaration/helper annotation constants for the
 annotated generator and metadata-relink samples. These are host ARM64 cases;
 complete Stream compatibility, Flutter/mobile startup and device-performance
 acceptance remain outstanding.
+
+
+### Covariant parameters and fields
+
+Explicit covariance stays on actual class, mixin and interface member signatures,
+allowing CFE to retain inherited narrowing checks and checked tear-offs. Lifted
+top-level helpers keep the declared parameter types and annotations, while only
+the member-only `covariant` keyword is removed by its original AST token range.
+Supported fields also retain explicit covariance, including inferred declarations
+whose type is materialized, abstract declarations and late fields. Materialization
+retains `abstract`, so noSuchMethod-based implementations still receive accesses
+rather than reading an accidentally introduced concrete field.
+
+Class emission preserves declaration source ranges. The pinned analyzer source
+printer omits field covariance; using it would silently change class contracts.
+Class shape comparison therefore uses lexical tokens, which retain semantic
+modifiers while ignoring comments and whitespace. A member/field covariance
+change relinks the affected class versions, typed functions and storage.
+
+Six `aot_covariant*` fixture pairs cover base-typed AOT calls, narrowed overrides,
+named/optional parameters, tear-offs, setters/index/super calls, generic helpers,
+explicit/inferred/late fields, mixin/on constraints, SDK ListBase overrides,
+noSuchMethod forwarders, record/function parameters, class additions and mixed
+3.0/3.4/3.12 libraries/parts. Native output and complete TypeError text are compared
+with independent original-source AOT. GC checks retain a generic receiver across
+Scavenge before invoking its patched helper; Kernel checks compare member/formal
+and helper annotation constants. Invalid modifier positions and unmarked invalid
+parameter narrowing still fail original source validation.
+
+This is host ARM64 coverage of these cases, not complete variance compatibility,
+live-object migration, Flutter/mobile activation or device-performance acceptance.

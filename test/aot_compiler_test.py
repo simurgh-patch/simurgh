@@ -1095,6 +1095,82 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(self.names(manifest, manifest['changed_functions']), ['Child.index'])
 
+    def test_covariant_members_retain_aot_consumers(self):
+        base, patch, manifest = self.named_mixin_pair('covariant')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Child.named', 'Child.read'])
+
+    def test_covariant_setters_operators_super_and_generic_helpers(self):
+        base, patch, manifest = self.named_mixin_pair('covariant_edges')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Child.[]', 'Child.read', 'Holder.update'])
+        self.assertNotIn('main', self.names(manifest, manifest['installed_functions']))
+
+    def test_covariant_fields_preserve_inference_and_inherited_checks(self):
+        base, patch, manifest = self.named_mixin_pair('covariant_fields')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['Child.label', 'Mock.noSuchMethod', 'Narrow.label'])
+
+    def test_covariant_mixins_sdk_forwarders_records_and_callbacks(self):
+        base, patch, manifest = self.named_mixin_pair('covariant_mixins')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['CheckedList.[]=', 'Child.read', 'NarrowFormats.callback'])
+        self.assertEqual(manifest['module_only_functions'], [])
+
+    def test_covariance_change_relinks_class_and_storage_dependencies(self):
+        base, patch, manifest = self.named_mixin_pair('covariant_relink')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Base', 'Child', 'FieldOnly'])
+        self.assertEqual(self.names(manifest, manifest['replaced_globals']), ['field', 'shared'])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        self.assertIn('invoke', self.names(manifest, manifest['module_only_functions']))
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main'])
+
+    def test_covariance_in_parts_and_new_language_library(self):
+        base, patch, manifest = self.named_mixin_pair('covariant_multilang')
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(self.names(manifest, manifest['added_classes']), ['Added'])
+        graph = json.loads((patch / 'source_graph.json').read_text())
+        self.assertEqual(set(graph['library_language_versions'].values()), {'3.0', '3.4', '3.12'})
+
+    def test_class_shape_preserves_field_covariance_but_ignores_comments(self):
+        source = self.source('app.dart', "/// Baseline documentation.\nclass C { Object value = 'x'; } void main() { print(C().value); }")
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text("class C { covariant Object value = 'x'; } void main() { print(C().value); }")
+        result = self.command('patch', source, base, self.root / 'covariant')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((self.root / 'covariant/manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['C'])
+        source.write_text("/** Updated documentation. */\nclass C { /* layout only */ Object  value = 'x'; } void main() { print('changed:${C().value}'); }")
+        result = self.command('patch', source, base, self.root / 'formatting')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((self.root / 'formatting/manifest.json').read_text())
+        self.assertEqual(manifest['replaced_classes'], [])
+
+    def test_invalid_covariant_modifier_positions_remain_rejected(self):
+        cases = [
+            'void f(covariant Object value) {} void main() {}',
+            'class C { static void f(covariant Object value) {} } void main() {}',
+            'class C { C(covariant Object value); } void main() {}',
+            'class C { static covariant Object value=0; } void main() {}',
+        ]
+        for index, text in enumerate(cases):
+            with self.subTest(index=index):
+                dest = self.root / f'invalid-covariant-{index}'
+                result = self.command('baseline', self.source(f'invalid-covariant-{index}.dart', text), dest)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertFalse(dest.exists())
+
+    def test_covariance_does_not_allow_unmarked_parameter_narrowing(self):
+        source = self.source('app.dart', 'class Base { String read(Object value) => "base"; } class Child extends Base { String read(String value) => value; } void main() {}')
+        result = self.command('baseline', source, self.root / 'invalid')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Static source errors', result.stderr)
+        self.assertFalse((self.root / 'invalid').exists())
+
     def test_generators_preserve_aot_consumers_and_metadata(self):
         base, patch, manifest = self.named_mixin_pair('generators')
         self.assertEqual(manifest['replaced_classes'], [])

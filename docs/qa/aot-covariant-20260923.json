@@ -1,0 +1,352 @@
+{
+  "recorded_at": "2026-09-24 10:25 +08:00",
+  "scope": "Member/field covariance, inherited runtime checks, helper lowering and semantic class-shape preservation on host ARM64",
+  "evidence": {
+    "normal": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/build.json",
+    "gc": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102910Z-w9xbx6f6/build.json",
+    "covariant": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102940Z-1d41kfqy/build.json",
+    "covariant_edges": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103014Z-8hbm0wzh/build.json",
+    "covariant_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103048Z-ofw0426z/build.json",
+    "covariant_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103121Z-ds8la9p2/build.json",
+    "covariant_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103156Z-zcoyijjz/build.json",
+    "covariant_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103228Z-e63u5rq2/build.json",
+    "generators": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103259Z-uvwpv_u7/build.json",
+    "generator_edges": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103331Z-xb49jhxd/build.json",
+    "generator_async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103403Z-d20peuwg/build.json",
+    "generator_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103434Z-i1rdl9uo/build.json",
+    "generator_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103506Z-xzguv_f4/build.json",
+    "metadata": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103538Z-d49i7xgk/build.json",
+    "metadata_package": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103612Z-l2x9ll3i/build.json",
+    "metadata_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103645Z-5k7gv3tr/build.json",
+    "metadata_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103721Z-h783gf89/build.json",
+    "enums": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103752Z-amagd8vc/build.json",
+    "enum_custom": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103823Z-yix_mm7j/build.json",
+    "enum_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103856Z-ihvk1068/build.json",
+    "enum_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T103930Z-j2um2fjt/build.json",
+    "records": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104002Z-j41835wa/build.json",
+    "record_super": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104034Z-294d8zz3/build.json",
+    "record_shapes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104106Z-phmb9zad/build.json",
+    "record_dynamic": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104139Z-wowultdd/build.json",
+    "record_multilang": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104212Z-8xvktvju/build.json",
+    "typedefs": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104247Z-pci1t5hh/build.json",
+    "typedef_relink": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104323Z-22gs478d/build.json",
+    "type_names": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104356Z-cp9g9eog/build.json",
+    "super_fields": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104429Z-2gban346/build.json",
+    "generic_classes": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104509Z-ju4czuti/build.json",
+    "async": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104548Z-2895qdps/build.json",
+    "dynamic_calls": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104622Z-o3a8fg0b/build.json",
+    "signatures": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104655Z-xmowyh3t/build.json",
+    "layout": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104731Z-dcvmtqq5/build.json",
+    "named_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104812Z-6as5kbvj/build.json",
+    "sdk_mixins": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T104849Z-hexre7wu/build.json",
+    "native_checks": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/report.json",
+    "verification": "output/m1-covariant-final-verification.log",
+    "native_log": "output/m1-covariant-final-native.log",
+    "compiler_analysis": "output/covariant-mainline/final-analysis.log",
+    "format": "output/covariant-mainline/final-format.log",
+    "input_hashes": "output/m1-covariant-final-start-hashes.json",
+    "native_input_hashes": "output/m1-covariant-final-native-start-hashes.json",
+    "process_results": "output/m1-covariant-final-process-results.json",
+    "cancelled_attempt": "output/m1-covariant-cancelled.json",
+    "abstract_field_regression": "output/covariant-mainline/abstract-probe/RESULT.json",
+    "doc_comment_failure": "output/m1-covariant-doc-comment-process-results.json",
+    "doc_comment_regressions": "output/covariant-null-probe/targeted-fixed.log",
+    "interrupted_ordinary_log": "output/m1-covariant-interrupted-ordinary.log"
+  },
+  "compiler_sha256": "973bd6960dab4c72e7cb9ee077f6863ca2300bb4852ad1cb0f06bc9de86ade2c",
+  "runtime_provenance": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667",
+      "pkg/front_end/lib/src/source/source_enum_builder.dart": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+    },
+    "artifacts": {
+      "dartaotruntime": "446d62d994d4841517159a7c970963896a71454e6e7991426d80e65298a4732f",
+      "gen_snapshot": "b16aa12a4ec071a1fcb7ffaba5de1ec9ae438d59ba794af31c1baf44e4d2676c",
+      "args.gn": "ef93b5446ae747609d90655a91206b32904c1fd5fe5589f36070a23d4b9e6f91"
+    }
+  },
+  "checks": {
+    "dart_tests": 16,
+    "python_tests": 159,
+    "flutter_widget_tests": 7,
+    "native_checks": 331,
+    "all_passed": true
+  },
+  "fingerprints_and_artifact_hashes_verified": true,
+  "source_archives_match_current_fixtures_and_resolved_packages": true,
+  "packages": {
+    "meta": {
+      "name": "meta",
+      "version": "1.18.2",
+      "language_version": "3.5",
+      "pubspec_sha256": "9b89b2693e8da6750291e5ff0091c70588d5f29c0b2fe69d508171fd316c5f03"
+    }
+  },
+  "baseline_aot_unchanged": true,
+  "outputs": {
+    "covariant": {
+      "baseline": "child:x\nchild-named:y\ncall-error:true\nnamed-error:true\nchild:z\ntear-error:true\nholder:ok:ok\nholder-error:true\n",
+      "patched": "patched:x\npatched-named:y\ncall-error:true\nnamed-error:true\npatched:z\ntear-error:true\nholder:ok:ok\nholder-error:true\n"
+    },
+    "covariant_edges": {
+      "baseline": "set:ok\nindex:child:key:ok\nchild:base:ok\nsetter-error:type 'Other' is not a subtype of type 'Payload' of 'item'\nkey-error:type 'int' is not a subtype of type 'String' of 'key'\nvalue-error:type 'Other' is not a subtype of type 'Payload' of 'item'\nread-error:type 'Other' is not a subtype of type 'Payload' of 'item'\nheap:31249875000\nheld:new\ngeneric-error:type 'Other' is not a subtype of type 'Payload' of 'item'\n",
+      "patched": "set:ok\nindex:patched:key:ok\npatched:base:ok\nsetter-error:type 'Other' is not a subtype of type 'Payload' of 'item'\nkey-error:type 'int' is not a subtype of type 'String' of 'key'\nvalue-error:type 'Other' is not a subtype of type 'Payload' of 'item'\nread-error:type 'Other' is not a subtype of type 'Payload' of 'item'\nheap:31249875000\nupdated:new\nheld:new\ngeneric-error:type 'Other' is not a subtype of type 'Payload' of 'item'\n"
+    },
+    "covariant_fields": {
+      "baseline": "abstract:from-nsm\nfields:parent:ok:child\nchild-error:type 'int' is not a subtype of type 'String' of 'value'\ngeneric:next:generic\ngeneric-error:type 'int' is not a subtype of type 'String' of 'value'\nlate-error:type 'int' is not a subtype of type 'String' of 'value'\ninferred:ok\ninferred-error:type 'int' is not a subtype of type 'String' of 'value'\n",
+      "patched": "abstract:patched-nsm\nfields:patched:parent:ok:child\nchild-error:type 'int' is not a subtype of type 'String' of 'value'\ngeneric:next:generic\ngeneric-error:type 'int' is not a subtype of type 'String' of 'value'\nlate-error:type 'int' is not a subtype of type 'String' of 'value'\ninferred:patched:ok\ninferred-error:type 'int' is not a subtype of type 'String' of 'value'\n"
+    },
+    "covariant_mixins": {
+      "baseline": "child:mixed:base:x\nmixed-error:type 'int' is not a subtype of type 'String' of 'item'\nmock:ok\nmock-error:type 'int' is not a subtype of type 'String' of 'item'\nsdk:new\nsdk-error:type 'int' is not a subtype of type 'String' of 'value'\nrecord:x:2:3\nrecord-error:type '(int, int)' is not a subtype of type '(String, int)' of 'value'\ncallback-error:type '(String) => String' is not a subtype of type '(int) => int' of 'value'\n",
+      "patched": "patched:mixed:base:x\nmixed-error:type 'int' is not a subtype of type 'String' of 'item'\nmock:ok\nmock-error:type 'int' is not a subtype of type 'String' of 'item'\nsdk:patched:new\nsdk-error:type 'int' is not a subtype of type 'String' of 'value'\nrecord:x:2:13\nrecord-error:type '(int, int)' is not a subtype of type '(String, int)' of 'value'\ncallback-error:type '(String) => String' is not a subtype of type '(int) => int' of 'value'\n"
+    },
+    "covariant_relink": {
+      "baseline": "field\nchild:x\nchild:y\nchild:3\nInstance of 'Child'\n",
+      "patched": "field\nadded:x\nchild:y\nerror:type 'int' is not a subtype of type 'String' of 'value'\nInstance of 'Added'\n"
+    },
+    "covariant_multilang": {
+      "baseline": "child:x\nerror:type 'int' is not a subtype of type 'String' of 'value'\n",
+      "patched": "added:x\nerror:type 'int' is not a subtype of type 'String' of 'value'\n"
+    }
+  },
+  "source_reference_artifacts": {
+    "covariant": {
+      "baseline": {
+        "source_sha256": "9768409dd90ca92bfa78e4787ac3a000a9ac45f0b0be0e3dfca07bdfee25615d",
+        "executable_sha256": "d7459ccc8baba9cdedfa9e0feb40daf98d20e1ce502b248ad0997beb025d6b73",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "37ef0e4a386a5587d8280fcf2ce720ad018525e976edbde4681ac92c4778eb62"
+      },
+      "patch": {
+        "source_sha256": "425dd2daec8485ae5329a2dc38e53b7b888a2247cf7850405da53d2bf59ff50e",
+        "executable_sha256": "b9aba82d9f1942f966e6f811a01eefb2123a2e4b07c3e9ec2d769ba99eeb1872",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "fd79bdc5aa67931eb0553571b9a0e721cc01de2ae1dd52786f11396eda8aa5c5"
+      }
+    },
+    "covariant_edges": {
+      "baseline": {
+        "source_sha256": "72a544d33392d134545c08b2448089a3833fb28702a5017b658401f580dc906f",
+        "executable_sha256": "c2c47dfca35efdf6834db89e339e18c1919f8d053605815f970c7c1a0945a9eb",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "e895ffb3e8052bb7f4b3f64b541ee09083ddf79ea6d71697fde877dd3740e821"
+      },
+      "patch": {
+        "source_sha256": "f85d77a72e8ebc3932e3a66a24566847c531910246a8e483cf5cc08cb8c4b4ae",
+        "executable_sha256": "3b2b094b51c0aea060bcba5fae49d8a6d0e342e542319f4350a50dc986273c2e",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "ccfd0609b90caade31d61b51602c1adb7d7cfe525ed97a0d2750a111c972ac01"
+      }
+    },
+    "covariant_fields": {
+      "baseline": {
+        "source_sha256": "ee81bb03b612002dc495fddae97cd4e55eff27f564fb30072cec87bf6fdcb988",
+        "executable_sha256": "db702d5f79d9f54dd9f9ae3aa715bfa8260a0f0e5d2d871bf2af3f0da5bd1580",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "c7b6b51f907e062140e6d45653d062facb1201b5cfa2e9b9b9216406a7c175a2"
+      },
+      "patch": {
+        "source_sha256": "17c1f996643454fcc6147e868e0c5cb26245094b398e1d440051bce37840ee2f",
+        "executable_sha256": "5e26f98496a14f5c80581e2680bd6f0469fc6a7a05c603ce3306b31bd5659cf2",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "6c31e8c7ea0596994a7f7c2da39274e7bc419037f6f79a1bda17aeeacd5ca96d"
+      }
+    },
+    "covariant_mixins": {
+      "baseline": {
+        "source_sha256": "e3fc0806d14c7188c7d0f73479aa662b2f33b04e91c399eb56d846a3a2d4f76b",
+        "executable_sha256": "33b0232420e26da70748cd48a64f9e5bd0714be176ae598668393f6ccf8c6657",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "f44587ed94b1c4cdca741fc0f2568916df069fe7676c0984cc275156cb00bfef"
+      },
+      "patch": {
+        "source_sha256": "6ea519cba2ecad8e33613668834bd229faa84ec30359868cea8fac03e6af571e",
+        "executable_sha256": "8f714b8d51ff5f60d5c73e38a31d85375ba52d6b177639a2114395e37c138534",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "3a61481cb29431d27480d12cdb1123f666e6c3f78ac1a52af9374a5fd645b43b"
+      }
+    },
+    "covariant_relink": {
+      "baseline": {
+        "source_sha256": "7a27775bba199698d7979de8674063be7e724010a23d65d4bd3e9f7714027759",
+        "executable_sha256": "9ed5b5e419bd0bbf2b10fa8a52dd4309f3dcc67675dde66cb6154d97b74fc365",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "91286d151b93cae1682cd92c1ff0349a0c1b5ce7322a7f3d824db099b3265864"
+      },
+      "patch": {
+        "source_sha256": "442893e630f2b6860d7f65d040ea054a2b5802533357e30e7f761a46e55ed116",
+        "executable_sha256": "9906e8c8c12f8fa5d8f6cc307aea9f1e0834603ebcf496f2c59ef859a65d33a8",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "6c51f0c8854bb3143f7487dc881e58145c9f12e55e358a98162f8c4d32f90583"
+      }
+    },
+    "covariant_multilang": {
+      "baseline": {
+        "source_sha256": "b834463ddc79ac0460e789c566038344364874210367cd4f006bb5d6836d71a8",
+        "executable_sha256": "950fb6c059bc6ab160c78b827dc4a11826240ad21a30f05b4f145687ea7386d8",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "cb202b278ccb298974616f726dfbc08d2367a35d610f9fc3469a473a8ee02572"
+      },
+      "patch": {
+        "source_sha256": "63b947b10acc10fb2ee810b7e7f620272a86f125b78ca654e0cd36c171004399",
+        "executable_sha256": "22579fc7234f89fabda9d419d5d470f6babb12cf14a701f40d46e54b8780e224",
+        "sdk_dart_sha256": "61a62a6fc4004a05f5511729fc9b4408b0031b2b82e080c70917edf31b707b19",
+        "source_graph_sha256": "f1c5f4ea2dec85e213449f3afa16828d0343d64b0d8ba791f166b03db3f85c85"
+      }
+    }
+  },
+  "scavenges": 198,
+  "kernel_metadata": {
+    "covariant_mixins": {
+      "sites": {
+        "baseline": 1,
+        "patch": 1,
+        "baseline_helpers": 1,
+        "patch_helpers": 1
+      },
+      "kernel_sha256": {
+        "source-baseline": "1cb4f45910e9f99ff6ddddfdb74641ef894a36bbde94203c1bf63d67c19acce6",
+        "baseline": "30731c384c8e904735ff03d6ef0c672f85c066fe76913509b401f42dcf74cd7c",
+        "source-patch": "f209ee45388f6a83666ae6097266dc3e181efa996180e81e13796a96b46199b8",
+        "patch": "f2f6b173b273d8db5fedf99a764454f6722c1306ad634b09bdda621803f94dc8"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/covariant_mixins-metadata-snapshots.json",
+      "snapshots_sha256": "3cb5ef511b24ebd470266a00994424d38ef75912dfcb4528fb13e83c4e3be8f1"
+    },
+    "generators": {
+      "sites": {
+        "baseline": 4,
+        "patch": 4,
+        "baseline_helpers": 2,
+        "patch_helpers": 1
+      },
+      "kernel_sha256": {
+        "source-baseline": "0bab7fa823f4e79eb5c0680b9b343142d144965d09672b80e3e7cbfa970b9c90",
+        "baseline": "116acf2350dacbd5a886b53f7f414ca5e59574340bca351db32e407739a76fc5",
+        "source-patch": "5cba3c4c1f00381a825c9209f934d733c4d60830eb6acc830b9f55f8f13bc9d6",
+        "patch": "054f85b11b0ec728e849a3a2f1f81ce17b59a87ae92c5b7c473e919a5da1b923"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/generators-metadata-snapshots.json",
+      "snapshots_sha256": "02125922efd7ab3d32b139348dca023cfe1bb00ff2a526eba4d1b09878ec144e"
+    },
+    "generator_relink": {
+      "sites": {
+        "baseline": 2,
+        "patch": 2,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "bd557ed575f254f00c9078fbfdb974136008df503282210cbff4f637e957f204",
+        "baseline": "ab55d6794594d9879363a771d1fc6c66b7ac7f91afa2e2e184cfb239e8d7293a",
+        "source-patch": "348867a57b276f075b6252952fff56a341922a34cba3243df7a0b6e1a1ef8be2",
+        "patch": "18876a503ec6f17070b480cfc489b6737c64488bcf1544287c7c8a38624187da"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/generator_relink-metadata-snapshots.json",
+      "snapshots_sha256": "a13ff2c908d87922817fa629393b4fd09a4e85a194dd20e58d3df5aa59e4f3aa"
+    },
+    "metadata": {
+      "sites": {
+        "baseline": 24,
+        "patch": 24,
+        "baseline_helpers": 4,
+        "patch_helpers": 4
+      },
+      "kernel_sha256": {
+        "source-baseline": "dc81d8e6f57bd261b021b44e92f491ba4f01f089555070ce4f37ec64c7685867",
+        "baseline": "947a2b929754cbc8336d12fcb95a67255f3a2b02ed6de81114ad5abef8db720d",
+        "source-patch": "717acb763415414bb02ee71a10fe4caab658b02b89dd5869d17eedc085251d88",
+        "patch": "2f5d0df917c1562f6fb3c4e9460f523ed00e4e4ad9c4f00ecb070cd82c97e697"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/metadata-metadata-snapshots.json",
+      "snapshots_sha256": "6555fe872039879d030a9db4af811a128b3d012df02d7141efd0955eb1ad611d"
+    },
+    "metadata_package": {
+      "sites": {
+        "baseline": 32,
+        "patch": 32,
+        "baseline_helpers": 3,
+        "patch_helpers": 1
+      },
+      "kernel_sha256": {
+        "source-baseline": "710a4682a244b2d9291dbc7715ba364b33663c028f7b4305497c0a1a51644914",
+        "baseline": "d2e2e3422eb09db9b69629993fe58133685bce2f5057d6cf80386ef1b9e59009",
+        "source-patch": "fab5c7838f92915cfc20d6064abffdcf9fcc282809b61a2b835bd554178e05f0",
+        "patch": "cb033609ea65d214f431a6eeb3e1c18567f2b5ea150464e87f96fd933bc22ce3"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/metadata_package-metadata-snapshots.json",
+      "snapshots_sha256": "b77adbe15e3c9485fe7b88dbc59f3c2cf1a3f00f72ab82307a9cd6553a28a873"
+    },
+    "metadata_relink": {
+      "sites": {
+        "baseline": 5,
+        "patch": 5,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "b82c8d2ae6c9735ae57caa6f1615fec1d4b95db03548eff0e56053a893383bbb",
+        "baseline": "10ea19beb86e94ed0262cb39a6cdf621b8bcd3f64c7cdfe10429de1d4df5bd5c",
+        "source-patch": "339a258f92dadac5488c43b45300fe66fa455466e73a8a659d8fabce3d68f871",
+        "patch": "9c05392d2597c338e5074de0e72e6647b964726cf8a599ebb1b00edf3e7292ff"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/metadata_relink-metadata-snapshots.json",
+      "snapshots_sha256": "fd72011334d612cbdb31a555e193405d5ef89d25e81ad30ad293f29e9de2710f"
+    },
+    "metadata_multilang": {
+      "sites": {
+        "baseline": 1,
+        "patch": 2,
+        "baseline_helpers": 0,
+        "patch_helpers": 0
+      },
+      "kernel_sha256": {
+        "source-baseline": "2a09a0f61f57db05d851596d4c390e03b89bcc58d654c6a40527dcb1e5385e2c",
+        "baseline": "459601e425347f9b17ec7222f1bcb9eb53421904445ca52f3550678585cdd88b",
+        "source-patch": "12659cbd1d970c503d341add70dbc73ff260aa9d572f27daa7f4fd09bca7bdff",
+        "patch": "6b9315f9a5938f664da4120bd581f26023db19a8564c4c6f36042d3dabcbc3f2"
+      },
+      "snapshots": "/Applications/project/test2/my-shorebird/output/m1-aot-20260923T102842Z-uej_mkgw/native-checks/metadata_multilang-metadata-snapshots.json",
+      "snapshots_sha256": "981d63bcfc9fb5e59601d7cdc42baa7cb6a8779b825ddd91ea0b08acdb5c9371"
+    }
+  },
+  "metadata_inspector_sha256": "8302967c2e2d5a7b5bee36a90ee2d8b04f762a2e9df141ebceea1b4ffeb1b592",
+  "metadata_verifier_sha256": "f0d812ebc6973393d4b94ca58ed3baa58fab4015daea420f25360bf29a935eec",
+  "kernel_languages": {
+    "launcher.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "app.dart": "3.12",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12"
+  },
+  "patch_kernel_languages": {
+    "module.dart": "3.12",
+    "unit_0e84d5503d8eb063adcf7959d627adf0bc1e344b7f40fa9fbbf3788b1f8bb17a.dart": "3.0",
+    "unit_2c2939dd35e05ec475c6fef136b0246b44d8f56e1739bdd8ae88c3121fa1a8bd.dart": "3.12",
+    "unit_d94044284982e95626ebdb187a4b03a81756f64fc0aaf4278ecfe6a59eff32e0.dart": "3.4"
+  },
+  "notes": [
+    "Preserve covariant on real class/mixin/interface members, letting CFE enforce inherited narrowing and checked tear-offs. Remove only that modifier token from lifted top-level helper formals, retaining types and annotations.",
+    "Explicit/inferred/late fields preserve covariance. Inferred abstract fields retain abstract so accesses still dispatch to noSuchMethod implementations instead of reading introduced concrete storage.",
+    "Class emission uses source ranges because the pinned analyzer source printer omits field covariance. Token-based class-shape comparison retains semantic modifiers while ignoring comments and whitespace.",
+    "Six new fixture pairs cover AOT base references, named/optional parameters, tear-offs, generic helpers, setters/index/super, fields, mixin/on, SDK ListBase, noSuchMethod, records/functions and added classes/parts/language versions.",
+    "Native checks compare full outputs and TypeError text with independently compiled original source. Changed member or field covariance relinks owning classes, typed functions and storage, while compatible method changes retain AOT callers.",
+    "Nine new Python regression tests cover the source/manifest boundaries and modifier-aware class changes. Initial eight passed, but the native field fixture exposed the source-printer omission; after correction, shape and relinking tests passed.",
+    "A further independent AOT probe proved a lost abstract field modifier changed from-nsm to null. Both initially running suites were deliberately stopped (exit 143), the inferred-field modifier was corrected, the fixture extended and independent AOT/mixed plus targeted checks passed before a new full freeze.",
+    "Initial final-native dispatch happened before its runner file existed and exited 2 without building; the launch-error log was preserved. The verified final native process was started after runner creation.",
+    "A further native package:meta rebuild exposed traversal of detached documentation-comment tokens. The failing native process exited 1 and the ordinary process was stopped with exit 143; logs and frozen inputs were archived. Start at metadata or declaration tokens instead; documentation-only shape changes, package:meta and metadata relinking targeted tests passed before final refreeze.",
+    "The native unified suite completed with 331 passed checks. The ordinary process was interrupted after the task stopped; its incomplete log is preserved, and the full ordinary suite was restarted on unchanged frozen inputs.",
+    "The final ordinary/native suites ran on the corrected frozen inputs. Thirty-seven groups were rebuilt; historical full native suite was not rerun. No runtime patch changed this round."
+  ],
+  "limitations": [
+    "This does not prove complete Dart variance/SDK compatibility or live object migration.",
+    "Full Flutter/mobile cold start, signing/rollback and physical-device performance remain incomplete. No mobile or performance acceptance is claimed."
+  ],
+  "m1_passed": false,
+  "production_runtime_implemented": false
+}

@@ -300,9 +300,8 @@ class _Classes {
       }
       for (final member in owner.node.members) {
         if (member is FieldDeclaration) {
-          if (member.externalKeyword != null ||
-              member.covariantKeyword != null) {
-            _reject('External/covariant fields are not supported');
+          if (member.externalKeyword != null) {
+            _reject('External fields are not supported');
           }
           for (final variable in member.fields.variables) {
             final field = owner.element.getField(variable.name.lexeme)!;
@@ -360,8 +359,7 @@ class _Classes {
           for (final formal
               in member.parameters?.parameters ?? <FormalParameter>[]) {
             final param = unwrapParameter(formal);
-            if (param is! SimpleFormalParameter ||
-                param.covariantKeyword != null) {
+            if (param is! SimpleFormalParameter) {
               _reject('Only explicitly typed method parameters supported');
             }
           }
@@ -781,7 +779,24 @@ class _Classes {
           member.body.accept(ref);
           final body = _rewrite(owner.library.source, member.body, ref.edits);
           records[helper]!['references'] = ref.references.toList()..sort();
-          final inner = parameters.substring(1, parameters.length - 1);
+          // CFE must keep covariance on the real member for inherited checks.
+          // It is not a legal modifier on lifted top-level helper parameters.
+          final helperParameterText = member.parameters == null
+              ? '()'
+              : text(
+                  owner,
+                  member.parameters!,
+                  extra: [
+                    for (final formal in member.parameters!.parameters)
+                      if (unwrapParameter(formal).covariantKeyword
+                          case final token?)
+                        _Edit(token.offset, token.end, ''),
+                  ],
+                );
+          final inner = helperParameterText.substring(
+            1,
+            helperParameterText.length - 1,
+          );
           final helperFormals = [
             if (!member.isStatic) '$receiverType $_receiver',
             if (inner.isNotEmpty) inner,
@@ -804,7 +819,7 @@ class _Classes {
                 ],
               );
               classBody.writeln(
-                '${member.metadata.map((a) => text(owner, a)).join('\n')}\n${member.isStatic ? 'static ' : ''}${member.fields.lateKeyword != null ? 'late ' : ''}${member.fields.isConst
+                '${member.metadata.map((a) => text(owner, a)).join('\n')}\n${member.abstractKeyword != null ? 'abstract ' : ''}${member.isStatic ? 'static ' : ''}${member.covariantKeyword != null ? 'covariant ' : ''}${member.fields.lateKeyword != null ? 'late ' : ''}${member.fields.isConst
                     ? 'const '
                     : member.fields.isFinal
                     ? 'final '

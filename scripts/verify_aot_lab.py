@@ -52,6 +52,12 @@ def main():
     parser.add_argument('--type-names-run-dir', type=Path)
     parser.add_argument('--super-parameters-run-dir', type=Path)
     parser.add_argument('--super-fields-run-dir', type=Path)
+    parser.add_argument('--covariant-run-dir', type=Path)
+    parser.add_argument('--covariant-edges-run-dir', type=Path)
+    parser.add_argument('--covariant-fields-run-dir', type=Path)
+    parser.add_argument('--covariant-mixins-run-dir', type=Path)
+    parser.add_argument('--covariant-relink-run-dir', type=Path)
+    parser.add_argument('--covariant-multilang-run-dir', type=Path)
     parser.add_argument('--generators-run-dir', type=Path)
     parser.add_argument('--generator-edges-run-dir', type=Path)
     parser.add_argument('--generator-async-run-dir', type=Path)
@@ -112,7 +118,7 @@ def main():
             raise RuntimeError(f'{name} failed; inspect {destination}')
         return process.stdout
 
-    folders = [run, gc_run] + [p.resolve() for p in [args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
+    folders = [run, gc_run] + [p.resolve() for p in [args.covariant_run_dir, args.covariant_edges_run_dir, args.covariant_fields_run_dir, args.covariant_mixins_run_dir, args.covariant_relink_run_dir, args.covariant_multilang_run_dir, args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -151,6 +157,24 @@ def main():
         return result
 
     for kind, folder, expected_base, expected_patch in [
+        ('covariant', args.covariant_run_dir,
+         ['child:x', 'child-named:y', 'call-error:true', 'named-error:true', 'child:z', 'tear-error:true', 'holder:ok:ok', 'holder-error:true'],
+         ['patched:x', 'patched-named:y', 'call-error:true', 'named-error:true', 'patched:z', 'tear-error:true', 'holder:ok:ok', 'holder-error:true']),
+        ('covariant_edges', args.covariant_edges_run_dir,
+         ['set:ok', 'index:child:key:ok', 'child:base:ok', "setter-error:type 'Other' is not a subtype of type 'Payload' of 'item'", "key-error:type 'int' is not a subtype of type 'String' of 'key'", "value-error:type 'Other' is not a subtype of type 'Payload' of 'item'", "read-error:type 'Other' is not a subtype of type 'Payload' of 'item'", 'heap:31249875000', 'held:new', "generic-error:type 'Other' is not a subtype of type 'Payload' of 'item'"],
+         ['set:ok', 'index:patched:key:ok', 'patched:base:ok', "setter-error:type 'Other' is not a subtype of type 'Payload' of 'item'", "key-error:type 'int' is not a subtype of type 'String' of 'key'", "value-error:type 'Other' is not a subtype of type 'Payload' of 'item'", "read-error:type 'Other' is not a subtype of type 'Payload' of 'item'", 'heap:31249875000', 'updated:new', 'held:new', "generic-error:type 'Other' is not a subtype of type 'Payload' of 'item'"]),
+        ('covariant_fields', args.covariant_fields_run_dir,
+         ['abstract:from-nsm', 'fields:parent:ok:child', "child-error:type 'int' is not a subtype of type 'String' of 'value'", 'generic:next:generic', "generic-error:type 'int' is not a subtype of type 'String' of 'value'", "late-error:type 'int' is not a subtype of type 'String' of 'value'", 'inferred:ok', "inferred-error:type 'int' is not a subtype of type 'String' of 'value'"],
+         ['abstract:patched-nsm', 'fields:patched:parent:ok:child', "child-error:type 'int' is not a subtype of type 'String' of 'value'", 'generic:next:generic', "generic-error:type 'int' is not a subtype of type 'String' of 'value'", "late-error:type 'int' is not a subtype of type 'String' of 'value'", 'inferred:patched:ok', "inferred-error:type 'int' is not a subtype of type 'String' of 'value'"]),
+        ('covariant_mixins', args.covariant_mixins_run_dir,
+         ['child:mixed:base:x', "mixed-error:type 'int' is not a subtype of type 'String' of 'item'", 'mock:ok', "mock-error:type 'int' is not a subtype of type 'String' of 'item'", 'sdk:new', "sdk-error:type 'int' is not a subtype of type 'String' of 'value'", 'record:x:2:3', "record-error:type '(int, int)' is not a subtype of type '(String, int)' of 'value'", "callback-error:type '(String) => String' is not a subtype of type '(int) => int' of 'value'"],
+         ['patched:mixed:base:x', "mixed-error:type 'int' is not a subtype of type 'String' of 'item'", 'mock:ok', "mock-error:type 'int' is not a subtype of type 'String' of 'item'", 'sdk:patched:new', "sdk-error:type 'int' is not a subtype of type 'String' of 'value'", 'record:x:2:13', "record-error:type '(int, int)' is not a subtype of type '(String, int)' of 'value'", "callback-error:type '(String) => String' is not a subtype of type '(int) => int' of 'value'"]),
+        ('covariant_relink', args.covariant_relink_run_dir,
+         ['field', 'child:x', 'child:y', 'child:3', "Instance of 'Child'"],
+         ['field', 'added:x', 'child:y', "error:type 'int' is not a subtype of type 'String' of 'value'", "Instance of 'Added'"]),
+        ('covariant_multilang', args.covariant_multilang_run_dir,
+         ['child:x', "error:type 'int' is not a subtype of type 'String' of 'value'"],
+         ['added:x', "error:type 'int' is not a subtype of type 'String' of 'value'"]),
         ('generators', args.generators_run_dir,
          ['lazy:0:0', '[1, 2, 8, 9]', '[1, 2, 8, 9]', 'replay:2:2', '[2, 3, 10, 11]', '[x, x]', '[x, x]', 'done:2:3'],
          ['lazy:0:0', '[3, 4, 8, 9]', '[3, 4, 8, 9]', 'replay:2:2', '[4, 5, 10, 11]', '[x]', '[x, x]', 'done:2:3']),
@@ -362,11 +386,11 @@ def main():
             continue
         folder = folder.resolve()
         before = digest(folder / 'baseline/app.aot')
-        if kind in ['multilang', 'multilang_added', 'multilang_packages', 'parts_packages', 'named_mixin_multilang', 'typedef_multilang', 'record_multilang', 'enum_multilang', 'metadata_multilang', 'generator_multilang']:
+        if kind in ['multilang', 'multilang_added', 'multilang_packages', 'parts_packages', 'named_mixin_multilang', 'typedef_multilang', 'record_multilang', 'enum_multilang', 'metadata_multilang', 'generator_multilang', 'covariant_multilang']:
             metadata = json.loads((folder / 'baseline/manifest.json').read_text())
             expected_versions = {'multilang': {'3.0', '3.12'},
                                  'multilang_added': {'3.0'},
-                                 'multilang_packages': {'3.0', '3.1'}, 'parts_packages': {'3.0', '3.12'}, 'named_mixin_multilang': {'3.0', '3.12'}, 'typedef_multilang': {'3.0', '3.12'}, 'record_multilang': {'3.0', '3.12'}, 'enum_multilang': {'3.0', '3.12'}, 'metadata_multilang': {'3.0', '3.12'}, 'generator_multilang': {'3.0', '3.12'}}[kind]
+                                 'multilang_packages': {'3.0', '3.1'}, 'parts_packages': {'3.0', '3.12'}, 'named_mixin_multilang': {'3.0', '3.12'}, 'typedef_multilang': {'3.0', '3.12'}, 'record_multilang': {'3.0', '3.12'}, 'enum_multilang': {'3.0', '3.12'}, 'metadata_multilang': {'3.0', '3.12'}, 'generator_multilang': {'3.0', '3.12'}, 'covariant_multilang': {'3.0', '3.12'}}[kind]
             if set(metadata['library_language_versions'].values()) != expected_versions:
                 raise ValueError('Fixture source language versions were not preserved')
             if kind == 'multilang_packages' and (
@@ -384,7 +408,7 @@ def main():
                     raise ValueError('CFE Kernel library language does not match original source')
             report[kind + '_kernel_languages'] = versions
             report['kernel_language_inspector_sha256'] = digest(inspector)
-            if kind in ['named_mixin_multilang', 'typedef_multilang', 'record_multilang', 'enum_multilang', 'metadata_multilang', 'generator_multilang']:
+            if kind in ['named_mixin_multilang', 'typedef_multilang', 'record_multilang', 'enum_multilang', 'metadata_multilang', 'generator_multilang', 'covariant_multilang']:
                 sdk = source_dart.parent.parent
                 packages = ROOT / 'compiler/.dart_tool/package_config.json'
                 kernel = destination / (kind + '-patch.dill')
@@ -407,12 +431,12 @@ def main():
 
 
         baseline_output = execute(kind + '-baseline', [RUNTIME, folder / 'baseline/app.aot'], lines=expected_base)
-        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in ['closures', 'classes', 'new-classes', 'accessors', 'async', 'generics', 'generic_classes', 'layout', 'dynamic_calls', 'multilang', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'parts', 'sdk_interfaces', 'sdk_super', 'sdk_super_gc', 'sdk_mixins', 'super_fields', 'private_interfaces', 'named_mixins', 'named_mixin_relink', 'typedefs', 'typedef_relink', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'enums', 'enum_relink', 'generator_edges', 'generator_async'] else []
+        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in ['closures', 'classes', 'new-classes', 'accessors', 'async', 'generics', 'generic_classes', 'layout', 'dynamic_calls', 'multilang', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'parts', 'sdk_interfaces', 'sdk_super', 'sdk_super_gc', 'sdk_mixins', 'super_fields', 'private_interfaces', 'named_mixins', 'named_mixin_relink', 'typedefs', 'typedef_relink', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'enums', 'enum_relink', 'generator_edges', 'generator_async', 'covariant_edges'] else []
         output = execute(kind + '-patched', [RUNTIME, *options, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'],
                          contains=(['Scavenge('] if options else []), lines=expected_patch)
         if options:
-            report[{'closures': 'closure_scavenges', 'classes': 'class_scavenges', 'new-classes': 'new_class_scavenges', 'accessors': 'accessor_scavenges', 'async': 'async_scavenges', 'generics': 'generic_scavenges', 'generic_classes': 'generic_class_scavenges', 'layout': 'layout_scavenges', 'dynamic_calls': 'dynamic_scavenges', 'multilang': 'multilang_scavenges', 'static': 'static_scavenges', 'interfaces': 'interface_scavenges', 'mixins': 'mixin_scavenges', 'factories': 'factory_scavenges', 'late_fields': 'late_field_scavenges', 'late_references': 'late_reference_scavenges', 'operators': 'operator_scavenges', 'parts': 'parts_scavenges', 'sdk_interfaces': 'sdk_interface_scavenges', 'sdk_super': 'sdk_super_scavenges', 'sdk_super_gc': 'sdk_super_new_object_scavenges', 'sdk_mixins': 'sdk_mixin_scavenges', 'super_fields': 'super_field_scavenges', 'private_interfaces': 'private_interface_scavenges', 'named_mixins': 'named_mixin_scavenges', 'named_mixin_relink': 'named_mixin_relink_scavenges', 'typedefs': 'typedef_scavenges', 'typedef_relink': 'typedef_relink_scavenges', 'records': 'record_scavenges', 'record_super': 'record_super_scavenges', 'record_shapes': 'record_shape_scavenges', 'record_dynamic': 'record_dynamic_scavenges', 'enums': 'enum_scavenges', 'enum_relink': 'enum_relink_scavenges', 'generator_edges': 'generator_iterator_scavenges', 'generator_async': 'generator_async_scavenges'}[kind]] = output.count('Scavenge(')
-        if kind in ['async', 'generics', 'generic_classes', 'layout', 'globals', 'late_final', 'inference', 'signatures', 'dynamic_calls', 'sdk', 'packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang', 'enums', 'enum_custom', 'enum_relink', 'enum_multilang', 'metadata', 'metadata_package', 'metadata_relink', 'metadata_multilang', 'generators', 'generator_edges', 'generator_async', 'generator_relink', 'generator_multilang']:
+            report[{'closures': 'closure_scavenges', 'classes': 'class_scavenges', 'new-classes': 'new_class_scavenges', 'accessors': 'accessor_scavenges', 'async': 'async_scavenges', 'generics': 'generic_scavenges', 'generic_classes': 'generic_class_scavenges', 'layout': 'layout_scavenges', 'dynamic_calls': 'dynamic_scavenges', 'multilang': 'multilang_scavenges', 'static': 'static_scavenges', 'interfaces': 'interface_scavenges', 'mixins': 'mixin_scavenges', 'factories': 'factory_scavenges', 'late_fields': 'late_field_scavenges', 'late_references': 'late_reference_scavenges', 'operators': 'operator_scavenges', 'parts': 'parts_scavenges', 'sdk_interfaces': 'sdk_interface_scavenges', 'sdk_super': 'sdk_super_scavenges', 'sdk_super_gc': 'sdk_super_new_object_scavenges', 'sdk_mixins': 'sdk_mixin_scavenges', 'super_fields': 'super_field_scavenges', 'private_interfaces': 'private_interface_scavenges', 'named_mixins': 'named_mixin_scavenges', 'named_mixin_relink': 'named_mixin_relink_scavenges', 'typedefs': 'typedef_scavenges', 'typedef_relink': 'typedef_relink_scavenges', 'records': 'record_scavenges', 'record_super': 'record_super_scavenges', 'record_shapes': 'record_shape_scavenges', 'record_dynamic': 'record_dynamic_scavenges', 'enums': 'enum_scavenges', 'enum_relink': 'enum_relink_scavenges', 'generator_edges': 'generator_iterator_scavenges', 'generator_async': 'generator_async_scavenges', 'covariant_edges': 'covariant_scavenges'}[kind]] = output.count('Scavenge(')
+        if kind in ['async', 'generics', 'generic_classes', 'layout', 'globals', 'late_final', 'inference', 'signatures', 'dynamic_calls', 'sdk', 'packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang', 'enums', 'enum_custom', 'enum_relink', 'enum_multilang', 'metadata', 'metadata_package', 'metadata_relink', 'metadata_multilang', 'generators', 'generator_edges', 'generator_async', 'generator_relink', 'generator_multilang', 'covariant', 'covariant_edges', 'covariant_fields', 'covariant_mixins', 'covariant_relink', 'covariant_multilang']:
             # Compare with the unmodified source compiled to ordinary AOT too;
             # the transformer and hand-written expected values are not oracles
             # for scheduling and type semantics by themselves.
@@ -420,7 +444,7 @@ def main():
             for side, expected in [('baseline', expected_base), ('patch', expected_patch)]:
                 graph = json.loads((folder / side / 'source_graph.json').read_text())
                 source = destination / (kind + '-source-' + side + '.dart')
-                if kind in ['packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang', 'enums', 'enum_custom', 'enum_relink', 'enum_multilang', 'metadata', 'metadata_package', 'metadata_relink', 'metadata_multilang', 'generators', 'generator_edges', 'generator_async', 'generator_relink', 'generator_multilang']:
+                if kind in ['packages', 'multilang', 'multilang_added', 'multilang_packages', 'type_names', 'super_parameters', 'static', 'interfaces', 'mixins', 'factories', 'late_fields', 'late_references', 'operators', 'operator_removal', 'operator_checks', 'parts', 'parts_packages', 'parts_private', 'sdk_interfaces', 'sdk_super', 'sdk_super_checks', 'sdk_super_gc', 'sdk_super_interfaces', 'sdk_mixins', 'sdk_mixin_relink', 'super_fields', 'private_interfaces', 'private_interface_added', 'private_interface_removed', 'named_mixins', 'named_mixin_interfaces', 'named_mixin_relink', 'named_mixin_multilang', 'named_mixin_retire', 'typedefs', 'typedef_relink', 'typedef_multilang', 'typedef_ancestors', 'records', 'record_super', 'record_shapes', 'record_dynamic', 'record_multilang', 'enums', 'enum_custom', 'enum_relink', 'enum_multilang', 'metadata', 'metadata_package', 'metadata_relink', 'metadata_multilang', 'generators', 'generator_edges', 'generator_async', 'generator_relink', 'generator_multilang', 'covariant', 'covariant_edges', 'covariant_fields', 'covariant_mixins', 'covariant_relink', 'covariant_multilang']:
                     reference = destination / (kind + '-reference-' + side)
                     reference.mkdir()
                     def library_path(uri):
@@ -462,6 +486,33 @@ def main():
                 if actual.splitlines() != expected:
                     raise RuntimeError('Untransformed source differs from expected observable behavior')
             report[kind + '_source_aot_reference_matches'] = True
+        if kind in ['covariant', 'covariant_edges', 'covariant_fields', 'covariant_mixins', 'covariant_relink', 'covariant_multilang']:
+            clean = execute(kind + '-patched-clean', [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'], lines=expected_patch)
+            if baseline_output.splitlines() != expected_base or clean.splitlines() != expected_patch:
+                raise RuntimeError('Covariance behavior or TypeError text differs from source AOT')
+            metadata = json.loads((folder / 'patch/manifest.json').read_text())
+            names = lambda field: sorted(metadata['entities'][symbol]['name'] for symbol in metadata[field])
+            expected_installed = {
+                'covariant': ['Child.named', 'Child.read'],
+                'covariant_edges': ['Child.[]', 'Child.read', 'Holder.update'],
+                'covariant_fields': ['Child.label', 'Mock.noSuchMethod', 'Narrow.label'],
+                'covariant_mixins': ['CheckedList.[]=', 'Child.read', 'NarrowFormats.callback'],
+                'covariant_relink': ['main'],
+                'covariant_multilang': ['make'],
+            }[kind]
+            if names('installed_functions') != expected_installed:
+                raise RuntimeError('Covariance patch replaced unexpected AOT consumers')
+            if kind == 'covariant_relink':
+                if names('replaced_classes') != ['Base', 'Child', 'FieldOnly'] or names('module_only_functions') != ['Base.read', 'Child.read', 'invoke', 'make'] or names('replaced_globals') != ['field', 'shared']:
+                    raise RuntimeError('Member/field covariance changes must relink class and storage dependencies')
+            elif names('replaced_classes') or names('module_only_functions') or names('replaced_globals'):
+                raise RuntimeError('Compatible covariance method patches must retain baseline classes/storage')
+            expected_added = ['Added'] if kind in ['covariant_relink', 'covariant_multilang'] else []
+            if names('added_classes') != expected_added:
+                raise RuntimeError('Unexpected covariance class additions')
+            report[kind + '_aot_consumers_and_covariance_semantics'] = True
+            if kind == 'covariant_mixins':
+                verify_metadata(kind, folder, destination, execute, report, ROOT, RUNTIME)
         if kind in ['generators', 'generator_edges', 'generator_async', 'generator_relink', 'generator_multilang']:
             clean = execute(kind + '-patched-clean', [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'], lines=expected_patch)
             if baseline_output.splitlines() != expected_base or clean.splitlines() != expected_patch:
