@@ -151,8 +151,9 @@ def main():
         platform = (ENGINE / 'out/host_release_arm64/flutter_patched_sdk/platform_strong.dill'
                     if args.target == 'flutter' else SDK / 'lib/_internal/vm_platform_strong.dill')
         report['platform'] = {'path': str(platform), 'sha256': sha(platform)}
+        report['target_os'] = 'macos'
         for mode in ['no-aot', 'aot']:
-            run('kernel-' + mode, [runtime, '--packages=' + str(packages), DART_SOURCE / 'pkg/vm/bin/gen_kernel.dart', '--' + mode, '--target=' + args.target,
+            run('kernel-' + mode, [runtime, '--packages=' + str(packages), DART_SOURCE / 'pkg/vm/bin/gen_kernel.dart', '--' + mode, '--target=' + args.target, '--target-os=macos',
                                   '--platform', platform, '--packages', packages, '--dynamic-interface',
                                   base / 'dynamic_interface.yaml', '-Ddart.vm.product=true', '-Ddart.vm.profile=false',
                                   '--output', base / (mode + '.dill'), base / 'launcher.dart'])

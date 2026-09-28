@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:isolate';
 import 'dart:io';
 import 'dart:ui';
@@ -7,6 +8,9 @@ Color shade() => const Color(0xff654321);
 Offset origin() => const Offset(10, 20);
 Color Function(Color) blender() =>
     (other) => Color.alphaBlend(shade(), other);
+@pragma('vm:platform-const-if', true)
+int get platformMarker => 50;
+int instrumentation() => developer.Timeline.timeSync('worker', () => worker(3));
 int worker(int value) => value + 10;
 Future<int> compute() => Isolate.run(() => worker(2));
 File dataFile(Directory root) => File('${root.path}/data.txt');
@@ -29,6 +33,8 @@ Future<void> main() async {
   } finally {
     await root.delete(recursive: true);
   }
+  print('platform-value:$platformMarker');
+  print('timeline:${instrumentation()}');
   print('isolate:${await compute()}');
   print('platform:${platform.label()}');
   print('color:${shade().toARGB32()}');

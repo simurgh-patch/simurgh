@@ -97,8 +97,10 @@ class _Classes {
     final suffix = type.nullabilitySuffix == NullabilitySuffix.question
         ? '?'
         : '';
-    if (type is TypeParameterType)
-      return '${symbols[type.element] ?? type.element.name}$suffix';
+    if (type is TypeParameterType) {
+      final name = symbols[type.element] ?? type.element.name!;
+      return suffix.isEmpty ? name : nullableTypeText(name);
+    }
     if (type is InterfaceType) {
       final name = symbols[type.element] ?? type.element.name!;
       final arguments = type.typeArguments.isEmpty

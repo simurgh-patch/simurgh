@@ -1433,7 +1433,7 @@ void main() { p.value += 1; }
         result = self.command('--target', 'flutter', 'patch', candidate / 'app.dart', base, patch)
         self.assertEqual(result.returncode, 0, result.stderr)
         manifest = json.loads((patch / 'manifest.json').read_text())
-        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['diskValue', 'origin', 'shade', 'worker'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['diskValue', 'getter platformMarker', 'origin', 'shade', 'worker'])
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(manifest['replaced_globals'], [])
         graph = json.loads((base / 'source_graph.json').read_text())
@@ -2068,6 +2068,45 @@ void main() { p.value += 1; }
                 result = self.command('baseline', source, dest)
                 self.assertEqual(result.returncode, 2, result.stdout)
                 self.assertIn('independent-group patch activation', result.stderr)
+                self.assertFalse(dest.exists())
+
+
+    def test_foundation_edges_keep_retained_callers_and_nullable_types(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_foundation_edges_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_foundation_edges_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['Promoted.changed', 'VoidChild.touch', 'comparison', 'getter platformValue', 'worker'])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(manifest['replaced_classes'], [])
+        generated = '\n'.join(p.read_text() for p in base.glob('*.dart'))
+        self.assertNotIn('void?', generated)
+        self.assertNotIn('dynamic?', generated)
+        self.assertIn('vm:notify-debugger-on-exception', generated)
+        self.assertNotIn("@pragma('vm:platform-const-if'", generated)
+        self.assertIn('dart:developer', json.loads((base / 'source_graph.json').read_text())['sdk_libraries'])
+
+    def test_platform_pragma_aliases_are_checked_before_omission(self):
+        for index, option in enumerate(['true', 'false', "'true'", 'null']):
+            source = self.source(f'pragma-option-{index}.dart',
+                "const hint = pragma('vm:platform-const-if', " + option + "); "
+                "@hint int get value => 3; void main() { print(value); }")
+            dest = self.root / f'pragma-option-{index}'
+            result = self.command('baseline', source, dest)
+            if option in {'true', 'false'}:
+                self.assertEqual(result.returncode, 0, result.stderr)
+                graph = json.loads((dest / 'source_graph.json').read_text())
+                self.assertIn('@hint', graph['libraries']['app:entry']['source'])
+                generated = '\n'.join(p.read_text() for p in dest.glob('*.dart'))
+                self.assertNotIn('@msbEntity_global_', generated)
+                self.assertEqual(set(graph['omitted_optimization_pragmas']),
+                                 {'vm:platform-const', 'vm:platform-const-if'})
+            else:
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertIn('requires a boolean option', result.stderr)
                 self.assertFalse(dest.exists())
 
 

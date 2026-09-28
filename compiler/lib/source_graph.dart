@@ -140,8 +140,16 @@ const linkedSdkLibraries = {
   'dart:typed_data',
   'dart:io',
   'dart:isolate',
+  'dart:developer',
 };
 String sdkPrefix(String uri) => '${entityPrefix}sdk_${uri.substring(5)}';
+
+// Nullable substitution is idempotent; top/null types cannot acquire a new
+// question mark. In particular void? is not valid Dart surface syntax.
+String nullableTypeText(String type) =>
+    type == 'void' || type == 'dynamic' || type == 'Null' || type.endsWith('?')
+    ? type
+    : '$type?';
 
 const isolateBridgeSymbols = {
   '${entityPrefix}isolateRun',
@@ -393,7 +401,45 @@ class _References extends RecursiveAstVisitor<void> {
     references.add(symbol);
   }
 
+  String? fieldPromotion(Expression node, Element? element) {
+    if (classes == null || element is! GetterElement) return null;
+    final field = element.variable;
+    final type = node.staticType;
+    if (field is! FieldElement ||
+        !field.isFinal ||
+        !field.isPrivate ||
+        type == null ||
+        type == element.returnType)
+      return null;
+    final original = element.returnType;
+    if (type is TypeParameterType &&
+        original is TypeParameterType &&
+        type.element == original.element) {
+      if (type.bound == original.bound ||
+          (type.bound.isDartCoreObject &&
+              type.bound.nullabilitySuffix == NullabilitySuffix.none)) {
+        return '!';
+      }
+      _reject(
+        'Unsupported private-field promotion intersection: ${type.getDisplayString()}',
+      );
+    }
+    return ' as ${classes!.typeText(type, names: entities)}';
+  }
+
+  void wrapFieldPromotion(Expression node, Element? element) {
+    final suffix = fieldPromotion(node, element);
+    if (suffix == null) return;
+    edits.add(_Edit(node.offset, node.offset, '('));
+    edits.add(_Edit(node.end, node.end, suffix == '!' ? ')!' : '$suffix)'));
+  }
+
   void replaceIdentifier(SimpleIdentifier node, String symbol) {
+    if (!node.isQualified) {
+      final suffix = fieldPromotion(node, referencedElement(node));
+      if (suffix != null)
+        symbol = suffix == '!' ? '($symbol)!' : '($symbol$suffix)';
+    }
     final parent = node.parent;
     // A lifted implicit member (or a qualified SDK entity) is an expression,
     // not a single identifier: $field must become ${receiver.field}.
@@ -461,6 +507,10 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitAnnotation(Annotation node) {
+    if (dispatchUnsafePragmas.contains(compilerPragmaName(node))) {
+      edits.add(_Edit(node.offset, node.end, ''));
+      return;
+    }
     super.visitAnnotation(node);
     final element = node.element;
     if (element is ConstructorElement && node.arguments != null) {
@@ -542,9 +592,11 @@ class _References extends RecursiveAstVisitor<void> {
       if (bridge == null)
         _reject('Unsupported super property: ${node.toSource()}');
       replace(node.offset, node.end, '$receiver.$bridge');
+      wrapFieldPromotion(node, referencedElement(node.propertyName));
       return;
     }
     super.visitPropertyAccess(node);
+    wrapFieldPromotion(node, referencedElement(node.propertyName));
   }
 
   @override
@@ -560,6 +612,7 @@ class _References extends RecursiveAstVisitor<void> {
       return;
     }
     super.visitPrefixedIdentifier(node);
+    wrapFieldPromotion(node, referencedElement(node.identifier));
   }
 
   @override
@@ -634,6 +687,12 @@ class _References extends RecursiveAstVisitor<void> {
       return;
     }
     final symbol = entities[node.element];
+    if (symbol != null &&
+        node.element is TypeParameterElement &&
+        node.question != null) {
+      replace(node.offset, node.end, nullableTypeText(symbol));
+      return;
+    }
     if (symbol != null) replace(node.offset, node.name.end, symbol);
     node.typeArguments?.accept(this);
   }
@@ -664,7 +723,11 @@ class _References extends RecursiveAstVisitor<void> {
 }
 
 String _rewrite(String source, AstNode node, List<_Edit> edits) {
-  edits.sort((a, b) => b.start.compareTo(a.start));
+  edits.sort((a, b) {
+    final byStart = b.start.compareTo(a.start);
+    // Replacements at an expression boundary precede inserted wrappers.
+    return byStart != 0 ? byStart : b.end.compareTo(a.end);
+  });
   var text = source.substring(node.offset, node.end);
   var previous = node.end;
   for (final edit in edits) {
@@ -675,6 +738,23 @@ String _rewrite(String source, AstNode node, List<_Edit> edits) {
     previous = edit.start;
   }
   return text;
+}
+
+// Platform folding cannot be applied to a dispatch getter: it would either
+// bake the baseline result into callers or require evaluating mutable slots.
+// Preserve source metadata in the archive, but omit this optimization hint
+// from generated declarations so cold replacements remain observable.
+const dispatchUnsafePragmas = {'vm:platform-const', 'vm:platform-const-if'};
+
+String? compilerPragmaName(Annotation node) {
+  final value = node.elementAnnotation?.computeConstantValue();
+  final type = value?.type;
+  if (type is InterfaceType &&
+      type.element.name == 'pragma' &&
+      type.element.library.uri.toString() == 'dart:core') {
+    return value!.getField('name')?.toStringValue();
+  }
+  return null;
 }
 
 // Resolve all metadata before lowering, including const aliases of pragmas.
@@ -690,7 +770,17 @@ class _MetadataGuard extends RecursiveAstVisitor<void> {
         type.element.name == 'pragma' &&
         type.element.library.uri.toString() == 'dart:core') {
       final name = value.getField('name')?.toStringValue();
+      if (name == 'vm:platform-const-if' &&
+          value.getField('options')?.toBoolValue() == null) {
+        _reject('vm:platform-const-if requires a boolean option');
+      }
       if (!{
+        ...dispatchUnsafePragmas,
+        'vm:notify-debugger-on-exception',
+        'flutter:keep-to-string-in-subtypes',
+        'dart2js:tryInline',
+        'dart2js:as:trust',
+        'wasm:prefer-inline',
         'vm:never-inline',
         'vm:prefer-inline',
         'vm:entry-point',
@@ -1224,7 +1314,8 @@ Future<SourceGraph> loadSourceGraph(
         // Preserve existing primitive/Future spellings and implicit core calls.
         final bare =
             (uri == 'dart:core' &&
-                (element is! InterfaceElement ||
+                ((element is! InterfaceElement &&
+                        element is! TypeAliasElement) ||
                     const {
                       'int',
                       'double',
@@ -1624,6 +1715,7 @@ Future<SourceGraph> loadSourceGraph(
       'entities': records,
       'classes': classes.manifest,
       'sdk_libraries': linkedSdkLibraries.toList(),
+      'omitted_optimization_pragmas': dispatchUnsafePragmas.toList(),
       'sdk_source_hashes': {
         for (final key in (sdkSourceHashes.keys.toList()..sort()))
           key: sdkSourceHashes[key],

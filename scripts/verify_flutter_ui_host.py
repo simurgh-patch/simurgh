@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cold-process checks for the restricted UI fixture in a matching host AOT engine.
+"""Cold-process checks for UI/foundation fixtures in a matching host AOT engine.
 
 Not a mobile runner, Widget acceptance suite, update client or production patch.
 """
@@ -38,14 +38,15 @@ def main():
         if sha(folder / name) != record['sha256']:
             raise ValueError(f'Changed compiler artifact: {name}')
     compiler_checks = json.loads((checks / 'report.json').read_text())
-    if not compiler_checks['all_passed'] or compiler_checks['engine_executed']:
+    if not compiler_checks['all_passed'] or compiler_checks['engine_executed'] or \
+            compiler_checks['build_sha256'] != sha(folder / 'build.json'):
         raise ValueError('Successful independent compiler checks required')
     for side in ['baseline', 'patch']:
         if sha(checks / f'source-{side}/source.dill') != compiler_checks['source_api'][side]['kernel_sha256']:
             raise ValueError(f'Changed original-source Kernel: {side}')
     out.mkdir(parents=True, exist_ok=False)
     source = ROOT / 'runtime/probes/flutter_ui_fixture_runner.cc'
-    report = {'kind': 'experimental-host-flutter-ui-cold-start', 'checks': [],
+    report = {'kind': 'experimental-host-flutter-cold-start', 'fixture': compiler_checks['fixture'], 'checks': [],
               'engine_executed': False, 'device_accepted': False, 'm1_passed': False,
               'production_patch': False, 'engine_sha256': build['engine_sha256'],
               'identity': build['identity'], 'compiler_sha256': compiler_sha(),
@@ -85,8 +86,13 @@ def main():
                                        checks / f'source-{side}/source.dill'])
     base = folder / 'baseline/app.aot'
     before = sha(base)
-    expected_base = ['io:base', 'isolate:3', 'platform:flutter', 'color:4279383126', 'point:1.0:2.0', 'blend:4279383126']
-    expected_patch = ['io:patch:5', 'isolate:12', 'platform:flutter', 'color:4284826401', 'point:10.0:20.0', 'blend:4284826401']
+    expected_base = ['io:base', 'platform-value:5', 'timeline:4', 'isolate:3', 'platform:flutter', 'color:4279383126', 'point:1.0:2.0', 'blend:4279383126']
+    expected_patch = ['io:patch:5', 'platform-value:50', 'timeline:13', 'isolate:12', 'platform:flutter', 'color:4284826401', 'point:10.0:20.0', 'blend:4284826401']
+    if compiler_checks['fixture'] == 'foundation':
+        expected_base = ['notifier:4', "diagnostic:Instance of 'IntProperty'", 'blend:true']
+        expected_patch = ['notifier:4', "diagnostic:Instance of 'IntProperty'", 'blend:false']
+    elif compiler_checks['fixture'] != 'ui':
+        raise ValueError('Unknown fixture')
     for name, aot, patch, expected in [
             ('source-baseline', out / 'source-baseline.aot', None, expected_base),
             ('source-patch', out / 'source-patch.aot', None, expected_patch),

@@ -49,6 +49,7 @@ def main():
     parser.add_argument('--dynamic-calls-run-dir', type=Path)
     parser.add_argument('--sdk-run-dir', type=Path)
     parser.add_argument('--io-run-dir', type=Path)
+    parser.add_argument('--foundation-edges-run-dir', type=Path)
     parser.add_argument('--isolates-run-dir', type=Path)
     parser.add_argument('--isolate-multilang-run-dir', type=Path)
     parser.add_argument('--sdk-interfaces-run-dir', type=Path)
@@ -140,7 +141,8 @@ def main():
                                           args.top_accessor_multilang_run_dir,
                                           args.conditional_run_dir,
                                           args.platform_conditions_run_dir, args.io_run_dir,
-                                          args.isolates_run_dir, args.isolate_multilang_run_dir) if p)
+                                          args.isolates_run_dir, args.isolate_multilang_run_dir,
+                                          args.foundation_edges_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1239,6 +1241,12 @@ void main() {{
          ['local:12:99', 'run:12', 'changed:112', 'nested:13', 'spawn:14:7', 'tearoff:15', 'error:Bad state: worker-10'],
          ['changedCompute', 'worker']),
         ('isolate-multilang', args.isolate_multilang_run_dir, ['legacy:3'], ['legacy:12'], ['worker']),
+        ('foundation-edges', args.foundation_edges_run_dir,
+         ['promoted:3:3:3:3:7:7:4', 'sorted:[1, 2]', 'void:baseline', 'types:3:null:4:x',
+          'platform:5', 'timeline:3', 'response:{"value":3}'],
+         ['promoted:3:3:3:3:7:7:13', 'sorted:[2, 1]', 'void:patch', 'types:3:null:4:x',
+          'platform:50', 'timeline:30', 'response:{"value":30}'],
+         ['Promoted.changed', 'VoidChild.touch', 'comparison', 'getter platformValue', 'worker']),
         ('io', args.io_run_dir, ['io:base'], ['io:patch:5'], ['diskValue']),
         ('top-accessors', args.top_accessors_run_dir,
          ['initial:1:5:11', 'compound:3:8', 'retained:3:13', 'callback:7'],

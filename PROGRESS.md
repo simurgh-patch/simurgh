@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-28 13:20 +08:00
+最后实质更新：2026-09-28 14:11 +08:00
 
 ## 当前状态
 
@@ -15,6 +15,10 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 2026-09-24 17:24 +08:00 用户授权优化空间后，仅清理独立宿主引擎构建目录中可重建的SwiftShader目标文件和静态库，保留源码、运行时可执行文件及历史QA输出；可用空间约2.0→9.2 GiB，验收后约9.0 GiB。新建基础AOT运行目录，保留先前ENOSPC失败报告。跨版本访问器完整`scripts/verify.sh`退出0：16 Dart＋166 Python＋7 Flutter共189项，分析通过；统一宿主原生20/20检查退出0，独立原始源码AOT与混合执行两侧逐行一致，真实源/生成Kernel的3.0/3.4/3.12语言版本、构建指纹和制品哈希已核对。通过证据docs/qa/aot-top-accessor-multilang-20260924.json，失败经过仍在incomplete记录。M1整体、移动真机冷启动、签名回退及性能门禁未通过；生产命令保持关闭。下一步处理剩余语言链接边界，并为移动真机验收准备足够构建空间和Android ARM64设备。
 
 ## 已实现
+
+- 2026-09-28 14:11 +08:00：M1受限foundation链接本轮验收完成：链接dart:developer，规范化void/dynamic/已可空函数和record的泛型替换，修复core Comparator别名及私有final字段提升。平台折叠pragma在生成分派声明中显式省略，源归档保留，const别名及bool参数检查；未知pragma和未支持的T & num提升明确拒绝。VM边界样例两侧与独立原始源码AOT逐行一致，未变AOT调用方观察到新getter/回调/方法；13项原生检查通过，21次Scavenge。固定独立framework源码的ValueNotifier/IntProperty/listEquals样例通过13项编译/真实Kernel/来源检查及7项真实Flutter宿主检查，原始/混合四个冷进程一致，仅安装changed，main/类/全局存储和基础AOT字节不变；既有UI扩展样例另通过7项编译和7项宿主检查。完整verify.sh退出0：16 Dart＋175 Python＋7 Flutter共198项，Python1764.159秒；静态分析、格式、两项证据保护及五组当前编译器/制品哈希核对通过。核心编译器/普通测试冻结未变，期间补强的验收脚本已按最终版本独立完整运行。QA：docs/qa/aot-foundation-host-20260928.json。早期日常SDK来源探针（只读未改）、Comparator/字段提升失败、错误GC路径、聚合入口误检、AOT裁剪库语言误检及Release诊断字符串oracle错误均保留，最终证据使用固定项目源码并逐文件核对；复用匹配宿主引擎，未重建。Widget下一阻塞为package:characters的extension声明，源码生成退出2且无基线；M1整体、Widget渲染、双端真机/签名回退/性能仍未通过，生产命令关闭。下一步实现extension声明和解析调用链接，再推进Widget/移动启动。按Important Changes提交推送main，实际以Git核对。
+
+- 2026-09-28 13:44 +08:00：继续M1 foundation链接，当前未整轮验收/提交。实现developer链接、平台折叠pragma显式省略并保留源归档、nullable void/dynamic/函数/record规范化、core Comparator别名限定、私有final字段提升恢复。定向2项回归及带提升/泛型/回调的真实VM混合样例通过；固定项目内framework revision的ValueNotifier/IntProperty/listEquals样例编译和四个真实Flutter宿主进程已通过初次对照，原生VM13项（21次Scavenge）及UI编译7项通过。完整verify.sh仍在session64341，output/foundation-final-verification.log，不能提前标通过；核心输入已冻结。早期foundation探针配置引用日常SDK框架源码（未修改），最终fixture已改为独立固定源码并增加来源核对；语言检查初次误读聚合入口、AOT裁剪库，宿主oracle初次误判Release诊断字符串，GC命令初次路径错误均保留失败日志并修正。Widget源码生成探针在package:characters/src/extensions.dart拒绝，未产生基线；extension链接是下一语言边界。移动真机、性能、签名回退和完整M1仍未通过，生产命令保持关闭。
 
 - 2026-09-28 13:20 +08:00：M1同组子isolate冷启动分派修复验收完成：按解析后的SDK实体自动包装Isolate.run/spawn调用及函数引用，无业务注解或手工桥接；生成基础设施捕获已验证的安装函数表，在子业务入口前检查指纹/签名并恢复替换槽，嵌套子isolate继续继承激活，业务静态状态独立初始化。原反例父/子均返回补丁12；父counter为99而子从7开始。覆盖未变AOT调用方、bytecode调用桥接、嵌套run、暂停spawn、泛型tear-off、异常及3.0/3.12跨库；两侧独立原始源码AOT逐行一致。完整verify.sh退出0：16 Dart＋173 Python＋7 Flutter共196项，Python1680.017秒；最终26项VM原生（含7项实际Kernel版本、21次Scavenge）、7项Flutter编译、7项真实宿主检查及已有证据目录拒绝保护通过。五组最终编译器/制品哈希一致；复用匹配的宿主引擎，未重建。原生验证器在普通测试冻结后增补可复现Kernel检查与--output，最终脚本另行完整执行和核对；核心编译器/普通测试输入未变。QA：docs/qa/aot-isolate-activation-20260928.json。初次可空enclosingElement编译错误已修复，早期证据保留；同基础AOT文件8735016→8817928字节（＋82912字节，非性能结论）。spawnUri直接和函数引用均拒绝，外部预编译代码自行创建isolate/移动后台通道/既有isolate实时激活未验。foundation仍阻于dart:developer及平台/调试pragma；隔离副本另发现T?替换void后生成非法void?，最小Base<T>/Child extends Base<void>已证明原始AOT输出ok而当前编译器退出2且无基线，待下一轮修复。M1整体、Widget/移动真机/签名回退/性能未通过，生产命令关闭。按Important Changes提交推送main，实际以Git核对。
 

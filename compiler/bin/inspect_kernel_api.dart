@@ -83,6 +83,7 @@ void main(List<String> args) {
             'diskValue',
             'worker',
             'compute',
+            'instrumentation',
           }.contains(names[p.name.text] ?? p.name.text))
             names[p.name.text] ?? p.name.text: describe(p.function.returnType),
       },

@@ -933,8 +933,8 @@ before the business entry point. The child-isolate result (`isolate:3` /
 
 This is a restricted macOS ARM64 host cold-start experiment with `dart:ui`, not
 full Widget rendering, a mobile updater or physical-device acceptance. The
-source compiler still rejects the minimal foundation graph at unlinked
-`dart:developer`; additional SDK/language linkage remains required.
+foundation compatibility boundary is described below; broader SDK/language
+linkage and Widget support remain incomplete.
 The independent `aot_io_baseline` / `aot_io_patch` fixtures cover the same file
 operations on the standalone VM. Pass their completed build directory via
 `verify_aot_lab.py --io-run-dir` alongside current base/GC runs to compare
@@ -952,8 +952,8 @@ AOT callback sent through `Isolate.run` still returned baseline `3`; original
 candidate AOT returned `12` in both places. Sending a new bytecode closure alone
 succeeded, so that result does not establish isolate support. This historical
 counterexample is now fixed for the compiler-mediated
-`run`/`spawn` paths described below. The experimental compiler still rejects
-`dart:developer` and independent-group `Isolate.spawnUri`.
+`run`/`spawn` paths described below. Independent-group `Isolate.spawnUri`
+remains rejected; developer linkage is covered by the foundation work below.
 See [the exploration record](../docs/qa/aot-isolate-propagation-exploration-20260928.json).
 
 
@@ -990,9 +990,49 @@ existing evidence directories are never overwritten. The restricted Flutter UI f
 an unchanged AOT isolate caller in the real host engine. None of these host
 checks establish mobile-device or performance acceptance.
 
-The remaining foundation investigation also exposes an independent type-rendering
-boundary: a nullable generic superclass getter instantiated with `void` currently
-produces invalid `void?` syntax in generated super bridges. A minimal
-`Base<T>` with `T? get value => null` and `Child extends Base<void>` runs in
-original-source AOT but is rejected before baseline output by the experimental
-compiler. This remains a separate unresolved language case.
+## Foundation linkage and type normalization
+
+The restricted SDK contract now links `dart:developer`. The edge fixture checks
+`Timeline.timeSync`, `ServiceExtensionResponse`, and a returned core `Comparator`
+typedef across AOT/bytecode dispatch. This does not establish VM-service,
+debugger, tracing-session or mobile profiling support.
+
+Nullable generic substitutions preserve `void`, `dynamic`, `Null`, and already
+nullable types instead of producing invalid `void?` or duplicate question marks.
+This applies to superclass bridges and rewritten type references, including
+nullable function and record arguments. Renaming private final fields makes them
+public and removes native field promotion. The transformer restores resolved
+promoted reads with explicit casts or non-null assertions, without evaluating a
+receiver twice. Non-denotable generic intersection promotions beyond non-null
+`Object` narrowing remain rejected.
+
+Resolved core pragmas are checked even through const aliases. Platform folding
+hints `vm:platform-const` and `vm:platform-const-if` are deliberately omitted
+from generated declarations, since evaluating a dispatch getter at compilation
+could bake in its baseline value. Their original source remains archived and the
+omitted hints are listed in the source graph. The conditional hint requires a
+constant boolean option. Debugger exception notification, Flutter toString
+retention and the listed dart2js/wasm optimization hints are preserved; unknown
+compiler pragmas still fail closed. Application code requires no new annotation.
+
+Build `aot_foundation_edges_baseline` / `aot_foundation_edges_patch` with the
+ordinary VM target, then pass `--foundation-edges-run-dir` to
+`verify_aot_lab.py` alongside current base/GC runs. It checks both original-source
+AOT outputs against the unchanged baseline and its bytecode patch, with retained
+callers and unchanged class/global storage.
+
+The `aot_flutter_foundation_*` fixtures use the independent pinned framework and
+source-built sky_engine. Prepare their package configurations with the project
+framework's `flutter pub get`, retaining the tracked dependency locks. Their
+limited flow uses ValueNotifier, an integer diagnostic property and a patched
+list comparison; it does not render Widgets. Build with `--target flutter
+--compile-only`, then run `verify_flutter_aot_lab.py --fixture foundation` and
+`verify_flutter_ui_host.py` using the same build and compiler-check directories.
+Both compiler targets explicitly select host macOS. Original-source verification
+reconstructs selected and inactive source archives plus package language versions,
+then runs CFE independently; unoptimized Kernel is used for language checks
+because AOT removes unused export libraries. The host verifier binds the compiler
+report to the exact build manifest and compares four fresh engine processes.
+
+Host checks do not pass M1 as a whole or the mobile, signature/rollback and
+performance gates. Production release and patch commands remain closed.
