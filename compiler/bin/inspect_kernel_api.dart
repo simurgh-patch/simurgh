@@ -81,6 +81,8 @@ void main(List<String> args) {
             'blender',
             'dataFile',
             'diskValue',
+            'worker',
+            'compute',
           }.contains(names[p.name.text] ?? p.name.text))
             names[p.name.text] ?? p.name.text: describe(p.function.returnType),
       },

@@ -57,7 +57,7 @@ The client updater, release service, administration console, and complete privat
 - Completed host and Android / iOS Release engine source builds and standalone sample integration builds. Physical-device execution and performance acceptance remain outstanding.
 - Host ARM64 experiments support local libraries, packages, and parts within a restricted source graph, with bidirectional calls between AOT and changed bytecode.
 - Restricted experiments cover functions and methods, class-version relinking, generics, closures, asynchronous code, state fields, user-class inheritance and mixins, and selected linked SDK interfaces and superclass bridges. See the [compiler documentation](compiler/README.md) for supported and rejected cases.
-- A restricted `dart:ui` compiler target and real host Flutter AOT engine cold-start checks cover `Color`, `Offset`, a UI-typed callback, and asynchronous `dart:io` file operations. Full Widget and mobile code updates remain incomplete.
+- A restricted `dart:ui` compiler target and real host Flutter AOT engine cold-start checks cover `Color`, `Offset`, a UI-typed callback, asynchronous `dart:io` file operations, and child-isolate dispatch activation. Full Widget and mobile code updates remain incomplete.
 - Toolchain diagnostics, ordinary tests, native host experiments, simulator checks, and physical-device acceptance are recorded separately.
 
 The runtime builds on the experimental dynamic-module machinery in the pinned official Dart sources, together with this project's patches. Full language compatibility, Flutter code replacement, mobile cold-start integration, signing and rollback, and physical-device performance gates remain incomplete.

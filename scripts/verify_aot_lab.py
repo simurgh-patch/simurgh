@@ -20,6 +20,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-dir', type=Path, required=True)
+    parser.add_argument('--output', type=Path, help='Fresh directory for verification evidence')
     parser.add_argument('--gc-run-dir', type=Path, required=True)
     parser.add_argument('--entities-run-dir', type=Path)
     parser.add_argument('--closures-run-dir', type=Path)
@@ -48,6 +49,8 @@ def main():
     parser.add_argument('--dynamic-calls-run-dir', type=Path)
     parser.add_argument('--sdk-run-dir', type=Path)
     parser.add_argument('--io-run-dir', type=Path)
+    parser.add_argument('--isolates-run-dir', type=Path)
+    parser.add_argument('--isolate-multilang-run-dir', type=Path)
     parser.add_argument('--sdk-interfaces-run-dir', type=Path)
     parser.add_argument('--sdk-mixins-run-dir', type=Path)
     parser.add_argument('--sdk-mixin-relink-run-dir', type=Path)
@@ -112,7 +115,7 @@ def main():
     parser.add_argument('--parts-private-run-dir', type=Path)
     args = parser.parse_args()
     run, gc_run = args.run_dir.resolve(), args.gc_run_dir.resolve()
-    destination = run / 'native-checks'
+    destination = args.output.resolve() if args.output else run / 'native-checks'
     destination.mkdir(exist_ok=False)
     report = {'complete_runtime_implemented': False, 'm1_passed': False, 'checks': []}
 
@@ -136,7 +139,8 @@ def main():
                                           args.top_accessor_signature_run_dir,
                                           args.top_accessor_multilang_run_dir,
                                           args.conditional_run_dir,
-                                          args.platform_conditions_run_dir, args.io_run_dir) if p)
+                                          args.platform_conditions_run_dir, args.io_run_dir,
+                                          args.isolates_run_dir, args.isolate_multilang_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1230,6 +1234,11 @@ void main() {{
                 raise ValueError('Enum display decoding escaped its generated namespace')
         report['enum_display_name_guards'] = True
     for kind, folder, expected_base, expected_patch, installed in [
+        ('isolates', args.isolates_run_dir,
+         ['local:3:99', 'run:3', 'changed:3', 'nested:4', 'spawn:5:7', 'tearoff:6', 'error:Bad state: worker-1'],
+         ['local:12:99', 'run:12', 'changed:112', 'nested:13', 'spawn:14:7', 'tearoff:15', 'error:Bad state: worker-10'],
+         ['changedCompute', 'worker']),
+        ('isolate-multilang', args.isolate_multilang_run_dir, ['legacy:3'], ['legacy:12'], ['worker']),
         ('io', args.io_run_dir, ['io:base'], ['io:patch:5'], ['diskValue']),
         ('top-accessors', args.top_accessors_run_dir,
          ['initial:1:5:11', 'compound:3:8', 'retained:3:13', 'callback:7'],
@@ -1311,12 +1320,14 @@ void main() {{
                 'executable_sha256': digest(executable),
                 'source_graph_sha256': digest(folder / side / 'source_graph.json'),
             }
-            if kind == 'top-accessor-multilang':
-                expected_versions = {'app:entry': '3.12', 'app:legacy.dart': '3.0',
-                                     'app:modern.dart': '3.4'}
+            if kind in {'top-accessor-multilang', 'isolate-multilang'}:
+                expected_versions = {'app:entry': '3.12', 'app:legacy.dart': '3.0'}
+                if kind == 'top-accessor-multilang':
+                    expected_versions['app:modern.dart'] = '3.4'
                 if graph['library_language_versions'] != expected_versions or \
-                        graph['libraries']['app:legacy_part.dart']['owner'] != 'app:legacy.dart':
-                    raise ValueError('Top-accessor source language ownership changed')
+                        (kind == 'top-accessor-multilang' and
+                         graph['libraries']['app:legacy_part.dart']['owner'] != 'app:legacy.dart'):
+                    raise ValueError('Source language ownership changed')
                 inspector = ROOT / 'compiler/bin/inspect_kernel_languages.dart'
                 packages = ROOT / 'compiler/.dart_tool/package_config.json'
                 source_kernel = destination / f'{kind}-source-{side}.dill'
@@ -1327,9 +1338,9 @@ void main() {{
                 for uri, version in expected_versions.items():
                     filename = 'app.dart' if uri == 'app:entry' else uri.removeprefix('app:')
                     if source_versions.get(filename) != version:
-                        raise ValueError('Original top-accessor source Kernel language changed')
+                        raise ValueError('Original source Kernel language changed')
                 report.setdefault(f'{kind}_source_kernel_languages', {})[side] = source_versions
-        if kind == 'top-accessor-multilang':
+        if kind in {'top-accessor-multilang', 'isolate-multilang'}:
             inspector = ROOT / 'compiler/bin/inspect_kernel_languages.dart'
             packages = ROOT / 'compiler/.dart_tool/package_config.json'
             baseline_graph = json.loads((folder / 'baseline/source_graph.json').read_text())
@@ -1339,7 +1350,7 @@ void main() {{
                  folder / 'baseline/no-aot.dill', folder / 'baseline']))
             for uri, filename in baseline_manifest['emitted_libraries'].items():
                 if baseline_versions.get(filename) != baseline_graph['library_language_versions'][uri]:
-                    raise ValueError('Baseline top-accessor Kernel language changed')
+                    raise ValueError('Baseline Kernel language changed')
             sdk = source_dart.parent.parent
             compiler = ROOT / '.engine-workspace/engine/engine/src/flutter/third_party/dart/pkg/vm/bin/gen_kernel.dart'
             patch_kernel = destination / f'{kind}-patch.dill'
@@ -1353,7 +1364,7 @@ void main() {{
             for uri, version in patch_graph['library_language_versions'].items():
                 filename = 'unit_' + hashlib.sha256(uri.encode()).hexdigest() + '.dart'
                 if patch_versions.get(filename) != version:
-                    raise ValueError('Patched top-accessor Kernel language changed')
+                    raise ValueError('Patched Kernel language changed')
             report[f'{kind}_generated_kernel_languages'] = {
                 'baseline': baseline_versions, 'patch': patch_versions,
             }

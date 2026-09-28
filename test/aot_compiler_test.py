@@ -1433,7 +1433,7 @@ void main() { p.value += 1; }
         result = self.command('--target', 'flutter', 'patch', candidate / 'app.dart', base, patch)
         self.assertEqual(result.returncode, 0, result.stderr)
         manifest = json.loads((patch / 'manifest.json').read_text())
-        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['diskValue', 'origin', 'shade'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['diskValue', 'origin', 'shade', 'worker'])
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(manifest['replaced_globals'], [])
         graph = json.loads((base / 'source_graph.json').read_text())
@@ -2042,6 +2042,33 @@ void main() { p.value += 1; }
                 self.assertEqual(result.returncode, 2)
                 self.assertIn(diagnostic, result.stderr)
                 self.assertFalse(output.exists())
+
+
+    def test_isolate_activation_preserves_aot_callers_and_patch_bridges(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_isolates_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_isolates_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['changedCompute', 'worker'])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertIn('simurghBaseline.msbEntity_isolateRun', (patch / 'module.dart').read_text())
+
+    def test_isolate_spawn_uri_requires_independent_group_activation(self):
+        for i, body in enumerate([
+            "void main() { Isolate.spawnUri(Uri.parse('child.dart'), [], null); }",
+            'void main() { final launch = Isolate.spawnUri; print(launch); }',
+            'void main() { final launch = iso.Isolate.spawnUri; print(launch); }',
+        ]):
+            with self.subTest(body=body):
+                source = self.source(f'spawn-uri-{i}.dart', "import 'dart:isolate'; import 'dart:isolate' as iso;\n" + body)
+                dest = self.root / f'rejected-{i}'
+                result = self.command('baseline', source, dest)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertIn('independent-group patch activation', result.stderr)
+                self.assertFalse(dest.exists())
 
 
 if __name__ == '__main__':

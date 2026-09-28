@@ -139,8 +139,31 @@ const linkedSdkLibraries = {
   'dart:convert',
   'dart:typed_data',
   'dart:io',
+  'dart:isolate',
 };
 String sdkPrefix(String uri) => '${entityPrefix}sdk_${uri.substring(5)}';
+
+const isolateBridgeSymbols = {
+  '${entityPrefix}isolateRun',
+  '${entityPrefix}isolateSpawn',
+};
+
+String? isolateBridge(Element? element) {
+  element = element?.baseElement;
+  if (element is! MethodElement ||
+      !element.isStatic ||
+      element.library.uri.toString() != 'dart:isolate' ||
+      element.enclosingElement?.name != 'Isolate')
+    return null;
+  return switch (element.name) {
+    'run' => '${entityPrefix}isolateRun',
+    'spawn' => '${entityPrefix}isolateSpawn',
+    'spawnUri' => _reject(
+      'Isolate.spawnUri requires independent-group patch activation',
+    ),
+    _ => null,
+  };
+}
 
 // The generated SDK imports and condition values must belong to one target.
 // UI availability is never inferred from the machine running the compiler.
@@ -468,6 +491,13 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
+    final bridge = isolateBridge(node.methodName.element);
+    if (bridge != null) {
+      replace(node.offset, node.methodName.end, bridge);
+      node.typeArguments?.accept(this);
+      node.argumentList.accept(this);
+      return;
+    }
     if (receiver != null && node.target is SuperExpression) {
       final bridge = classes?.superBridge(owner!, node.methodName.element);
       if (bridge == null)
@@ -499,6 +529,11 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitPropertyAccess(PropertyAccess node) {
+    final bridge = isolateBridge(node.propertyName.element);
+    if (bridge != null) {
+      replace(node.offset, node.end, bridge);
+      return;
+    }
     if (receiver != null && node.target is SuperExpression) {
       final bridge = classes?.superBridge(
         owner!,
@@ -514,6 +549,11 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    final bridge = isolateBridge(node.identifier.element);
+    if (bridge != null) {
+      replace(node.offset, node.end, bridge);
+      return;
+    }
     final symbol = propertySymbol(node.identifier);
     if (symbol != null && node.prefix.element is PrefixElement) {
       replace(node.offset, node.end, symbol);

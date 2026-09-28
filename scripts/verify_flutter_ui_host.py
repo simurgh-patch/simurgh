@@ -85,8 +85,8 @@ def main():
                                        checks / f'source-{side}/source.dill'])
     base = folder / 'baseline/app.aot'
     before = sha(base)
-    expected_base = ['io:base', 'platform:flutter', 'color:4279383126', 'point:1.0:2.0', 'blend:4279383126']
-    expected_patch = ['io:patch:5', 'platform:flutter', 'color:4284826401', 'point:10.0:20.0', 'blend:4284826401']
+    expected_base = ['io:base', 'isolate:3', 'platform:flutter', 'color:4279383126', 'point:1.0:2.0', 'blend:4279383126']
+    expected_patch = ['io:patch:5', 'isolate:12', 'platform:flutter', 'color:4284826401', 'point:10.0:20.0', 'blend:4284826401']
     for name, aot, patch, expected in [
             ('source-baseline', out / 'source-baseline.aot', None, expected_base),
             ('source-patch', out / 'source-patch.aot', None, expected_patch),

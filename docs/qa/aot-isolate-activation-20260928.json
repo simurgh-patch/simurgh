@@ -1,0 +1,160 @@
+{
+  "recorded_at": "2026-09-28T13:19:44.677479+08:00",
+  "scope": "Compiler-mediated same-group child isolate activation in restricted standalone VM and real host Flutter AOT/bytecode cold processes",
+  "compiler_sha256": "88d1dd575c34d24a9fd2e0efe8d33087fea6990e0272e39703550a9e33d63472",
+  "checks": {
+    "ordinary_exit_code": 0,
+    "fresh_output_guard": true,
+    "dart_tests": 16,
+    "python_tests": 173,
+    "flutter_widget_tests": 7,
+    "vm_native_checks": 26,
+    "flutter_compiler_checks": 7,
+    "flutter_host_checks": 7,
+    "kernel_language_checks_included_in_native_total": 7,
+    "all_passed": true
+  },
+  "input_sha256": {
+    "compiler/bin/aot_patch.dart": "6512e3b0c3de7286855f18e59b069f97e8826640214843f78a29ade94bcda7fb",
+    "compiler/bin/inspect_kernel_api.dart": "01c001c3ef0e864042759faf18d095f14ae673b28f91bacf4c69d19a4d1102fe",
+    "compiler/lib/source_graph.dart": "32391e240796be499c04090c47d84e9eb7ea1bef7014eb798634505f326856ff",
+    "compiler/lib/class_lowering.dart": "1f47b58ba330868af1a2074427aa68d565622304a46346def0615f74980ee53a",
+    "test/aot_compiler_test.py": "77c663cc76af8bbfecf79c2466fcba3dc0934fbb00e5a8ce6666f525b18bdfa7",
+    "scripts/verify_aot_lab.py": "b36e838143016a43c21e9d9ae6427f353fe3ffe2e8b493528bb3e62d849ae4ae",
+    "scripts/verify_flutter_aot_lab.py": "70f53965c3452d2e87a6943f71c441b82100209081702791d9cc147d566c2c7e",
+    "scripts/verify_flutter_ui_host.py": "262bbd1c73b0aa7bba67f365d522b5cefbf75970278ea97887df6672b8e90a92",
+    "compiler/fixtures/aot_isolates_baseline/app.dart": "f4556b2ddadc39ac94f1ef5e7de7a4b191c33701f1894063ab4eb983279b5159",
+    "compiler/fixtures/aot_isolates_patch/app.dart": "0239a71d74ae5c39842b373c53ae1e1a2f768f44f4f6eb611d83d7d5ba9a65a7",
+    "compiler/fixtures/aot_isolate_multilang_baseline/legacy.dart": "e60f09eef1a473b67eb34ce915aa5557e3be472ca235f0c55af07738b692b690",
+    "compiler/fixtures/aot_isolate_multilang_baseline/app.dart": "06b0ee87ce1b043405194b4f9ce404273b4b8f414ed9aa310f33b5b4b8c27935",
+    "compiler/fixtures/aot_isolate_multilang_patch/legacy.dart": "edc083e8f18eb37b59b82b0ca6e96a9c8e26802d60cae8872b0c9f5b3a2374e6",
+    "compiler/fixtures/aot_isolate_multilang_patch/app.dart": "06b0ee87ce1b043405194b4f9ce404273b4b8f414ed9aa310f33b5b4b8c27935",
+    "compiler/fixtures/aot_flutter_ui_baseline/fallback.dart": "6840b7621ca278538cc20e38d3f69fd49793c26f3cef1a8ffbfc656e30af8d71",
+    "compiler/fixtures/aot_flutter_ui_baseline/app.dart": "7a5d2a8af72f851e303cd5683f51d76f26a9c140bd71c40bd5879eea0580c083",
+    "compiler/fixtures/aot_flutter_ui_baseline/flutter.dart": "9330fc3ef890875fefe4f6e7a073afb4e10525e1a24c9df1c861b0f1215bf02e",
+    "compiler/fixtures/aot_flutter_ui_patch/fallback.dart": "6840b7621ca278538cc20e38d3f69fd49793c26f3cef1a8ffbfc656e30af8d71",
+    "compiler/fixtures/aot_flutter_ui_patch/app.dart": "94e74d977035e667a9a691a656e83269c651f8a465544fbbc008551882ee5125",
+    "compiler/fixtures/aot_flutter_ui_patch/flutter.dart": "9330fc3ef890875fefe4f6e7a073afb4e10525e1a24c9df1c861b0f1215bf02e"
+  },
+  "ordinary_input_freeze_sha256": "e341951b0d358a764b51d863a3942394f80cc465e0708695224dffaa9e7ef58e",
+  "evidence_sha256": {
+    "output/isolate-activation-native-verified/report.json": "6bd08025ce345ef25b5e2ccc5a8f05903bcdab5bfe9a5b9b9a566e54eed9e978",
+    "output/isolate-activation-flutter/compiler-checks/report.json": "c5c5ec6c6edda85d301a6a7d31ddd9e4679ec9bfecc62d2bc4a6508abf7b8d00",
+    "output/isolate-activation-flutter-host/report.json": "ff6b774dc0b180917bfc108dac5cc027ce3e6d1be89f0f16e4aabdc3b783e6ab",
+    "output/isolate-activation-languages/report.json": "31e74fd2ec2d29e95e2d8494987c352771ed6e977b4710e0178de44bac56c8bd",
+    "output/isolate-activation-verification.log": "d9a9479debfb9811dfe5e8b134543ae4f6dc4609e96de7cedbe9728f2c28afaf",
+    "output/isolate-activation-final-inputs.json": "dce3f22bdb658f81219076f166d31932c8c7aaada592f6c147709587bc267047",
+    "output/isolate-activation-evidence-guard.json": "80a36baf7443d23d22b84e39345d5a5d5e75ee8377b510b65e2fa3e9d0ee2235",
+    "output/isolate-activation-frozen-inputs.json": "e341951b0d358a764b51d863a3942394f80cc465e0708695224dffaa9e7ef58e",
+    "output/isolate-activation-targeted.log": "fe8a52cd1684d50b34181c8eb9d398d42e74f36ba5b2ebae0fd87b63b66331a7",
+    "output/check_isolate_languages.py": "09f959b9f917c0a71488a700676481be0ebaa8901d360898405698db342d516f",
+    "output/isolate-activation-size.json": "6cb2476f792a4222aaebbb1f91106730d31e8a1572eeacbc65080afe5288ab90",
+    "output/isolate-activation-analysis-final.log": "2403665fc7f833094e03cb6f1797244c66570fd1a585a63a89cb1610607463a1",
+    "output/isolate-activation-foundation-exploration/probe.log": "7774aa93c4f8f9274b4e85a3c5f844d2c466831e5daafabc8acc0599c550b05b",
+    "output/isolate-activation-foundation-exploration/probe-second.log": "cf1b479d38e7199bc53860be11c1abb09df2f946340b12dc37b179e9e4a13bea",
+    "output/isolate-activation-foundation-exploration/probe-third.log": "cf1b479d38e7199bc53860be11c1abb09df2f946340b12dc37b179e9e4a13bea",
+    "output/isolate-activation-foundation-exploration/diagnostic-source.txt": "c1b809c4ea4d0253e764de68074205565ff5c286e21eb830880f1480d686c855",
+    "output/isolate-activation-foundation-exploration/compiler/bin/aot_patch.dart": "7bda594ef3bc12edf8400a6f66a82f5da587ceb7cd1644749611e7417e07a9db",
+    "output/isolate-activation-foundation-exploration/compiler/lib/source_graph.dart": "c82b629d28e5ec1af300f2a191b13d9f26618b860d59eec5c722723c2ee71627",
+    "output/isolate-activation-foundation-exploration/nullable-void.dart": "88ba960c8566364ec0bb17a7940ece1512992e04db6698520f5faa238ef8ca5b",
+    "output/isolate-activation-foundation-exploration/nullable-void-report.json": "fcef550063258789248ae4315d4452a4af2aa372269df48076436bd2096f8ce1"
+  },
+  "builds": {
+    "isolate-activation-base": "d27f7b1cf1d8a302168ea30c12e88ab284f3fa54ed9e4ce9205f657d5c9d3a53",
+    "isolate-activation-gc": "201d166874f4a6d7519ba8dbc77d3c5f8fba98722578c2e6f39194ecbf5fc541",
+    "isolate-activation-final": "a337b6ee85f9727dd976d892a9aa174ce52bed2cf386c2e80d7cbcfcb8546954",
+    "isolate-activation-multilang": "529a252ccb177460d0fffdd41d1d8b338c1cb190edbcf7e4f754ab34a2e0a690",
+    "isolate-activation-flutter": "423ec1195d056a70add23cc9df5be11eb7eeb5efa8680285cdc0ccdcd4ae1bd5"
+  },
+  "host_engine_sha256": "aa920d8d6c1b3f3a75d964a70113d3fe91cb27c1d9f2ce52ec58a7fad3953b87",
+  "engine_rebuilt_this_increment": false,
+  "baseline_aot_sha256": "2d6e0a9a865d855cf71647633de03906d798e499bfe093b9616f5c8e67a97d18",
+  "observed_vm_scavenges": 21,
+  "verified": [
+    "Resolved Isolate.run/spawn invocations and tear-offs use generated baseline helpers. Patch calls link back to those helpers automatically, with no application annotations/manual bridges.",
+    "A validated activation map is captured before spawn and restored before the child business callback. Nested children inherit activation; business static values remain isolate-local.",
+    "Isolates fixture installs only changedCompute and worker, retaining main, compute, nested, spawned, spawnOnce and failing in AOT. Tests cover bytecode-to-helper calls, paused spawn, generic tear-offs, nested run and exception propagation.",
+    "The native verifier was extended after the ordinary input freeze to include repeatable Kernel version checks and fresh output selection; its final version was separately executed and hashed. Compiler and ordinary-test inputs remained unchanged.",
+    "Original-source AOT matches generated baseline and patched unchanged baseline exactly. The previously failing child result now matches patched parent result 12. Parent counter stays 99 while child initializes its own 7.",
+    "The source and generated Kernel library versions remain 3.0/3.12 across the split-library fixture. Bytecode worker replaces only worker, retaining the old AOT compute caller.",
+    "Four real Flutter AOT engine cold processes preserve exact UI/file output and return isolate:3 / isolate:12 as original sources do. Existing matching engine reused without rebuilding.",
+    "Direct and unprefixed/prefixed tear-off Isolate.spawnUri references reject before creating outputs. Wrong baseline and signature rejection/atomicity and base GC checks remain passing."
+  ],
+  "failures_and_fixes": [
+    "Initial analysis found an unchecked nullable enclosingElement access; corrected before final compilation. Initial failed build and analysis logs retained.",
+    "Early scenario run preceded activation-map allocation hardening; all acceptance builds were rebuilt under the final compiler identity."
+  ],
+  "foundation_exploration": {
+    "accepted": false,
+    "production_compiler_modified": false,
+    "minimized_actual_compiler_case": {
+      "source": "class Base<T> { T? get value => null; }\nclass Child extends Base<void> {}\nvoid main() { Child().value; print(\"ok\"); }\n",
+      "report": {
+        "kind": "minimized-next-compiler-boundary",
+        "steps": [
+          {
+            "command": [
+              "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/host_release_arm64/dart-sdk/bin/dart",
+              "compile",
+              "exe",
+              "/Applications/project/test2/my-shorebird/output/isolate-activation-foundation-exploration/nullable-void.dart",
+              "-o",
+              "/Applications/project/test2/my-shorebird/output/isolate-activation-foundation-exploration/nullable-void-original"
+            ],
+            "exit_code": 0,
+            "stdout": "Generated: /Applications/project/test2/my-shorebird/output/isolate-activation-foundation-exploration/nullable-void-original\n",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "/Applications/project/test2/my-shorebird/output/isolate-activation-foundation-exploration/nullable-void-original"
+            ],
+            "exit_code": 0,
+            "stdout": "ok\n",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "/Applications/project/test2/my-shorebird/.engine-workspace/engine/engine/src/out/host_release_arm64/dart-sdk/bin/dart",
+              "/Applications/project/test2/my-shorebird/compiler/bin/aot_patch.dart",
+              "baseline",
+              "/Applications/project/test2/my-shorebird/output/isolate-activation-foundation-exploration/nullable-void.dart",
+              "/Applications/project/test2/my-shorebird/output/isolate-activation-foundation-exploration/nullable-void-generated"
+            ],
+            "exit_code": 2,
+            "stdout": "",
+            "stderr": "FormatException: Invalid Dart source: [(2285..2285): Operator declarations must be preceded by the keyword 'operator'., (2285..2285): The string '?' isn't a user-definable operator., (2285..2285): Methods must have an explicit list of parameters., (2287..2289): A function body must be provided.]\n"
+          }
+        ],
+        "generated_output_exists": false
+      }
+    },
+    "copy_only_changes": "Provisionally admit dart:developer and selected foundation pragmas solely to locate later blockers.",
+    "next_blockers": [
+      "dart:developer remains unlinked in actual compiler",
+      "vm:platform-const-if and vm:notify-debugger-on-exception require deliberate semantics",
+      "Copied compiler then emits invalid void? types when substituting T? with void in foundation super bridges; diagnostic source retained."
+    ]
+  },
+  "size_observation": {
+    "same_source_fixture": "compiler/fixtures/aot_baseline/app.dart",
+    "old_run": "output/flutter-io-20260928-base",
+    "new_run": "output/isolate-activation-base",
+    "old_bytes": 8735016,
+    "new_bytes": 8817928,
+    "performance_measured": false
+  },
+  "m1_passed": false,
+  "device_accepted": false,
+  "production_patch": false,
+  "not_verified": [
+    "Independent isolate groups / spawnUri",
+    "Isolates created by external precompiled code without compiler helpers",
+    "Mobile background platform channels",
+    "Live activation in existing isolates",
+    "Full framework/Widget lowering",
+    "Current Android/iOS runtime cold activation",
+    "Signatures/rollback",
+    "Physical-device startup/frame/memory performance"
+  ]
+}

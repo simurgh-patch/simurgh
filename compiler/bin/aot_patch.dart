@@ -496,7 +496,7 @@ String nodeText(
   var text = program.source.substring(node.offset, node.end);
   if (baselineNames != null) {
     final edits = CallEdits(
-      program.functions.keys.toSet(),
+      {...program.functions.keys, ...isolateBridgeSymbols},
       program.classes.keys.toSet(),
       program.globals.keys.toSet(),
     )..walk(node);
@@ -513,7 +513,7 @@ String nodeText(
           ? ((baselineClasses ?? program.classes.keys.toSet()).contains(name)
                 ? '${prefix}Baseline.'
                 : '')
-          : (baselineNames.contains(name)
+          : (baselineNames.contains(name) || isolateBridgeSymbols.contains(name)
                 ? '${prefix}Baseline.'
                 : '${prefix}Patch_');
       if (edits.interpolations.contains(offset)) {
@@ -644,6 +644,7 @@ void baseline(Program program, Directory output) {
     generated.writeln('$type? ${prefix}Slot$index;');
     index++;
   }
+  generated.writeln('Map<String, Function> ${prefix}ActiveUpdates = {};');
   generated.writeln(
     'void ${prefix}Install(String fingerprint, Map<String, Function> updates) {',
   );
@@ -653,6 +654,9 @@ void baseline(Program program, Directory output) {
   generated.writeln(
     'if (updates.keys.any((key) => !${jsonEncode(names)}.contains(key))) '
     "{ throw StateError('Unknown patch entity'); }",
+  );
+  generated.writeln(
+    'final ${prefix}NextUpdates = {...${prefix}ActiveUpdates, ...updates};',
   );
   index = 0;
   for (final name in names) {
@@ -677,7 +681,9 @@ void baseline(Program program, Directory output) {
     );
     index++;
   }
+  generated.writeln('${prefix}ActiveUpdates = ${prefix}NextUpdates;');
   generated.writeln('}');
+  generated.writeln(isolateInfrastructure(baselineKey(program.identity)));
   index = 0;
   for (final name in names) {
     final f = program.functions[name]!;
@@ -742,6 +748,31 @@ Future<void> main(List<String> args) async {
 }
 """);
 }
+
+// Each child receives a snapshot of the cold-activated function map, not
+// parent business static state. Top-level patch tear-offs are sendable inside
+// one isolate group. Nested children capture the restored activation again.
+String isolateInfrastructure(String fingerprint) =>
+    """
+Future<R> ${entityPrefix}isolateRun<R>(msbEntity_sdk_async.FutureOr<R> Function() computation, {String? debugName}) {
+  final activation = ${prefix}ActiveUpdates;
+  return msbEntity_sdk_isolate.Isolate.run<R>(() {
+    ${prefix}Install('$fingerprint', activation);
+    return computation();
+  }, debugName: debugName);
+}
+void ${prefix}IsolateStart<T>(List<Object?> payload) {
+  ${prefix}Install('$fingerprint', payload[0] as Map<String, Function>);
+  (payload[1] as void Function(T))(payload[2] as T);
+}
+Future<msbEntity_sdk_isolate.Isolate> ${entityPrefix}isolateSpawn<T>(void Function(T) entryPoint, T message, {
+  bool paused = false, bool errorsAreFatal = true,
+  msbEntity_sdk_isolate.SendPort? onExit, msbEntity_sdk_isolate.SendPort? onError, String? debugName,
+}) => msbEntity_sdk_isolate.Isolate.spawn<List<Object?>>(
+  ${prefix}IsolateStart<T>, [${prefix}ActiveUpdates, entryPoint, message],
+  paused: paused, errorsAreFatal: errorsAreFatal, onExit: onExit, onError: onError, debugName: debugName,
+);
+""";
 
 String dynamicInterfaceText(Program program) =>
     "callable:\n${program.target.sdkLibraries.map((uri) => "  - library: '$uri'\n").join()}  - library: 'app.dart'\n${program.splitLibraries ? program.libraryVersions.keys.map((uri) => "  - library: '${program.libraryFile(uri)}'\n").join() : ''}"

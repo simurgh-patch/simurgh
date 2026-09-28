@@ -169,9 +169,9 @@ Pass its output directory to `scripts/verify_aot_lab.py --dynamic-calls-run-dir`
 
 ## Linked SDK libraries
 
-The resolver accepts `dart:core`, `dart:async`, `dart:collection`, `dart:math`, `dart:convert`, `dart:typed_data` and `dart:io`. Imports/exports, prefixes and show/hide clauses are resolved on the original source. Public SDK references then use canonical library aliases in the lowered source, baseline and module; same-spelled symbols from separate imports cannot be merged by text alone. Existing primitive and Future spellings are preserved. An explicit unprefixed core import accompanies the aliases because a prefixed core import disables Dart's implicit core import.
+The resolver accepts `dart:core`, `dart:async`, `dart:collection`, `dart:math`, `dart:convert`, `dart:typed_data`, `dart:io` and `dart:isolate`. Imports/exports, prefixes and show/hide clauses are resolved on the original source. Public SDK references then use canonical library aliases in the lowered source, baseline and module; same-spelled symbols from separate imports cannot be merged by text alone. Existing primitive and Future spellings are preserved. An explicit unprefixed core import accompanies the aliases because a prefixed core import disables Dart's implicit core import.
 
-All seven libraries are part of the baseline contract, even if a particular application has no calls to one of them yet. The baseline retains callable SDK APIs and dynamic selectors so patches can first use an API (the fixture first uses base64Encode). This is a conservative code-retention choice with unmeasured performance/size costs, not permission to change SDK code or native libraries in a patch. The locked toolchain pins the SDK implementation.
+All eight libraries are part of the baseline contract, even if a particular application has no calls to one of them yet. The baseline retains callable SDK APIs and dynamic selectors so patches can first use an API (the fixture first uses base64Encode). This is a conservative code-retention choice with unmeasured performance/size costs, not permission to change SDK code or native libraries in a patch. The locked toolchain pins the SDK implementation.
 
 Resolved public SDK types, nested generics and accepted function types are usable in globals, parameters, results and generic bounds. Existing signature compatibility checks still apply. The `aot_sdk` fixture passes real Uint8List/List/Map/Queue/DateTime/Stream/Future objects across the boundary, preserves shared typed-array storage, calls SDK APIs from bytecode and catches a SDK FormatException in unchanged AOT. Its main and typed-array reader remain AOT. Independent source AOT is the output oracle. This is not a claim that every method in these libraries or every Stream lifecycle has passed runtime tests.
 
@@ -877,8 +877,9 @@ This requires a package configuration that resolves the source-built `sky_engine
 package. An arbitrary SDK package with modified UI declarations is rejected.
 
 The fixture covers `Color`, `Offset`, a UI-typed callback, a UI conditional
-import, and asynchronous `dart:io` file operations. `main`, `dataFile` and
-`blender` stay in AOT while `diskValue`, `origin` and `shade` are replaced.
+import, and asynchronous `dart:io` file operations. `main`, `dataFile`,
+`blender` and the isolate `compute` caller stay in AOT while `diskValue`,
+`origin`, `shade` and `worker` are replaced.
 `File` and `Directory` cross typed boundaries; the patch first opens a
 `RandomAccessFile`, uses `FileMode.write`, flushes and closes it, dynamically
 reads the file and inspects `FileStat`. Each cold process creates and cleans up
@@ -927,8 +928,8 @@ The fixed C++ fixture runner uses the real AOT Flutter embedder, a platform task
 queue and a bounded completion check. It compiles two original-source AOT
 snapshots and compares four separate processes: original baseline, original
 candidate, generated baseline and that unchanged baseline with bytecode loaded
-before the business entry point. The `Color`/`Offset` values and UI-typed callback
-and file readback (`io:base` / `io:patch:5`) must match exactly; the engine and baseline bytes must stay unchanged.
+before the business entry point. The child-isolate result (`isolate:3` /
+`isolate:12`), `Color`/`Offset` values, UI-typed callback and file readback (`io:base` / `io:patch:5`) must match exactly; the engine and baseline bytes must stay unchanged.
 
 This is a restricted macOS ARM64 host cold-start experiment with `dart:ui`, not
 full Widget rendering, a mobile updater or physical-device acceptance. The
@@ -949,6 +950,49 @@ boundaries after provisionally linking developer/isolate: the
 probe, replacing `worker` changed the parent result to `12`, but an unchanged
 AOT callback sent through `Isolate.run` still returned baseline `3`; original
 candidate AOT returned `12` in both places. Sending a new bytecode closure alone
-succeeded, so that result does not establish isolate support. The shipping
-experimental compiler still rejects `dart:developer` and `dart:isolate`.
+succeeded, so that result does not establish isolate support. This historical
+counterexample is now fixed for the compiler-mediated
+`run`/`spawn` paths described below. The experimental compiler still rejects
+`dart:developer` and independent-group `Isolate.spawnUri`.
 See [the exploration record](../docs/qa/aot-isolate-propagation-exploration-20260928.json).
+
+
+## Child-isolate cold activation
+
+Resolved `dart:isolate` `Isolate.run` and `Isolate.spawn` calls and tear-offs
+are automatically lowered to generated baseline helpers. Application source
+needs no annotation or manual bridge. The helpers capture the successfully
+installed function map, transfer it within the same isolate group, validate the
+baseline fingerprint and signatures, and restore dispatch before invoking the
+user callback. Nested children inherit that activation in turn. Ordinary
+business statics are not copied from the parent; each child initializes its own
+state normally. Installation prepares the next activation map before changing
+slots, preserving rejection of invalid signatures without partial installation.
+
+The wrappers retain generic signatures and forward `debugName`, `paused`,
+`errorsAreFatal`, `onExit` and `onError`. They do not replace native isolate
+scheduling or message transfer. `Isolate.spawnUri` is rejected at source
+resolution, including its tear-offs, because a new isolate group needs a
+separate code-loading/activation protocol. External precompiled code that
+creates isolates on its own, mobile background platform channels and live
+installation into already-running isolates are not covered.
+
+`aot_isolates_baseline` / `aot_isolates_patch` cover unchanged AOT callers,
+bytecode callers, nested `run`, paused `spawn`, generic tear-offs, independent
+static state and exception propagation. `aot_isolate_multilang_*` crosses
+Dart 3.0/3.12 libraries. Build each with `scripts/aot_lab.py`, then pass the
+completed directories to `scripts/verify_aot_lab.py --isolates-run-dir` and
+`--isolate-multilang-run-dir` alongside current base/GC runs. The verifier
+independently compiles original-source AOT for both sides and requires exact
+cold-process output and actual original/generated Kernel language versions.
+Use `--output` to select a fresh evidence directory for another verification;
+existing evidence directories are never overwritten. The restricted Flutter UI fixture additionally exercises
+an unchanged AOT isolate caller in the real host engine. None of these host
+checks establish mobile-device or performance acceptance.
+
+The remaining foundation investigation also exposes an independent type-rendering
+boundary: a nullable generic superclass getter instantiated with `void` currently
+produces invalid `void?` syntax in generated super bridges. A minimal
+`Base<T>` with `T? get value => null` and `Child extends Base<void>` runs in
+original-source AOT but is rejected before baseline output by the experimental
+compiler. This remains a separate unresolved language case.
