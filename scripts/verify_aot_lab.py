@@ -35,6 +35,7 @@ def main():
     parser.add_argument('--top-accessor-signature-run-dir', type=Path)
     parser.add_argument('--top-accessor-multilang-run-dir', type=Path)
     parser.add_argument('--conditional-run-dir', type=Path)
+    parser.add_argument('--platform-conditions-run-dir', type=Path)
     parser.add_argument('--parameters-run-dir', type=Path)
     parser.add_argument('--async-run-dir', type=Path)
     parser.add_argument('--generics-run-dir', type=Path)
@@ -133,7 +134,8 @@ def main():
                                           args.top_accessor_package_run_dir,
                                           args.top_accessor_signature_run_dir,
                                           args.top_accessor_multilang_run_dir,
-                                          args.conditional_run_dir) if p)
+                                          args.conditional_run_dir,
+                                          args.platform_conditions_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1369,20 +1371,45 @@ void main() {{
         if kind.startswith('top-accessor-metadata'):
             verify_metadata(kind, folder, destination, execute, report, ROOT, RUNTIME)
         report[f'{kind}_aot_consumers_retained'] = True
-    if args.conditional_run_dir is not None:
-        folder = args.conditional_run_dir.resolve()
+    for kind, folder in [('conditional', args.conditional_run_dir),
+                         ('platform-conditions', args.platform_conditions_run_dir)]:
+        if folder is None:
+            continue
+        folder = folder.resolve()
         metadata = json.loads((folder / 'patch/manifest.json').read_text())
         names = sorted(metadata['entities'][symbol]['name'] for symbol in metadata['installed_functions'])
-        if names != ['label', 'value'] or metadata['replaced_classes'] or metadata['replaced_globals']:
+        expected_names = ['label', 'value'] if kind == 'conditional' else ['value', 'value']
+        if names != expected_names or metadata['replaced_classes'] or metadata['replaced_globals']:
             raise ValueError('Conditional import/export did not retain the AOT caller')
         source_dart = RUNTIME.parent.parent / 'host_release_arm64/dart-sdk/bin/dart'
-        report['conditional_source_aot'] = {}
-        for side, expected in [('baseline', 'result:2:baseline'), ('patch', 'result:4:patched')]:
+        report[f'{kind}_source_aot'] = {}
+        conditional_aot_hash = digest(folder / 'baseline/app.aot')
+        for side in ['baseline', 'patch']:
             graph = json.loads((folder / side / 'source_graph.json').read_text())
-            if set(graph['libraries']) != {'app:entry', 'app:barrel.dart', 'app:vm_impl.dart', 'app:vm_public.dart'} or \
-                    set(graph['conditional_sources']) != {'app:default_impl.dart', 'app:default_public.dart'}:
+            if kind == 'conditional':
+                expected = ['result:2:baseline' if side == 'baseline' else 'result:4:patched']
+                active = {'app:entry', 'app:barrel.dart', 'app:vm_impl.dart', 'app:vm_public.dart'}
+                inactive = {'app:default_impl.dart', 'app:default_public.dart'}
+            else:
+                present, absent = (1, 2) if side == 'baseline' else (11, 12)
+                supported = ['async', 'collection', 'concurrent', 'convert', 'core', 'developer',
+                             'ffi', 'io', 'isolate', 'math', 'typed_data', 'cli',
+                             'nativewrappers', 'vmservice_io']
+                unsupported = ['mirrors', 'html', 'js', 'js_util', 'js_interop',
+                               'js_interop_unsafe', 'ui']
+                expected = [f'{name}:{present}' for name in supported]
+                expected += [f'{name}:{absent}' for name in unsupported]
+                expected += [f'edges:{present}:{present}:{absent}:{absent}:{present}']
+                active = {'app:entry', 'app:barrel.dart', 'app:present.dart', 'app:absent.dart'}
+                inactive = set()
+                environment = {f'dart.library.{name}': 'true' for name in supported}
+                environment.update({f'dart.library.{name}': None for name in unsupported})
+                if graph['conditional_target'] != 'pinned-standalone-vm-aot' or \
+                        graph['conditional_environment'] != environment:
+                    raise ValueError('Conditional target environment differs from verified AOT target')
+            if set(graph['libraries']) != active or set(graph['conditional_sources']) != inactive:
                 raise ValueError('Conditional source graph selected the wrong VM branch')
-            reference = destination / f'conditional-reference-{side}'
+            reference = destination / f'{kind}-reference-{side}'
             reference.mkdir()
             for uri, record in {**graph['libraries'], **graph['conditional_sources']}.items():
                 path = reference / ('app.dart' if uri == 'app:entry' else uri.removeprefix('app:'))
@@ -1390,20 +1417,22 @@ void main() {{
                     raise ValueError(f'Conditional source escapes reference archive: {uri}')
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(record['source'])
-            executable = destination / f'conditional-source-{side}'
-            execute(f'conditional-source-{side}-compile',
+            executable = destination / f'{kind}-source-{side}'
+            execute(f'{kind}-source-{side}-compile',
                     [source_dart, 'compile', 'exe', reference / 'app.dart', '-o', executable])
-            source_output = execute(f'conditional-source-{side}', [executable], lines=[expected])
+            source_output = execute(f'{kind}-source-{side}', [executable], lines=expected)
             mixed_command = ([RUNTIME, folder / 'baseline/app.aot'] if side == 'baseline' else
                              [RUNTIME, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'])
-            mixed_output = execute(f'conditional-mixed-{side}', mixed_command, lines=[expected])
-            if source_output != mixed_output or source_output.strip() != expected:
+            mixed_output = execute(f'{kind}-mixed-{side}', mixed_command, lines=expected)
+            if source_output != mixed_output or source_output.splitlines() != expected:
                 raise ValueError(f'Conditional original AOT and mixed {side} output differ')
-            report['conditional_source_aot'][side] = {
+            report[f'{kind}_source_aot'][side] = {
                 'executable_sha256': digest(executable),
                 'source_graph_sha256': digest(folder / side / 'source_graph.json'),
             }
-        report['conditional_aot_caller_retained'] = True
+        if digest(folder / 'baseline/app.aot') != conditional_aot_hash:
+            raise ValueError('Conditional baseline AOT binary changed')
+        report[f'{kind}_aot_caller_retained'] = True
     if digest(run / 'baseline/app.aot') != aot_hash:
         raise ValueError('Baseline AOT binary changed')
     report['baseline_aot_unchanged'] = True

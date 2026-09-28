@@ -1365,7 +1365,7 @@ void main() { p.value += 1; }
                          {'package:utility/default.dart'})
 
         unsupported = self.source('conditional-unknown.dart',
-                                  "import 'default_impl.dart' if (dart.library.ffi) 'vm_impl.dart'; void main() {}")
+                                  "import 'default_impl.dart' if (dart.library.unknown) 'vm_impl.dart'; void main() {}")
         result = self.command('baseline', unsupported, self.root / 'conditional-unknown-out')
         self.assertEqual(result.returncode, 2, result.stdout)
         self.assertIn('Unsupported conditional environment', result.stderr)
@@ -1378,6 +1378,30 @@ void main() { p.value += 1; }
         result = self.command('baseline', escaped / 'app.dart', self.root / 'conditional-escaped-out')
         self.assertEqual(result.returncode, 2, result.stdout)
         self.assertIn('escapes entry source root', result.stderr)
+
+    def test_platform_conditions_match_pinned_aot_environment(self):
+        base, patch, manifest = self.named_mixin_pair('platform_conditions')
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['value', 'value'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        graph = json.loads((base / 'source_graph.json').read_text())
+        self.assertEqual(graph['conditional_target'], 'pinned-standalone-vm-aot')
+        self.assertEqual(graph['conditional_environment']['dart.library.ffi'], 'true')
+        self.assertIsNone(graph['conditional_environment']['dart.library.mirrors'])
+        self.assertEqual(set(graph['libraries']),
+                         {'app:entry', 'app:barrel.dart', 'app:present.dart', 'app:absent.dart'})
+        self.assertEqual(graph['libraries']['app:barrel.dart']['dependencies'], ['app:present.dart'])
+        # Availability conditions do not open SDK APIs or arbitrary environments.
+        cases = [
+            ("import 'dart:core' if (dart.library.ffi) 'dart:ffi'; void main() {}", 'Only local relative Dart imports/exports supported'),
+            ("import 'dart:core' if (custom.flag) 'dart:math'; void main() {}", 'Unsupported conditional'),
+        ]
+        for index, (source, error) in enumerate(cases):
+            dest = self.root / f'platform-invalid-{index}'
+            result = self.command('baseline', self.source(f'platform-invalid-{index}.dart', source), dest)
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn(error, result.stderr)
+            self.assertFalse(dest.exists())
 
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [

@@ -1,0 +1,75 @@
+{
+  "scope": "Pinned standalone VM AOT conditional environments and host ARM64 mixed execution",
+  "evidence": {
+    "platform": "output/platform-conditions-20260928-exploration/build.json",
+    "base": "output/platform-conditions-20260928-base/build.json",
+    "gc": "output/platform-conditions-20260928-gc/build.json",
+    "conditional": "output/platform-conditions-20260928-conditional/build.json",
+    "native_report": "output/platform-conditions-20260928-base/native-checks/report.json",
+    "ordinary_log": "output/platform-conditions-verification.log",
+    "native_log": "output/platform-conditions-native.log",
+    "frozen_inputs": "output/platform-conditions-frozen-inputs.json",
+    "flutter_foundation_probe": "output/platform-condition-inspection/flutter-foundation/result.json"
+  },
+  "checks": {
+    "native_checks": 19,
+    "native_exit_code": 0,
+    "ordinary_exit_code": 0,
+    "compiler_analysis": "passed",
+    "compiler_format": "passed",
+    "dart_tests": 16,
+    "python_tests": 168,
+    "flutter_widget_tests": 7,
+    "all_passed": true
+  },
+  "compiler_sha256": "eb2bb9e754c25e6159926b011fb0da7c8cde7fc00a885115f5fcada392873b9f",
+  "input_sha256": {
+    "compiler/lib/source_graph.dart": "4f6b3266c62288ecbef501caa34cd423c65a338d4d43370a34f5d05cd4939a0b",
+    "compiler/lib/class_lowering.dart": "962d6a35310e0de358da0769eee55c0ed6a046ce989e2d808ec272602db13a94",
+    "compiler/bin/aot_patch.dart": "b9719b174b4f46533827872f12d965501203ae64133fb940df4e917d9949ee0d",
+    "runtime/patches/manifest.json": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "scripts/verify_aot_lab.py": "79bef9f05c87a417213d2ec2a33a53f751f5c470b48b724dc63bfef0e485e242",
+    "test/aot_compiler_test.py": "5373264a6f88a0716348d6ced9673ffb34b2a37c769c1d1498fbcad92a8e66b4",
+    "toolchain.lock.json": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "compiler/fixtures/aot_platform_conditions_baseline/absent.dart": "6db7d0caf38721a2079a76cac1fe462a921daf13eb12cb562e272dc5dcaa3dd0",
+    "compiler/fixtures/aot_platform_conditions_baseline/app.dart": "716a2fe94ff6c5696b576ef35ca1d710231c72df5e4e27ce612e37ca46c1533a",
+    "compiler/fixtures/aot_platform_conditions_baseline/barrel.dart": "92202599483a1727827fdaeda1a51cc37b3a2b092d26b2bd617ce5251ebf43db",
+    "compiler/fixtures/aot_platform_conditions_baseline/present.dart": "ed6c4065cac2d0fcde951c7a5d6465e11235ea9feaccd8d9b738cd0bd2c3cab0",
+    "compiler/fixtures/aot_platform_conditions_patch/absent.dart": "0d23753ab9e62287a4cf519ad79f1d0d7cfc0f481785de912a3ec74ad5dd0d98",
+    "compiler/fixtures/aot_platform_conditions_patch/app.dart": "716a2fe94ff6c5696b576ef35ca1d710231c72df5e4e27ce612e37ca46c1533a",
+    "compiler/fixtures/aot_platform_conditions_patch/barrel.dart": "92202599483a1727827fdaeda1a51cc37b3a2b092d26b2bd617ce5251ebf43db",
+    "compiler/fixtures/aot_platform_conditions_patch/present.dart": "28b7e88fa80648e7e49e27b5dad3179c6453c5836310204cc3cf63bb8b2e216b"
+  },
+  "native_report_sha256": "eb8adeb2f9df2751aa9bc46c498445d6198f473c9b91e27185637c545eb9818f",
+  "source_aot": {
+    "baseline": {
+      "executable_sha256": "cd725688f2fce443c45fee1e609b63c0f060546a69debbfcea075df4ed488db9",
+      "source_graph_sha256": "ef79942d6daea45e142fc95b301edd1cf5331f7e8034e889f3f83c3fe72587cf"
+    },
+    "patch": {
+      "executable_sha256": "98d91002475113f32a5411bf5fbd2e971fdd4e7ac49a7164c0a3fb2ba6b3d97e",
+      "source_graph_sha256": "deb7008776778165b47727d2c074d5092df227495318e9cff4608cb04373e954"
+    }
+  },
+  "observed_scavenges": 21,
+  "verified": [
+    "Twenty-one pinned library conditions match original-source AOT on baseline and patch, including explicit true, absent-vs-empty/false, first-match ordering and conditional exports.",
+    "Only the two selected value function bodies are installed from bytecode; the unchanged main remains AOT.",
+    "Four current-compiler builds have matching archived sources and artifact hashes; baseline AOT bytes remain unchanged.",
+    "Unknown/custom environment names and selected unlinked SDK APIs remain rejected.",
+    "Complete scripts/verify.sh exited 0: 16 Dart, 168 Python and 7 Flutter tests; root, compiler and sample analysis passed."
+  ],
+  "failures_and_fixes": [
+    "The first targeted test expected a generic Unsupported diagnostic; the compiler correctly rejected dart:ffi with the existing Only local relative Dart imports/exports supported diagnostic. Corrected the assertion and reran successfully."
+  ],
+  "limitations": [
+    "This is the standalone VM AOT environment. dart.library.ui is absent; this does not establish Flutter target compatibility.",
+    "Minimal Flutter foundation import still exits 2 at unsupported dart:ui without generating a baseline.",
+    "Availability conditions do not open additional SDK APIs. No custom defines or deferred imports.",
+    "Historical native suites, mobile engine rebuilds, physical-device cold start, signatures, rollback and performance were not run."
+  ],
+  "m1_passed": false,
+  "production_patch": false,
+  "recorded_at": "2026-09-28 10:14 +08:00",
+  "ordinary_log_sha256": "f14d4738b87013fdcd55bd216c62ccb798100ee2410fb83a9e51f1a7ddec592c"
+}

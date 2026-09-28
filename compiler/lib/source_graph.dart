@@ -20,6 +20,33 @@ import 'package:yaml/yaml.dart';
 
 part 'class_lowering.dart';
 
+// Pinned standalone VM AOT environment, independently checked with source AOT.
+// Null means absent, not the string "false" or "": equality tests must not match.
+// Library availability is separate from our much smaller linked SDK API set.
+const pinnedVmConditionalEnvironment = <String, String?>{
+  'dart.library.async': 'true',
+  'dart.library.collection': 'true',
+  'dart.library.concurrent': 'true',
+  'dart.library.convert': 'true',
+  'dart.library.core': 'true',
+  'dart.library.developer': 'true',
+  'dart.library.ffi': 'true',
+  'dart.library.io': 'true',
+  'dart.library.isolate': 'true',
+  'dart.library.math': 'true',
+  'dart.library.typed_data': 'true',
+  'dart.library.cli': 'true',
+  'dart.library.nativewrappers': 'true',
+  'dart.library.vmservice_io': 'true',
+  'dart.library.mirrors': null,
+  'dart.library.html': null,
+  'dart.library.js': null,
+  'dart.library.js_util': null,
+  'dart.library.js_interop': null,
+  'dart.library.js_interop_unsafe': null,
+  'dart.library.ui': null,
+};
+
 bool supportsAsyncReturn(DartType type) =>
     type is DynamicType ||
     (type is InterfaceType &&
@@ -768,7 +795,10 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
   final conditionalInputs = <File, String>{};
   final collection = AnalysisContextCollectionImpl(
     includedPaths: [entry.path],
-    declaredVariables: {'dart.library.io': 'true'},
+    declaredVariables: {
+      for (final entry in pinnedVmConditionalEnvironment.entries)
+        if (entry.value != null) entry.key: entry.value!,
+    },
   );
   final session = collection.contexts.single.currentSession;
   final resolved = <String, ResolvedUnitResult>{};
@@ -891,10 +921,9 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (directive is NamespaceDirective &&
           directive.configurations.isNotEmpty) {
         for (final configuration in directive.configurations) {
-          if (!{
-            'dart.library.io',
-            'dart.library.html',
-          }.contains(configuration.name.toSource())) {
+          if (!pinnedVmConditionalEnvironment.containsKey(
+            configuration.name.toSource(),
+          )) {
             _reject('Unsupported conditional environment in $uri');
           }
         }
@@ -1457,6 +1486,8 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     return SourceGraph(source.toString(), {
       'schema': 1,
       'entry': 'app:entry',
+      'conditional_target': 'pinned-standalone-vm-aot',
+      'conditional_environment': pinnedVmConditionalEnvironment,
       'entry_package_uri': packageConfig.toPackageUri(entry.uri)?.toString(),
       'language_version': languageVersion,
       'library_language_versions': languageVersions,
