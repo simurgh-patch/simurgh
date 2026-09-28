@@ -57,7 +57,7 @@ python3 scripts/prepare_engine.py --build-root .engine-workspace
 - 已完成宿主及 Android / iOS Release 引擎源码构建和独立样例接入构建；真机运行与性能验收仍待完成。
 - 宿主 ARM64 实验支持受限源码图中的本地库、package 与 part 链接，以及 AOT 与变更字节码双向调用。
 - 受限实验覆盖函数与方法、类版本重连、泛型、闭包、异步、状态字段、用户类继承与混入，以及已链接 SDK 的部分接口和父类桥接。具体支持与拒绝范围见[编译器文档](compiler/README.md)。
-- 受限 `dart:ui` 编译目标已在真实宿主 Flutter AOT 引擎中验证 `Color`、`Offset`、UI 类型回调、异步 `dart:io` 文件操作、子 isolate 分派激活及受限 foundation 通知器／诊断流程的混合冷启动；完整 Widget 与移动端代码更新仍未完成。
+- 受限 `dart:ui` 编译目标已在真实宿主 Flutter AOT 引擎中验证 `Color`、`Offset`、UI 类型回调、异步 `dart:io` 文件操作、子 isolate 分派激活、受限 foundation 通知器／诊断流程及 characters 包 extension 调用的混合冷启动；完整 Widget 与移动端代码更新仍未完成。
 - 工具链诊断、普通测试、宿主原生实验、模拟器验证和真机验收分别记录，不互相替代。
 
 运行时基于锁定官方 Dart 源码中的实验性动态模块机制及本项目补丁。完整语言兼容、Flutter 代码替换、移动端冷启动接入、签名与回退、真机性能门槛尚未完成。

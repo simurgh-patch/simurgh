@@ -19,6 +19,7 @@ import 'package:package_config/package_config.dart';
 import 'package:yaml/yaml.dart';
 
 part 'class_lowering.dart';
+part 'extension_lowering.dart';
 
 // Pinned standalone VM AOT environment, independently checked with source AOT.
 // Null means absent, not the string "false" or "": equality tests must not match.
@@ -595,6 +596,14 @@ class _References extends RecursiveAstVisitor<void> {
       wrapFieldPromotion(node, referencedElement(node.propertyName));
       return;
     }
+    final property = referencedElement(node.propertyName);
+    if (property is ExecutableElement &&
+        property.isStatic &&
+        property.enclosingElement is ExtensionElement &&
+        entities[property] != null) {
+      replace(node.offset, node.end, entities[property]!);
+      return;
+    }
     super.visitPropertyAccess(node);
     wrapFieldPromotion(node, referencedElement(node.propertyName));
   }
@@ -607,7 +616,12 @@ class _References extends RecursiveAstVisitor<void> {
       return;
     }
     final symbol = propertySymbol(node.identifier);
-    if (symbol != null && node.prefix.element is PrefixElement) {
+    final property = referencedElement(node.identifier);
+    if (symbol != null &&
+        (node.prefix.element is PrefixElement ||
+            (property is ExecutableElement &&
+                property.isStatic &&
+                property.enclosingElement is ExtensionElement))) {
       replace(node.offset, node.end, symbol);
       return;
     }
@@ -636,7 +650,8 @@ class _References extends RecursiveAstVisitor<void> {
           element is ExecutableElement &&
           element is! ConstructorElement &&
           !element.isStatic &&
-          element.enclosingElement is InterfaceElement;
+          (element.enclosingElement is InterfaceElement ||
+              element.enclosingElement is ExtensionElement);
       final declaring = element?.enclosingElement;
       final staticOwner = declaring is InterfaceElement
           ? classes?.declarations[declaring]
@@ -647,6 +662,15 @@ class _References extends RecursiveAstVisitor<void> {
           element.isStatic &&
           staticOwner != null) {
         replaceIdentifier(node, '${staticOwner.symbol}.${member ?? node.name}');
+      } else if (!node.isQualified &&
+          element is ExecutableElement &&
+          element.isStatic &&
+          declaring is ExtensionElement &&
+          entities[declaring] != null) {
+        replaceIdentifier(
+          node,
+          '${entities[declaring]}.${member ?? node.name}',
+        );
       } else if (implicit) {
         replaceIdentifier(node, '$receiver.${member ?? node.name}');
       } else if (member != null && member != node.name) {
@@ -695,6 +719,16 @@ class _References extends RecursiveAstVisitor<void> {
     }
     if (symbol != null) replace(node.offset, node.name.end, symbol);
     node.typeArguments?.accept(this);
+  }
+
+  @override
+  void visitExtensionOverride(ExtensionOverride node) {
+    final symbol = entities[node.element];
+    if (symbol == null)
+      _reject('Unlinked extension override: ${node.name.lexeme}');
+    replace(node.offset, node.name.end, symbol);
+    node.typeArguments?.accept(this);
+    node.argumentList.accept(this);
   }
 
   @override
@@ -779,6 +813,7 @@ class _MetadataGuard extends RecursiveAstVisitor<void> {
         'vm:notify-debugger-on-exception',
         'flutter:keep-to-string-in-subtypes',
         'dart2js:tryInline',
+        'dart2js:prefer-inline',
         'dart2js:as:trust',
         'wasm:prefer-inline',
         'vm:never-inline',
@@ -1061,6 +1096,7 @@ Future<SourceGraph> loadSourceGraph(
           declaration is! GenericTypeAlias &&
           declaration is! FunctionTypeAlias &&
           declaration is! MixinDeclaration &&
+          declaration is! ExtensionDeclaration &&
           declaration is! TopLevelVariableDeclaration) {
         _reject(
           'Library $uri: classes, fields and extensions require layout/dependency support',
@@ -1344,6 +1380,14 @@ Future<SourceGraph> loadSourceGraph(
             node is MixinDeclaration,
       )) {
         classes.register(library, declaration);
+      }
+    }
+    final extensions = _Extensions(classes);
+    for (final library in sorted) {
+      for (final declaration
+          in resolved[library.uri]!.unit.declarations
+              .whereType<ExtensionDeclaration>()) {
+        extensions.register(library, declaration);
       }
     }
     final aliases = <(_Library, CompilationUnitMember, TypeAliasElement)>[];
@@ -1656,6 +1700,7 @@ Future<SourceGraph> loadSourceGraph(
       }
     }
     source.write(classes.lower());
+    source.write(extensions.lower());
     // A coherent graph is required: don't bind mixed versions of source files.
     for (final library in sorted) {
       if (library.file.readAsStringSync() != library.source)

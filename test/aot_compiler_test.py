@@ -2110,5 +2110,66 @@ void main() { p.value += 1; }
                 self.assertFalse(dest.exists())
 
 
+    def test_extensions_preserve_aot_callers_and_static_storage(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_extensions_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_extensions_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['Text.getter score', 'Text.getter score', 'Text.method amount'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        self.assertEqual(len(json.loads((base / 'manifest.json').read_text())['extension_shapes']), 5)
+        self.assertIn('extension-storage', (base / 'manifest.json').read_text())
+
+    def test_extension_signature_change_rebinds_retained_consumer(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_extension_relink_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_extension_relink_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['retained'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']),
+                         ['Read.getter result', 'Read.method label'])
+        self.assertEqual(manifest['replaced_classes'], [])
+
+    def test_extension_addition_and_receiver_layout_relink(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_extension_added_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_extension_added_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main'])
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Box'])
+        self.assertEqual(self.names(manifest, manifest['added_functions']), ['Fresh.getter label', 'Read.getter doubled'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']),
+                         ['Read.getter doubled', 'Read.method read', 'retained'])
+
+    def test_extension_unsupported_operators_and_removal_fail_closed(self):
+        source = self.source('operator.dart',
+            'class Box {} extension Operators on Box { int operator +(int n) => n; } '
+            'void main() { print(Box() + 1); }')
+        target = self.root / 'operator'
+        result = self.command('baseline', source, target)
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Extension operators require explicit receiver linkage', result.stderr)
+        self.assertFalse(target.exists())
+        source = self.source('remove.dart',
+            'extension Read on int { int get value => this; } void main() { print(1); }')
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text('void main() { print(2); }')
+        result = self.command('patch', source, base, self.root / 'patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Removing extension declarations', result.stderr)
+        self.assertFalse((self.root / 'patch').exists())
+
+
 if __name__ == '__main__':
     unittest.main()

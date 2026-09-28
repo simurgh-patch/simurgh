@@ -91,6 +91,9 @@ def main():
     if compiler_checks['fixture'] == 'foundation':
         expected_base = ['notifier:4', "diagnostic:Instance of 'IntProperty'", 'blend:true']
         expected_patch = ['notifier:4', "diagnostic:Instance of 'IntProperty'", 'blend:false']
+    elif compiler_checks['fixture'] == 'extensions':
+        expected_base = ['clusters:3', 'unicode:2', 'blend:true']
+        expected_patch = ['clusters:12', 'unicode:2', 'blend:false']
     elif compiler_checks['fixture'] != 'ui':
         raise ValueError('Unknown fixture')
     for name, aot, patch, expected in [

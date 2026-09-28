@@ -175,7 +175,7 @@ All eight libraries are part of the baseline contract, even if a particular appl
 
 Resolved public SDK types, nested generics and accepted function types are usable in globals, parameters, results and generic bounds. Existing signature compatibility checks still apply. The `aot_sdk` fixture passes real Uint8List/List/Map/Queue/DateTime/Stream/Future objects across the boundary, preserves shared typed-array storage, calls SDK APIs from bytecode and catches a SDK FormatException in unchanged AOT. Its main and typed-array reader remain AOT. Independent source AOT is the output oracle. This is not a claim that every method in these libraries or every Stream lifecycle has passed runtime tests.
 
-Package constructs outside the supported lowered source subset, other SDK libraries (including io/isolate/ffi), general extension declarations and broader SDK coverage remain incomplete. Their existing fail-closed boundaries are preserved.
+Package constructs outside the supported lowered source subset, unlinked SDK libraries such as ffi, extension types/operators and broader SDK coverage remain incomplete. Ordinary extension declarations and io/isolate linkage are covered by the later sections; unsupported boundaries still fail closed.
 
 ```sh
 python3 scripts/aot_lab.py --baseline compiler/fixtures/aot_sdk_baseline/app.dart --candidate compiler/fixtures/aot_sdk_patch/app.dart
@@ -1036,3 +1036,49 @@ report to the exact build manifest and compares four fresh engine processes.
 
 Host checks do not pass M1 as a whole or the mobile, signature/rollback and
 performance gates. Production release and patch commands remain closed.
+
+## Extension dispatch
+
+Ordinary extension declarations now lower to native extension wrappers and typed
+installable top-level helpers. Member selectors are assigned stable identities
+from the original library and extension, after analyzer resolution. Combining
+libraries therefore does not let an unrelated same-name extension capture a
+previously resolved call. Named and unnamed extensions, implicit calls, explicit
+prefixed overrides, generic receiver/method parameters, getter/setter assignment,
+method tear-offs and nullable receivers retain Dart syntax and inference.
+
+Static extension fields live in a generated baseline storage class, preserving
+lazy initialization, `late`, `final`, `const` and state across calls. Static
+methods use the same dispatch helpers. Patches emit their own extension wrappers
+and hide old extension declarations from the baseline import; the wrappers call
+retained AOT dispatch helpers where compatible. Signature, receiver-layout and
+wrapper dependencies invalidate consumers and keep incompatible helpers local
+to the patch. New extensions and members are supported by the same dependency
+path. Extension removal, augmentation/external declarations, and extension
+operators remain explicitly rejected. Unnamed declarations use their order among
+unnamed extensions within the owning library as identity; reordering them is not
+a stable-identity guarantee.
+
+The `aot_extensions_*` fixture crosses Dart 3.12/3.0 libraries and covers retained
+AOT callers, cross-library same-name declarations, static state, null-aware
+receiver evaluation, generic assignment/overrides and tear-offs. The
+`aot_extension_relink_*` fixture changes a getter's return signature;
+`aot_extension_added_*` combines new members/extensions with changed receiver
+layout. Build them with `aot_lab.py` and pass their directories to
+`verify_aot_lab.py` using `--extensions-run-dir`, `--extension-relink-run-dir`
+and `--extension-added-run-dir`, along with fresh base/GC runs.
+`aot_extension_gc_*` / `--extension-gc-run-dir` additionally cover retained
+receiver tear-offs across await and observed Scavenges, plus async, sync* and
+async* extension bodies. The verifier
+requires exact original-source AOT and mixed-process outputs and checks actual
+Kernel library versions for the cross-version fixture.
+
+`aot_flutter_extensions_*` uses the pinned framework plus the locked characters
+package, including a family-emoji grapheme cluster. Prepare package configs with
+the independent framework's Flutter, build `--target flutter --compile-only`,
+then use `verify_flutter_aot_lab.py --fixture extensions` followed by the host
+verifier. `dart2js:prefer-inline` is preserved as an optimization hint on this
+host target; unknown pragmas remain rejected. This restricted flow establishes
+neither full Unicode conformance nor Widget rendering. The next Widget source
+boundary is `dart:ffi` in framework desktop-window implementations; merely
+passing characters compilation does not establish FFI or Widget support.

@@ -24,6 +24,7 @@ final compilerHash = hash(
       'bin/aot_patch.dart',
       'lib/source_graph.dart',
       'lib/class_lowering.dart',
+      'lib/extension_lowering.dart',
       '../runtime/patches/manifest.json',
     ])
       '$path\u0000${hash(File.fromUri(Platform.script.resolve('../$path')).readAsStringSync())}\n',
@@ -199,6 +200,13 @@ class Program {
     }
     for (final declaration in unit.declarations) {
       if (declaration is GenericTypeAlias) continue;
+      if (declaration is ExtensionDeclaration) {
+        if (declaration.name == null ||
+            !supportedTypeParameters(declaration.typeParameters))
+          reject('Unsupported generated extension');
+        extensions[declaration.name!.lexeme] = declaration;
+        continue;
+      }
       if (declaration is ClassDeclaration ||
           declaration is ClassTypeAlias ||
           declaration is EnumDeclaration ||
@@ -313,6 +321,7 @@ class Program {
           as Map<String, dynamic>;
   String entityId(String name) =>
       (entities[name] as Map<String, dynamic>)['entity'] as String;
+  final extensions = <String, ExtensionDeclaration>{};
   final aliases = <String, GenericTypeAlias>{};
   final functions = <String, FunctionDeclaration>{};
   final classes = <String, CompilationUnitMember>{};
@@ -335,6 +344,10 @@ class Program {
     'toolchain_sha256': toolchainHash,
     'compiler_sha256': compilerHash,
     'baseline_fingerprint': baselineKey(identity),
+    'extension_shapes': {
+      for (final e in extensions.entries)
+        e.key: hash(declarationTokens(e.value)),
+    },
     'type_aliases': {
       for (final entry in aliases.entries)
         entry.key: hash(entry.value.toSource()),
@@ -589,6 +602,8 @@ void writeLinkedSources(
             ? name.substring('${prefix}Patch_'.length)
             : null;
       }
+    } else if (declaration is ExtensionDeclaration) {
+      name = declaration.name!.lexeme;
     } else if (declaration is GenericTypeAlias) {
       name = declaration.name.lexeme;
     } else if (declaration is ClassDeclaration ||
@@ -629,6 +644,9 @@ void baseline(Program program, Directory output) {
   }
   for (final declaration in program.globals.values.toSet()) {
     generated.writeln(declaration.toSource());
+  }
+  for (final declaration in program.extensions.values) {
+    generated.writeln(nodeText(program, declaration));
   }
   for (final declaration in program.classes.values) {
     generated.writeln(nodeText(program, declaration));
@@ -931,6 +949,28 @@ Future<void> patch(Program program, Directory base, Directory output) async {
         name,
   };
   final structuralChanges = replacedClasses.toList()..sort();
+  final originalExtensions = original.extensions.keys.toSet();
+  final removedExtensions = originalExtensions.difference(
+    program.extensions.keys.toSet(),
+  );
+  if (removedExtensions.isNotEmpty)
+    reject('Removing extension declarations is not implemented');
+  final changedExtensionReferences = <String>{};
+  for (final name in originalExtensions) {
+    if (declarationTokens(original.extensions[name]!) !=
+        declarationTokens(program.extensions[name]!)) {
+      changedExtensionReferences.add(name);
+      for (final declaration in [
+        original.extensions[name]!,
+        program.extensions[name]!,
+      ]) {
+        for (final member
+            in declaration.body.members.whereType<MethodDeclaration>()) {
+          changedExtensionReferences.add(member.name.lexeme);
+        }
+      }
+    }
+  }
   final originalAliases = original.aliases.keys.toSet();
   final removedAliases = originalAliases.difference(
     program.aliases.keys.toSet(),
@@ -962,7 +1002,8 @@ Future<void> patch(Program program, Directory base, Directory output) async {
         replacedClasses.length +
         replacedGlobals.length +
         moduleOnly.length +
-        invalidated.length;
+        invalidated.length +
+        changedExtensionReferences.length;
     for (final name in program.functions.keys) {
       final current = program.functions[name]!;
       final signature = signatureReferences(current, {
@@ -983,19 +1024,37 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       }
       if (signature.isNotEmpty ||
           (before.contains(name) &&
-              replacedClasses.contains(program.entities[name]?['owner']))) {
+              (replacedClasses.contains(program.entities[name]?['owner']) ||
+                  changedExtensionReferences.contains(
+                    program.entities[name]?['owner'],
+                  )))) {
         // Static helpers have no receiver type in their signature. A replaced
         // declaring class still owns their new signature/storage semantics;
         // keep those helpers module-local, just like instance helpers.
         moduleOnly.add(name);
       }
       if (referencesTo(current, {
+        ...changedExtensionReferences,
         ...replacedAliases,
         ...replacedClasses,
         ...replacedGlobals,
         ...moduleOnly,
       }).isNotEmpty)
         invalidated.add(name);
+    }
+    for (final entry in program.extensions.entries) {
+      if (referencesTo(entry.value, {
+        ...replacedAliases,
+        ...replacedClasses,
+        ...replacedGlobals,
+        ...moduleOnly,
+      }).isNotEmpty) {
+        changedExtensionReferences.add(entry.key);
+        for (final member
+            in entry.value.body.members.whereType<MethodDeclaration>()) {
+          changedExtensionReferences.add(member.name.lexeme);
+        }
+      }
     }
     for (final entry in program.aliases.entries) {
       if (referencesTo(entry.value, {
@@ -1007,6 +1066,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
     for (final name in originalGlobals) {
       final declaration = program.globals[name]!;
       if (referencesTo(declaration, {
+            ...changedExtensionReferences,
             ...replacedAliases,
             ...replacedClasses,
             ...replacedGlobals,
@@ -1022,6 +1082,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
     }
     for (final name in originalClasses) {
       if (referencesTo(program.classes[name]!, {
+        ...changedExtensionReferences,
         ...replacedAliases,
         ...replacedClasses,
         ...replacedGlobals,
@@ -1067,7 +1128,8 @@ Future<void> patch(Program program, Directory base, Directory output) async {
             replacedClasses.length +
             replacedGlobals.length +
             moduleOnly.length +
-            invalidated.length;
+            invalidated.length +
+            changedExtensionReferences.length;
   }
   if (moduleOnly.contains('main'))
     reject('Entry metadata changes require a new baseline');
@@ -1133,8 +1195,22 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       moduleGlobals.isEmpty)
     reject('No function body changes');
   final source = StringBuffer(
-    '// @dart=${program.languageVersion}\n${program.target.sdkImports}\nimport ${jsonEncode(File('${base.path}/app.dart').absolute.uri.toString())} as ${prefix}Baseline;\n',
+    '// @dart=${program.languageVersion}\n${program.target.sdkImports}\nimport ${jsonEncode(File('${base.path}/app.dart').absolute.uri.toString())} as ${prefix}Baseline${originalExtensions.isEmpty ? '' : ' hide ${originalExtensions.join(', ')}'};\n',
   );
+  // Extension declarations have no runtime identity. Re-emit their stable
+  // wrappers locally so implicit calls in bytecode can resolve them, while
+  // retained helper references still cross into baseline AOT dispatch.
+  for (final declaration in program.extensions.values) {
+    source.writeln(
+      nodeText(
+        program,
+        declaration,
+        baselineNames: baselineFunctions,
+        baselineClasses: baselineClasses,
+        baselineGlobals: baselineGlobals,
+      ),
+    );
+  }
   // Typedefs have no runtime identity. Each module re-declares its aliases,
   // qualifying retained classes while keeping generic constructor forwarding.
   for (final declaration in program.aliases.values) {

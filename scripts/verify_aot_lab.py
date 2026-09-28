@@ -50,6 +50,10 @@ def main():
     parser.add_argument('--sdk-run-dir', type=Path)
     parser.add_argument('--io-run-dir', type=Path)
     parser.add_argument('--foundation-edges-run-dir', type=Path)
+    parser.add_argument('--extensions-run-dir', type=Path)
+    parser.add_argument('--extension-relink-run-dir', type=Path)
+    parser.add_argument('--extension-added-run-dir', type=Path)
+    parser.add_argument('--extension-gc-run-dir', type=Path)
     parser.add_argument('--isolates-run-dir', type=Path)
     parser.add_argument('--isolate-multilang-run-dir', type=Path)
     parser.add_argument('--sdk-interfaces-run-dir', type=Path)
@@ -142,7 +146,9 @@ def main():
                                           args.conditional_run_dir,
                                           args.platform_conditions_run_dir, args.io_run_dir,
                                           args.isolates_run_dir, args.isolate_multilang_run_dir,
-                                          args.foundation_edges_run_dir) if p)
+                                          args.foundation_edges_run_dir, args.extensions_run_dir,
+                                          args.extension_relink_run_dir, args.extension_added_run_dir,
+                                          args.extension_gc_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1241,6 +1247,20 @@ void main() {{
          ['local:12:99', 'run:12', 'changed:112', 'nested:13', 'spawn:14:7', 'tearoff:15', 'error:Bad state: worker-10'],
          ['changedCompute', 'worker']),
         ('isolate-multilang', args.isolate_multilang_run_dir, ['legacy:3'], ['legacy:12'], ['worker']),
+        ('extensions', args.extensions_run_dir,
+         ['storage:7:7:8:7', 'static:2', 'null:null:1:null', 'anonymous:7', 'remote:6:4',
+          'async:future!', 'score:4:4', 'tearoff:a!', 'generic:5:5'],
+         ['storage:7:7:8:7', 'static:27', 'null:null:1:null', 'anonymous:7', 'remote:9:6',
+          'async:future!', 'score:13:13', 'tearoff:a!', 'generic:5:5'],
+         ['Text.getter score', 'Text.getter score', 'Text.method amount']),
+        ('extension-gc', args.extension_gc_run_dir,
+         ['allocation:12720', 'captured:10', 'later:9', 'sequence:[10]', 'stream:[11]'],
+         ['allocation:12720', 'captured:73', 'later:72', 'sequence:[73]', 'stream:[74]'],
+         ['Work.method call', 'Work.method later', 'Work.method sequence', 'Work.method stream']),
+        ('extension-relink', args.extension_relink_run_dir,
+         ['relink:value:3'], ['relink:value:2.5'], ['retained']),
+        ('extension-added', args.extension_added_run_dir,
+         ['added:3:3'], ['added:8:3:14:ok!'], ['main']),
         ('foundation-edges', args.foundation_edges_run_dir,
          ['promoted:3:3:3:3:7:7:4', 'sorted:[1, 2]', 'void:baseline', 'types:3:null:4:x',
           'platform:5', 'timeline:3', 'response:{"value":3}'],
@@ -1285,6 +1305,11 @@ void main() {{
         expected_module_only = (['getter doubled', 'getter value', 'setter value']
                                 if kind == 'top-accessor-multilang' else
                                 ['getter value', 'setter value'] if relink else [])
+        if kind == 'extension-relink':
+            expected_module_only = ['Read.getter result', 'Read.method label']
+        if kind == 'extension-added':
+            expected_replaced = ['Box']
+            expected_module_only = ['Read.getter doubled', 'Read.method read', 'retained']
         if (names != installed or replaced != expected_replaced or
                 metadata['replaced_globals'] or
                 module_only != expected_module_only):
@@ -1328,8 +1353,10 @@ void main() {{
                 'executable_sha256': digest(executable),
                 'source_graph_sha256': digest(folder / side / 'source_graph.json'),
             }
-            if kind in {'top-accessor-multilang', 'isolate-multilang'}:
+            if kind in {'top-accessor-multilang', 'isolate-multilang', 'extensions'}:
                 expected_versions = {'app:entry': '3.12', 'app:legacy.dart': '3.0'}
+                if kind == 'extensions':
+                    expected_versions = {'app:entry': '3.12', 'app:other.dart': '3.0'}
                 if kind == 'top-accessor-multilang':
                     expected_versions['app:modern.dart'] = '3.4'
                 if graph['library_language_versions'] != expected_versions or \
@@ -1348,7 +1375,7 @@ void main() {{
                     if source_versions.get(filename) != version:
                         raise ValueError('Original source Kernel language changed')
                 report.setdefault(f'{kind}_source_kernel_languages', {})[side] = source_versions
-        if kind in {'top-accessor-multilang', 'isolate-multilang'}:
+        if kind in {'top-accessor-multilang', 'isolate-multilang', 'extensions'}:
             inspector = ROOT / 'compiler/bin/inspect_kernel_languages.dart'
             packages = ROOT / 'compiler/.dart_tool/package_config.json'
             baseline_graph = json.loads((folder / 'baseline/source_graph.json').read_text())
@@ -1380,7 +1407,7 @@ void main() {{
                            lines=expected_base)
         if baseline.splitlines() != expected_base:
             raise ValueError(f'{kind} baseline output differs from original AOT')
-        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind == 'top-accessor-gc' else []
+        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in {'top-accessor-gc', 'extension-gc'} else []
         patched = execute(f'{kind}-patched',
                           [RUNTIME, *options, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'],
                           contains=['Scavenge('] if options else (), lines=expected_patch)
@@ -1388,7 +1415,9 @@ void main() {{
         if observed != expected_patch:
             raise ValueError(f'{kind} patched output differs from original AOT')
         if options:
-            report['top_accessor_scavenges'] = patched.count('Scavenge(')
+            if patched.count('Scavenge(') == 0:
+                raise ValueError(f'{kind} did not collect the captured receiver')
+            report['extension_scavenges' if kind == 'extension-gc' else 'top_accessor_scavenges'] = patched.count('Scavenge(')
         if kind.startswith('top-accessor-metadata'):
             verify_metadata(kind, folder, destination, execute, report, ROOT, RUNTIME)
         report[f'{kind}_aot_consumers_retained'] = True
