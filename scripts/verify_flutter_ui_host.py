@@ -94,6 +94,9 @@ def main():
     elif compiler_checks['fixture'] == 'extensions':
         expected_base = ['clusters:3', 'unicode:2', 'blend:true']
         expected_patch = ['clusters:12', 'unicode:2', 'blend:false']
+    elif compiler_checks['fixture'] == 'extension-types':
+        expected_base = ['layout:7.0:20.0', 'callback:7.0:20.0', 'representation:true:2.0:13.0']
+        expected_patch = ['layout:25.0:137.0', 'callback:25.0:137.0', 'representation:true:2.0:13.0']
     elif compiler_checks['fixture'] != 'ui':
         raise ValueError('Unknown fixture')
     for name, aot, patch, expected in [
@@ -101,7 +104,7 @@ def main():
             ('source-patch', out / 'source-patch.aot', None, expected_patch),
             ('mixed-baseline', base, None, expected_base),
             ('mixed-patch', base, folder / 'patch/patch.bytecode', expected_patch)]:
-        stdout = run(name, [probe, aot, assets, icu] + ([patch] if patch else []))
+        stdout = run(name, [probe, aot, assets, icu, expected[-1]] + ([patch] if patch else []))
         if stdout.splitlines() != expected:
             raise ValueError(f'{name} output differs from source AOT')
     if sha(base) != before or sha(DYNAMIC / 'libflutter_engine.dylib') != build['engine_sha256']:

@@ -54,6 +54,8 @@ def main():
     parser.add_argument('--extension-relink-run-dir', type=Path)
     parser.add_argument('--extension-added-run-dir', type=Path)
     parser.add_argument('--extension-gc-run-dir', type=Path)
+    parser.add_argument('--extension-types-run-dir', type=Path)
+    parser.add_argument('--extension-type-relink-run-dir', type=Path)
     parser.add_argument('--isolates-run-dir', type=Path)
     parser.add_argument('--isolate-multilang-run-dir', type=Path)
     parser.add_argument('--sdk-interfaces-run-dir', type=Path)
@@ -148,7 +150,8 @@ def main():
                                           args.isolates_run_dir, args.isolate_multilang_run_dir,
                                           args.foundation_edges_run_dir, args.extensions_run_dir,
                                           args.extension_relink_run_dir, args.extension_added_run_dir,
-                                          args.extension_gc_run_dir) if p)
+                                          args.extension_gc_run_dir, args.extension_types_run_dir,
+                                          args.extension_type_relink_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1257,6 +1260,15 @@ void main() {{
          ['allocation:12720', 'captured:10', 'later:9', 'sequence:[10]', 'stream:[11]'],
          ['allocation:12720', 'captured:73', 'later:72', 'sequence:[73]', 'stream:[74]'],
          ['Work.method call', 'Work.method later', 'Work.method sequence', 'Work.method stream']),
+        ('extension-types', args.extension_types_run_dir,
+         ['value:5:5:6:7:7', 'erased:true:int:true:5', 'static:9:9', 'pair:ok:8:2',
+          'nullable:-1:8', 'remote:10', 'allocation:12720', 'captured:10:9:[10]:[11]'],
+         ['value:14:14:15:16:16', 'erased:true:int:true:14', 'static:19:9', 'pair:ok:17:2',
+          'nullable:-1:8', 'remote:10', 'allocation:12720', 'captured:73:72:[73]:[74]'],
+         ['Pair.count', 'Value.+', 'Value.compute', 'Value.read',
+          'Work.call', 'Work.later', 'Work.sequence', 'Work.stream']),
+        ('extension-type-relink', args.extension_type_relink_run_dir,
+         ['relink:3:3:true:int'], ['relink:3.5:3.5:true:double'], ['main']),
         ('extension-relink', args.extension_relink_run_dir,
          ['relink:value:3'], ['relink:value:2.5'], ['retained']),
         ('extension-added', args.extension_added_run_dir,
@@ -1305,6 +1317,9 @@ void main() {{
         expected_module_only = (['getter doubled', 'getter value', 'setter value']
                                 if kind == 'top-accessor-multilang' else
                                 ['getter value', 'setter value'] if relink else [])
+        if kind == 'extension-type-relink':
+            expected_replaced = ['Reading', 'Wrapped']
+            expected_module_only = ['Reading.measure', 'make', 'retained']
         if kind == 'extension-relink':
             expected_module_only = ['Read.getter result', 'Read.method label']
         if kind == 'extension-added':
@@ -1407,7 +1422,7 @@ void main() {{
                            lines=expected_base)
         if baseline.splitlines() != expected_base:
             raise ValueError(f'{kind} baseline output differs from original AOT')
-        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in {'top-accessor-gc', 'extension-gc'} else []
+        options = ['--new_gen_semi_max_size=1', '--verbose_gc'] if kind in {'top-accessor-gc', 'extension-gc', 'extension-types'} else []
         patched = execute(f'{kind}-patched',
                           [RUNTIME, *options, folder / 'baseline/app.aot', folder / 'patch/patch.bytecode'],
                           contains=['Scavenge('] if options else (), lines=expected_patch)
@@ -1417,7 +1432,8 @@ void main() {{
         if options:
             if patched.count('Scavenge(') == 0:
                 raise ValueError(f'{kind} did not collect the captured receiver')
-            report['extension_scavenges' if kind == 'extension-gc' else 'top_accessor_scavenges'] = patched.count('Scavenge(')
+            report['extension_type_scavenges' if kind == 'extension-types' else
+                   'extension_scavenges' if kind == 'extension-gc' else 'top_accessor_scavenges'] = patched.count('Scavenge(')
         if kind.startswith('top-accessor-metadata'):
             verify_metadata(kind, folder, destination, execute, report, ROOT, RUNTIME)
         report[f'{kind}_aot_consumers_retained'] = True

@@ -47,7 +47,9 @@ class _Classes {
     }
     final element = node.typeElement;
     final name = node.typeName.lexeme;
-    final id = _hash('${library.ownerUri}::class::$name');
+    final id = _hash(
+      '${library.ownerUri}::${node is ExtensionTypeDeclaration ? 'extension-type' : 'class'}::$name',
+    );
     // Runtime display-name ABI: identity remains the library/class hash.
     final symbol = '${entityPrefix}class_${id}__$name';
     entities[element] = symbol;
@@ -61,6 +63,7 @@ class _Classes {
       'name': name,
       'entity': id,
       'kind': 'class',
+      if (node is ExtensionTypeDeclaration) 'generated': 'extension-type',
     };
   }
 
@@ -192,6 +195,7 @@ class _Classes {
   Future<void> loadSdkAncestors(AnalysisSession session) async {
     final libraries = <LibraryElement, ResolvedLibraryResult>{};
     for (final owner in declarations.values) {
+      if (owner.element is ExtensionTypeElement) continue;
       for (final type in owner.element.allSupertypes) {
         final element = type.element;
         if (!element.library.uri.isScheme('dart') ||
@@ -286,9 +290,32 @@ class _Classes {
       }
       for (final interface in owner.element.interfaces) {
         if (!declarations.containsKey(interface.element) &&
-            !sdkInterface(interface.element)) {
+            !(owner.element is ExtensionTypeElement
+                ? target.sdkLibraries.contains(
+                        interface.element.library.uri.toString(),
+                      ) &&
+                      entities.containsKey(interface.element)
+                : sdkInterface(interface.element))) {
           _reject('Interfaces must be supported program or public SDK classes');
         }
+      }
+      if (owner.node case ExtensionTypeDeclaration node) {
+        if (node.augmentKeyword != null)
+          _reject('Extension type augmentation is not supported');
+        final element = owner.element as ExtensionTypeElement;
+        final field = element.representation;
+        final name = _privateMember(owner.library.ownerUri, field.name!);
+        memberSymbols[field] = name;
+        memberSymbols[field.getter!] = name;
+        final parameter =
+            node.primaryConstructor.formalParameters.parameters.single;
+        entities[parameter.declaredFragment!.element] = name;
+        final constructorName = node.primaryConstructor.constructorName?.name;
+        if (constructorName != null)
+          memberSymbols[element.primaryConstructor] = _privateMember(
+            owner.library.ownerUri,
+            constructorName.lexeme,
+          );
       }
       if (owner.node is EnumDeclaration) {
         for (final constant in (owner.node as EnumDeclaration).body.constants) {
@@ -420,7 +447,9 @@ class _Classes {
     for (final owner in declarations.values) {
       // Named applications inherit their base/mixin wrappers. They have no body
       // in which to declare additional super bridges.
-      if (owner.node is ClassTypeAlias) continue;
+      if (owner.node is ClassTypeAlias ||
+          owner.node is ExtensionTypeDeclaration)
+        continue;
       final seen = <String>{};
       final superUses = _SuperUses();
       owner.node.accept(superUses);
@@ -516,6 +545,7 @@ class _Classes {
     // Source identifiers in our generated namespace are rejected, and method
     // helpers are invoked only by their actual declaring implementation.
     for (final owner in declarations.values) {
+      if (owner.node is ExtensionTypeDeclaration) continue;
       final inherited = <InterfaceElement>{};
       void inherit(InterfaceElement element) {
         if (!inherited.add(element)) return;
@@ -1046,6 +1076,19 @@ class _Classes {
       node.onClause?.accept(headerRefs);
       node.implementsClause?.accept(headerRefs);
       node.typeParameters?.accept(headerRefs);
+      if (node is ExtensionTypeDeclaration) {
+        node.primaryConstructor.formalParameters.accept(headerRefs);
+        final name = node.primaryConstructor.constructorName?.name;
+        if (name != null)
+          headerRefs.edits.add(
+            _Edit(
+              name.offset,
+              name.end,
+              memberSymbols[(owner.element as ExtensionTypeElement)
+                  .primaryConstructor]!,
+            ),
+          );
+      }
       headerRefs.edits.add(
         _Edit(node.typeName.offset, node.typeName.end, owner.symbol),
       );

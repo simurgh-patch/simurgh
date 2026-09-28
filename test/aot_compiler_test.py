@@ -2171,5 +2171,63 @@ void main() { p.value += 1; }
         self.assertFalse((self.root / 'patch').exists())
 
 
+    def test_extension_types_retain_native_erasure_and_aot_consumers(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_extension_types_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_extension_types_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['Pair.count', 'Value.+', 'Value.compute', 'Value.read',
+                          'Work.call', 'Work.later', 'Work.sequence', 'Work.stream'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        self.assertEqual(manifest['module_only_functions'], [])
+        source = (base / 'source.dart').read_text()
+        self.assertIn('extension type const ', source)
+        graph = json.loads((base / 'source_graph.json').read_text())
+        # Erased extension members must not become dynamic selectors on int/record.
+        self.assertNotIn('invoke:measure', [root['selector'] for root in graph['dynamic_retention_roots']])
+        interface = (base / 'dynamic_interface.yaml').read_text().split('extendable:', 1)[1]
+        for symbol, entity in manifest['entities'].items():
+            if entity.get('generated') == 'extension-type':
+                self.assertNotIn(symbol, interface)
+
+    def test_extension_type_representation_change_rebinds_typed_consumers(self):
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('baseline', ROOT / 'compiler/fixtures/aot_extension_type_relink_baseline/app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('patch', ROOT / 'compiler/fixtures/aot_extension_type_relink_patch/app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['main'])
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['Reading', 'Wrapped'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']),
+                         ['Reading.measure', 'make', 'retained'])
+
+    def test_extension_type_invalid_sources_and_removal_fail_closed(self):
+        invalid = [
+            'extension type E(int value) implements String {} void main() {}',
+            'extension type E(int value) {} void main() { E("wrong"); }',
+            'extension type E(int value) { int state = 1; } void main() {}',
+        ]
+        for i, source in enumerate(invalid):
+            output = self.root / f'invalid-{i}'
+            result = self.command('baseline', self.source(f'invalid-{i}.dart', source), output)
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('Static source errors', result.stderr)
+            self.assertFalse(output.exists())
+        source = self.source('remove.dart', 'extension type E(int value) {} void main() { print(1); }')
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text('void main() { print(2); }')
+        result = self.command('patch', source, base, self.root / 'patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Deleted classes require reference removal proof', result.stderr)
+        self.assertFalse((self.root / 'patch').exists())
+
+
 if __name__ == '__main__':
     unittest.main()

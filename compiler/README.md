@@ -175,7 +175,7 @@ All eight libraries are part of the baseline contract, even if a particular appl
 
 Resolved public SDK types, nested generics and accepted function types are usable in globals, parameters, results and generic bounds. Existing signature compatibility checks still apply. The `aot_sdk` fixture passes real Uint8List/List/Map/Queue/DateTime/Stream/Future objects across the boundary, preserves shared typed-array storage, calls SDK APIs from bytecode and catches a SDK FormatException in unchanged AOT. Its main and typed-array reader remain AOT. Independent source AOT is the output oracle. This is not a claim that every method in these libraries or every Stream lifecycle has passed runtime tests.
 
-Package constructs outside the supported lowered source subset, unlinked SDK libraries such as ffi, extension types/operators and broader SDK coverage remain incomplete. Ordinary extension declarations and io/isolate linkage are covered by the later sections; unsupported boundaries still fail closed.
+Package constructs outside the supported lowered source subset, unlinked SDK libraries such as ffi, ordinary extension operators and broader SDK coverage remain incomplete. Ordinary extension declarations and io/isolate linkage are covered by the later sections; unsupported boundaries still fail closed.
 
 ```sh
 python3 scripts/aot_lab.py --baseline compiler/fixtures/aot_sdk_baseline/app.dart --candidate compiler/fixtures/aot_sdk_patch/app.dart
@@ -1082,3 +1082,40 @@ host target; unknown pragmas remain rejected. This restricted flow establishes
 neither full Unicode conformance nor Widget rendering. The next Widget source
 boundary is `dart:ffi` in framework desktop-window implementations; merely
 passing characters compilation does not establish FFI or Widget support.
+
+
+## Extension type representation
+
+Restricted extension types keep native `extension type` declarations. The pinned
+Dart compiler performs representation erasure; the transformer does not box the
+value in a generated runtime class. Primary, named, redirecting and factory
+constructors retain native syntax and const behavior. Private representation and
+constructor names follow original library identity. Concrete methods, accessors,
+operators and static methods call typed dispatch helpers; static fields remain
+in the retained declaration. Extension types contribute neither extendable runtime
+classes nor dynamic member selectors on their erased representation.
+
+A body-only change keeps callers and storage in AOT. Representation, constructor
+or member-signature changes participate in dependency propagation, including
+extension types implementing another extension type. Incompatible typed consumers
+stay module-local rather than being installed into an old dispatch slot. Removal
+and augmentation are rejected; external members and invalid original source still
+fail closed. This does not establish arbitrary extension-type/FFI compatibility.
+
+`aot_extension_types_*` covers integer, nullable, generic record and list
+representations, SDK and extension-type interfaces, const/redirecting/factory
+constructor calls and tear-offs, operators, static state and captured receivers
+across await and Scavenges. `aot_extension_type_relink_*` changes the representation
+from int to double and rebinds typed consumers. Pass their build directories as
+`--extension-types-run-dir` and `--extension-type-relink-run-dir` to the native
+verifier with current base/GC builds. It compares both sides with independently
+compiled original-source AOT, including runtime representation identity.
+
+The `aot_flutter_extension_types_*` fixtures model layout information using a
+record of `dart:ui` Size/Offset values. Resolve their locked local sky_engine
+dependency with the pinned source-built Dart SDK, build with `--target flutter
+--compile-only`, and use `verify_flutter_aot_lab.py --fixture extension-types`
+then `verify_flutter_ui_host.py`. The fixture exercises retained UI-typed callers
+and callback tear-offs in real host engine cold processes. It does not import or
+render the full Widget framework, whose FFI boundary remains unsupported. Mobile
+cold activation, signatures/rollback and performance acceptance remain incomplete.

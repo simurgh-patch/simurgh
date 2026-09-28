@@ -58,6 +58,7 @@ bool supportsAsyncReturn(DartType type) =>
 extension ProgramTypeDeclaration on CompilationUnitMember {
   Token get typeName => switch (this) {
     ClassDeclaration c => c.namePart.typeName,
+    ExtensionTypeDeclaration e => e.primaryConstructor.typeName,
     EnumDeclaration e => e.namePart.typeName,
     ClassTypeAlias c => c.name,
     MixinDeclaration m => m.name,
@@ -65,6 +66,7 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
   };
   TypeParameterList? get typeParameters => switch (this) {
     ClassDeclaration c => c.namePart.typeParameters,
+    ExtensionTypeDeclaration e => e.primaryConstructor.typeParameters,
     EnumDeclaration e => e.namePart.typeParameters,
     ClassTypeAlias c => c.typeParameters,
     GenericTypeAlias a => a.typeParameters,
@@ -80,11 +82,13 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
   AstNode get body => switch (this) {
     EnumDeclaration e => e.body,
     ClassDeclaration c => c.body,
+    ExtensionTypeDeclaration e => e.body,
     MixinDeclaration m => m.body,
     _ => throw StateError('Not a class/mixin'),
   };
   InterfaceElement get typeElement => switch (this) {
     ClassDeclaration c => c.declaredFragment!.element,
+    ExtensionTypeDeclaration e => e.declaredFragment!.element,
     EnumDeclaration e => e.declaredFragment!.element,
     ClassTypeAlias c => c.declaredFragment!.element,
     MixinDeclaration m => m.declaredFragment!.element,
@@ -103,6 +107,7 @@ extension ProgramTypeDeclaration on CompilationUnitMember {
       this is MixinDeclaration ? (this as MixinDeclaration).onClause : null;
   ImplementsClause? get implementsClause => switch (this) {
     ClassDeclaration c => c.implementsClause,
+    ExtensionTypeDeclaration e => e.implementsClause,
     EnumDeclaration e => e.implementsClause,
     ClassTypeAlias c => c.implementsClause,
     MixinDeclaration m => m.implementsClause,
@@ -969,6 +974,8 @@ List<Map<String, String>> _dynamicRetentionRoots(
     }
   }
   for (final owner in classes.declarations.values) {
+    // Extension types erase to their representation; their members are static.
+    if (owner.element is ExtensionTypeElement) continue;
     members(owner.element, true);
   }
   final keys = roots.keys.toList()..sort();
@@ -1097,6 +1104,7 @@ Future<SourceGraph> loadSourceGraph(
           declaration is! FunctionTypeAlias &&
           declaration is! MixinDeclaration &&
           declaration is! ExtensionDeclaration &&
+          declaration is! ExtensionTypeDeclaration &&
           declaration is! TopLevelVariableDeclaration) {
         _reject(
           'Library $uri: classes, fields and extensions require layout/dependency support',
@@ -1375,6 +1383,7 @@ Future<SourceGraph> loadSourceGraph(
       for (final declaration in resolved[library.uri]!.unit.declarations.where(
         (node) =>
             node is ClassDeclaration ||
+            node is ExtensionTypeDeclaration ||
             node is ClassTypeAlias ||
             node is EnumDeclaration ||
             node is MixinDeclaration,

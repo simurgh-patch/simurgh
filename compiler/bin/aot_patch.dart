@@ -54,6 +54,7 @@ bool isTypeParameter(NamedType type) {
       MethodDeclaration() => scope.typeParameters,
       GenericFunctionType() => scope.typeParameters,
       ClassDeclaration() => scope.namePart.typeParameters,
+      ExtensionTypeDeclaration() => scope.primaryConstructor.typeParameters,
       EnumDeclaration() => scope.namePart.typeParameters,
       ClassTypeAlias() => scope.typeParameters,
       GenericTypeAlias() => scope.typeParameters,
@@ -208,6 +209,7 @@ class Program {
         continue;
       }
       if (declaration is ClassDeclaration ||
+          declaration is ExtensionTypeDeclaration ||
           declaration is ClassTypeAlias ||
           declaration is EnumDeclaration ||
           declaration is MixinDeclaration) {
@@ -607,6 +609,7 @@ void writeLinkedSources(
     } else if (declaration is GenericTypeAlias) {
       name = declaration.name.lexeme;
     } else if (declaration is ClassDeclaration ||
+        declaration is ExtensionTypeDeclaration ||
         declaration is ClassTypeAlias ||
         declaration is EnumDeclaration ||
         declaration is MixinDeclaration) {
@@ -803,6 +806,7 @@ String dynamicClassInterface(Program program) {
           .where(
             (entry) =>
                 entry.value is! EnumDeclaration &&
+                entry.value is! ExtensionTypeDeclaration &&
                 entry.value.finalKeyword == null &&
                 entry.value.sealedKeyword == null,
           )

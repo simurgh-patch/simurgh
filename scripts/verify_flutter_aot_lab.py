@@ -10,7 +10,7 @@ from aot_lab import ROOT, ENGINE, SDK, DART_SOURCE, compiler_sha, sha, source_id
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-dir', type=Path, required=True)
-    parser.add_argument('--fixture', choices=['ui', 'foundation', 'extensions'], default='ui')
+    parser.add_argument('--fixture', choices=['ui', 'foundation', 'extensions', 'extension-types'], default='ui')
     parser.add_argument('--output', type=Path, help='Fresh directory for compiler verification evidence')
     args = parser.parse_args()
     folder = args.run_dir.resolve()
@@ -69,7 +69,7 @@ def main():
                               folder / 'baseline/aot.dill', folder / 'baseline' / entry_library, baseline_graph]))
     patch = json.loads((folder / 'patch/manifest.json').read_text())
     installed = sorted(patch['entities'][s]['name'] for s in patch['installed_functions'])
-    expected_installed = {'foundation': ['changed'], 'extensions': ['Count.getter measured'],
+    expected_installed = {'extension-types': ['LayoutInfo.project'], 'foundation': ['changed'], 'extensions': ['Count.getter measured'],
                           'ui': ['diskValue', 'getter platformMarker', 'origin', 'shade', 'worker']}[args.fixture]
     if installed != expected_installed or patch['replaced_classes'] or patch['replaced_globals']:
         raise ValueError('Flutter fixture should retain main/blender and SDK classes')
@@ -84,7 +84,7 @@ def main():
                 raise ValueError(f'Changed pinned UI source: {name}')
         reference = destination / f'source-{side}'
         reference.mkdir()
-        for uri, record in {**graph['libraries'], **graph['conditional_sources']}.items():
+        for uri, record in {**graph['libraries'], **graph.get('conditional_sources', {})}.items():
             if uri.startswith('package:'):
                 name, relative = uri.removeprefix('package:').split('/', 1)
                 if name not in graph['packages']:

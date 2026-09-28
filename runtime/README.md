@@ -69,7 +69,9 @@ fresh or reproducible build claim.
 
 `runtime/probes/flutter_ui_fixture_runner.cc` is a fixed acceptance harness for
 the UI compiler fixture, with a software renderer, a platform task queue, AOT
-mode enforcement and a timeout. `scripts/verify_flutter_ui_host.py` compiles it
+mode enforcement and a timeout. The verifier supplies the exact expected final
+output line as the completion condition; a missing or mismatched line times out.
+`scripts/verify_flutter_ui_host.py` compiles it
 against the pinned engine header, verifies artifact identities, and compares
 original and mixed execution in cold processes. See the compiler README for the
 complete commands. Passing this host fixture does not enable production commands

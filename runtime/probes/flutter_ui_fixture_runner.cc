@@ -25,10 +25,11 @@ struct Context {
   std::priority_queue<Pending> tasks;
   uint64_t sequence = 0;
   std::atomic<bool> completed{false};
+  const char *completion_output = nullptr;
 };
 int main(int argc, char **argv) {
-  if (argc != 4 && argc != 5) {
-    std::fprintf(stderr, "Usage: probe AOT ASSETS ICU [BYTECODE]\n");
+  if ((argc != 5 && argc != 6) || argv[4][0] == '\0') {
+    std::fprintf(stderr, "Usage: probe AOT ASSETS ICU COMPLETION_OUTPUT [BYTECODE]\n");
     return 2;
   }
   if (!FlutterEngineRunsAOTCompiledDartCode()) {
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
     return 3;
   }
   Context context;
+  context.completion_output = argv[4];
   FlutterEngineAOTData data = nullptr;
   FlutterEngineAOTDataSource source{};
   source.type = kFlutterEngineAOTDataSourceTypeElfPath;
@@ -72,15 +74,15 @@ int main(int argc, char **argv) {
   project.aot_data = data;
   project.custom_task_runners = &runners;
   project.shutdown_dart_vm_when_done = true;
-  project.dart_entrypoint_argc = argc == 5 ? 1 : 0;
+  project.dart_entrypoint_argc = argc == 6 ? 1 : 0;
   project.dart_entrypoint_argv =
-      argc == 5 ? const_cast<const char **>(&argv[4]) : nullptr;
+      argc == 6 ? const_cast<const char **>(&argv[5]) : nullptr;
   project.log_message_callback = [](const char *, const char *message,
                                     void *user) {
     std::printf("%s\n", message);
     std::fflush(stdout);
-    if (std::strncmp(message, "blend:", 6) == 0) {
-      auto &ctx = *static_cast<Context *>(user);
+    auto &ctx = *static_cast<Context *>(user);
+    if (std::strcmp(message, ctx.completion_output) == 0) {
       ctx.completed = true;
       ctx.changed.notify_one();
     }

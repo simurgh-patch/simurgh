@@ -1,0 +1,7 @@
+name: flutter_extension_type_probe
+publish_to: none
+environment:
+  sdk: '>=3.12.0 <3.13.0'
+dependencies:
+  sky_engine:
+    path: ../../../.engine-workspace/engine/engine/src/out/host_release_arm64/gen/dart-pkg/sky_engine
