@@ -1,0 +1,30 @@
+{
+  "kind": "isolated-unaccepted-sdk-linkage-exploration",
+  "time": "2026-09-28T12:21:57.150354+08:00",
+  "accepted": false,
+  "production_compiler_changed_for_exploration": false,
+  "description": "A copied compiler adds dart:developer and dart:isolate solely to probe foundation blockers. This is not supported SDK linkage or runtime acceptance.",
+  "foundation_after_unverified_sdk_links": "FormatException: Unsupported compiler pragma: vm:platform-const-if",
+  "isolate_propagation": {
+    "baseline": "local:3\ncompute:3\n",
+    "mixed_patch": "local:12\ncompute:3\n",
+    "original_candidate_aot": "local:12\ncompute:12\n",
+    "installed_functions": [
+      "worker"
+    ],
+    "finding": "The parent isolate sees worker replacement, but an unchanged AOT callback in Isolate.run observes baseline worker in the child. A directly transmitted bytecode closure succeeded separately. SDK allow-list expansion alone would be unsound.",
+    "next": "Design cold-start module activation and dispatch initialization for child isolates, then compare both AOT and bytecode callbacks with original-source AOT before admitting dart:isolate.",
+    "source_baseline": "import 'dart:isolate';\nint worker(int x) => x + 1;\nFuture<int> compute(int x) => Isolate.run(() => worker(x));\nFuture<void> main() async { print('local:${worker(2)}'); print('compute:${await compute(2)}'); }\n",
+    "source_candidate": "import 'dart:isolate';\nint worker(int x) => x + 10;\nFuture<int> compute(int x) => Isolate.run(() => worker(x));\nFuture<void> main() async { print('local:${worker(2)}'); print('compute:${await compute(2)}'); }\n",
+    "generated_slot_evidence": "baseline/app.dart declares int Function(int)? simurghSlot1; simurghInstall assigns the replacement only in the calling isolate. The unchanged compute callback reaches worker through that isolate-local slot."
+  },
+  "evidence": {
+    "output/flutter-io-foundation-exploration/isolate-dispatch-report.json": "2cf8bee10d3e26f977546806da5cb0ea8413f48dacf6cccfba6cff1896444054",
+    "output/flutter-io-foundation-exploration/isolate-dispatch-original.json": "ca1584a84d129d2b18008f1893917050e4ebdcdffb05cebfc9524d5f5959930c",
+    "output/flutter-io-foundation-exploration/isolate-report.json": "89c9f120aac469be3533ed6b3a6b5797af02d0e8bcf45d188f72ff22afec52d8",
+    "output/flutter-io-foundation-exploration/compiler/lib/source_graph.dart": "68e5ec0a1df7582c7cf45891d8b80b87f619b9c0e6028050d02c979c7d9dc3c8",
+    "output/flutter-io-foundation-exploration/isolate-dispatch-source-baseline.dart": "ca6ad83cd85bedd8824b0f8cd9fa91923e6fd2429035f8fd661c1b99a0685a66",
+    "output/flutter-io-foundation-exploration/isolate-dispatch-source-patch.dart": "6ac381f773e280694ac9b6a9df14d66d6ff08340e0f3dbac52b1af3af9f22f52"
+  },
+  "production_compiler_sha256": "4f2b36ff46fd3a816bd65eceaf4572aa04afd54f1e31564ddb5917e831dbbf22"
+}

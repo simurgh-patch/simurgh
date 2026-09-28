@@ -54,7 +54,7 @@ def main():
                               folder / 'baseline/aot.dill', folder / 'baseline/app.dart', baseline_graph]))
     patch = json.loads((folder / 'patch/manifest.json').read_text())
     installed = sorted(patch['entities'][s]['name'] for s in patch['installed_functions'])
-    if installed != ['origin', 'shade'] or patch['replaced_classes'] or patch['replaced_globals']:
+    if installed != ['diskValue', 'origin', 'shade'] or patch['replaced_classes'] or patch['replaced_globals']:
         raise ValueError('Flutter fixture should retain main/blender and SDK classes')
     report['source_api'] = {}
     for side in ['baseline', 'patch']:

@@ -47,6 +47,7 @@ def main():
     parser.add_argument('--signatures-run-dir', type=Path)
     parser.add_argument('--dynamic-calls-run-dir', type=Path)
     parser.add_argument('--sdk-run-dir', type=Path)
+    parser.add_argument('--io-run-dir', type=Path)
     parser.add_argument('--sdk-interfaces-run-dir', type=Path)
     parser.add_argument('--sdk-mixins-run-dir', type=Path)
     parser.add_argument('--sdk-mixin-relink-run-dir', type=Path)
@@ -135,7 +136,7 @@ def main():
                                           args.top_accessor_signature_run_dir,
                                           args.top_accessor_multilang_run_dir,
                                           args.conditional_run_dir,
-                                          args.platform_conditions_run_dir) if p)
+                                          args.platform_conditions_run_dir, args.io_run_dir) if p)
     manifests = [json.loads((p / 'build.json').read_text()) for p in folders]
     if len({manifest['compiler_sha256'] for manifest in manifests}) != 1:
         raise ValueError('Acceptance fixtures were built with different compilers')
@@ -1229,6 +1230,7 @@ void main() {{
                 raise ValueError('Enum display decoding escaped its generated namespace')
         report['enum_display_name_guards'] = True
     for kind, folder, expected_base, expected_patch, installed in [
+        ('io', args.io_run_dir, ['io:base'], ['io:patch:5'], ['diskValue']),
         ('top-accessors', args.top_accessors_run_dir,
          ['initial:1:5:11', 'compound:3:8', 'retained:3:13', 'callback:7'],
          ['initial:11:5:21', 'compound:13:8', 'retained:36:46', 'callback:60'],

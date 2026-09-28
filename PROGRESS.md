@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-28 12:07 +08:00
+最后实质更新：2026-09-28 12:43 +08:00
 
 ## 当前状态
 
@@ -15,6 +15,8 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 2026-09-24 17:24 +08:00 用户授权优化空间后，仅清理独立宿主引擎构建目录中可重建的SwiftShader目标文件和静态库，保留源码、运行时可执行文件及历史QA输出；可用空间约2.0→9.2 GiB，验收后约9.0 GiB。新建基础AOT运行目录，保留先前ENOSPC失败报告。跨版本访问器完整`scripts/verify.sh`退出0：16 Dart＋166 Python＋7 Flutter共189项，分析通过；统一宿主原生20/20检查退出0，独立原始源码AOT与混合执行两侧逐行一致，真实源/生成Kernel的3.0/3.4/3.12语言版本、构建指纹和制品哈希已核对。通过证据docs/qa/aot-top-accessor-multilang-20260924.json，失败经过仍在incomplete记录。M1整体、移动真机冷启动、签名回退及性能门禁未通过；生产命令保持关闭。下一步处理剩余语言链接边界，并为移动真机验收准备足够构建空间和Android ARM64设备。
 
 ## 已实现
+
+- 2026-09-28 12:43 +08:00：M1 dart:io受限混合链接验收完成：VM/Flutter共同SDK契约加入io，异步File/RandomAccessFile/FileMode/FileStat及补丁首次动态读取通过；main/dataFile与UI blender保留AOT，补丁只更新diskValue及既有UI变更函数。两侧独立原始源码AOT与同基线字节码逐行一致，最终源归档、Kernel返回类型和制品哈希已核对；复用已验证宿主Flutter引擎，未重建引擎。完整verify.sh退出0：16 Dart＋171 Python＋7 Flutter共194项，Python耗时1729.590秒；13项VM原生（21次Scavenge）、7项Flutter编译和7项真实宿主检查通过。QA：docs/qa/aot-flutter-io-host-20260928.json。初次定向测试模块路径错误已修正；初次Flutter基线恰逢格式化，保留旧证据并按最终源码重建重验。仅清理闲置参考宿主Dart的2521个.o/.a缓存2619692664字节，保留SDK/当前引擎/历史QA。同基础样例AOT文件6810664→8735016字节（约＋28%，非性能验收）。正式编译器foundation下一阻塞仍为dart:developer；隔离预研另确认vm:platform-const-if及子isolate替换槽问题：父返回补丁12，子AOT回调返回旧3，原始候选AOT均为12，详见docs/qa/aot-isolate-propagation-exploration-20260928.json；不得仅放开SDK导入宣称支持。M1整体、Widget、双端真机冷启动、签名回退及性能未通过；生产命令保持关闭。下一步处理developer/平台pragma并设计子isolate冷启动激活；按Important Changes提交推送main，实际以Git核对。
 
 - 2026-09-28 12:07 +08:00：M1受限Flutter UI宿主冷启动路径验收：编译器显式分离VM/Flutter平台策略，Flutter链接dart:ui并绑定19个UI源码fragment，跨目标或SDK源码变化拒绝；原始/生成Kernel的Color、Offset及UI类型回调签名、21项CFE条件常量一致。匹配当前补丁的宿主ARM64 Release Flutter embedder库2918步真实构建完成，既有运行时工具哈希未变；正式构建脚本再次验证并缓存复用，不称为第二次干净构建。C++探针在真实AOT引擎中运行四个独立冷进程，原始源码两侧与同一AOT基线无补丁/加载字节码的输出逐行一致，只安装origin/shade，main/blender保留AOT，基线与引擎字节不变。完整verify.sh退出0：16 Dart＋171 Python＋7 Flutter共194项；19项VM原生、7项Flutter编译检查、7项宿主检查及4项构建/身份保护检查通过。早期类型/测试导入/Kernel检查器错误及首次普通静态失败已修复并保留；独立dartaotruntime启动Flutter snapshot退出253的失败转由真实embedder验证，未冒充成功。低空间时仅清理旧参考宿主ANGLE/Vulkan的705个.o/.a缓存约2.9 GiB，保留历史证据及当前构建。QA：docs/qa/aot-flutter-ui-host-20260928.json。最小foundation入口下一阻塞为dart:io；Widget、完整框架、移动真机、签名回退和性能仍未验收，生产门禁关闭。下一步扩展实际Flutter SDK/语言链接并推进双端启动；按Important Changes提交推送main，实际以Git核对。
 

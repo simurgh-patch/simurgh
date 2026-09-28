@@ -76,7 +76,7 @@ class AotCompilerTests(unittest.TestCase):
                 self.assertFalse((self.root / (name + '-invalid')).exists())
         cases = {
             'async_void': 'void main() async {}',
-            'import': "import 'dart:io'; void main() {}",
+            'import': "import 'dart:mirrors'; void main() {}",
             'invalid_generator_return': 'int values() sync* { yield 1; } void main() {}',
             'member': 'int f() => 1; void main() { print(1.f); }',
         }
@@ -1433,7 +1433,7 @@ void main() { p.value += 1; }
         result = self.command('--target', 'flutter', 'patch', candidate / 'app.dart', base, patch)
         self.assertEqual(result.returncode, 0, result.stderr)
         manifest = json.loads((patch / 'manifest.json').read_text())
-        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['origin', 'shade'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['diskValue', 'origin', 'shade'])
         self.assertEqual(manifest['replaced_classes'], [])
         self.assertEqual(manifest['replaced_globals'], [])
         graph = json.loads((base / 'source_graph.json').read_text())
@@ -1441,6 +1441,7 @@ void main() { p.value += 1; }
         self.assertEqual(graph['conditional_environment']['dart.library.ui'], 'true')
         self.assertIsNone(graph['conditional_environment']['dart.library.cli'])
         self.assertIn('dart:ui', graph['sdk_libraries'])
+        self.assertIn('dart:io', graph['sdk_libraries'])
         self.assertEqual(set(graph['libraries']), {'app:entry', 'app:flutter.dart'})
         self.assertEqual(set(graph['conditional_sources']), {'app:fallback.dart'})
         self.assertEqual(len(graph['sdk_source_hashes']), 19)

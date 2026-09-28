@@ -138,6 +138,7 @@ const linkedSdkLibraries = {
   'dart:math',
   'dart:convert',
   'dart:typed_data',
+  'dart:io',
 };
 String sdkPrefix(String uri) => '${entityPrefix}sdk_${uri.substring(5)}';
 

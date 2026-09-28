@@ -1,0 +1,96 @@
+{
+  "recorded_at": "2026-09-28T12:42:50.434843+08:00",
+  "scope": "Linked dart:io and restricted asynchronous file operations across AOT/bytecode in standalone VM and real host Flutter engine",
+  "compiler_sha256": "4f2b36ff46fd3a816bd65eceaf4572aa04afd54f1e31564ddb5917e831dbbf22",
+  "checks": {
+    "ordinary_exit_code": 0,
+    "dart_tests": 16,
+    "python_tests": 171,
+    "flutter_widget_tests": 7,
+    "vm_native_checks": 13,
+    "flutter_compiler_checks": 7,
+    "flutter_host_checks": 7,
+    "all_passed": true
+  },
+  "input_sha256": {
+    "compiler/bin/aot_patch.dart": "347989e8dc5b8edf4645b2d42261c2cd8094348d91482046919d33ecda7bde88",
+    "compiler/bin/inspect_kernel_api.dart": "9f7c21dced6669df35bf7fc3f92359571fb0238c0a1c3809c664c96279d10870",
+    "compiler/lib/source_graph.dart": "427fade3e3ef5e46fa555bb192e8db56d4844b1a9b8513d1454cb6030eea5e36",
+    "compiler/lib/class_lowering.dart": "1f47b58ba330868af1a2074427aa68d565622304a46346def0615f74980ee53a",
+    "test/aot_compiler_test.py": "adeca9e70c19dfc5bff08ac48e8579630d99c03f81287ce403af3cff1f162df2",
+    "scripts/verify_aot_lab.py": "6d5b3ba7ed606379bd6bbb6daf4fc20c0f6ff6f4d0f5cd3dccdc843f80e249da",
+    "scripts/verify_flutter_aot_lab.py": "8ae0f1d358252cda6960044e96176245e01e99f1281aa680db7d8e2f12125814",
+    "scripts/verify_flutter_ui_host.py": "b00c3aa2445a79cd19e5e90fd230e9b2920362b61dc189c942fc2942c7d5ed51",
+    "compiler/fixtures/aot_flutter_ui_baseline/fallback.dart": "6840b7621ca278538cc20e38d3f69fd49793c26f3cef1a8ffbfc656e30af8d71",
+    "compiler/fixtures/aot_flutter_ui_baseline/app.dart": "5f9d150f5420855df969d369517d08c5afdc9fd6a93f4e172631d0b75d80fa9c",
+    "compiler/fixtures/aot_flutter_ui_baseline/flutter.dart": "9330fc3ef890875fefe4f6e7a073afb4e10525e1a24c9df1c861b0f1215bf02e",
+    "compiler/fixtures/aot_flutter_ui_patch/fallback.dart": "6840b7621ca278538cc20e38d3f69fd49793c26f3cef1a8ffbfc656e30af8d71",
+    "compiler/fixtures/aot_flutter_ui_patch/app.dart": "d4a4dcae0b11d124f933e36ce917189ea464e89a384e090e43d91b61082dc28d",
+    "compiler/fixtures/aot_flutter_ui_patch/flutter.dart": "9330fc3ef890875fefe4f6e7a073afb4e10525e1a24c9df1c861b0f1215bf02e",
+    "compiler/fixtures/aot_io_baseline/app.dart": "25cc475500e7d7411f295dcb6333b4edeea753150ec423800f609a4adf80ae38",
+    "compiler/fixtures/aot_io_patch/app.dart": "87b64f518dd8a38a86ff9e36c2d2f2fa7e4f2bed4aeb3818e1334c46eed1a3e6"
+  },
+  "evidence_sha256": {
+    "output/flutter-io-20260928-base/native-checks/report.json": "348d6fdecb15b86456ac926d3111793cab2d915110cdd51c05bf81d42e501538",
+    "output/flutter-io-20260928-host-final/report.json": "424e75f15b766e4ed883de88d5720d280d8a130837aa2da7a1fd3f946dbc8061",
+    "output/flutter-io-20260928-final/compiler-checks/report.json": "d0f7bbf19c040de5ecaef337c99470019d38b7917a6c4e4d3e9e029729266c66",
+    "output/flutter-io-verification.log": "12231ec8a1758f0580c395b1f11161117d3d57aca65eae47ee0ef176ea5035bb",
+    "output/flutter-io-20260928-final/build.json": "ce89808f63e89db6c45c71b55671c9421bb206e25ec28314affe2bb20af4e3e4",
+    "output/flutter-io-20260928-vm/build.json": "ce940959cd0795afe79c9a40f033f3699c749cd389847eb83365a57e9b7c6d65",
+    "output/flutter-io-frozen-inputs.json": "20675a1f21f81d22a012769ed5dbdb3835c1342fc673873b1dcb0dd8367992cb",
+    "output/flutter-io-reference-cache-cleanup.json": "d6fedb146ff485714dc205d7d74a6fbc9d0528dbac1914f4bc5cf3a680c3059d",
+    "output/flutter-io-artifact-size-observation.json": "3eaa073a81bca84045df039ca6285cafca9228dd058c5871443a36153f63414e"
+  },
+  "host_engine_sha256": "aa920d8d6c1b3f3a75d964a70113d3fe91cb27c1d9f2ce52ec58a7fad3953b87",
+  "host_engine_rebuilt_this_increment": false,
+  "baseline_aot_sha256": "c757b39f4bdac042e7ca3ed98e51dbc104af47eab416ec37e70cc48250e6881f",
+  "observed_vm_scavenges": 21,
+  "verified": [
+    "Both targets link dart:io using the existing resolved SDK identity and retention mechanisms.",
+    "The patch first uses FileMode.write, RandomAccessFile open/write/flush/close, dynamic File.readAsString and FileStat.size. Native asynchronous completion crosses unchanged AOT main and dataFile into bytecode diskValue.",
+    "Both sides independently compile archived original sources to AOT. VM and four cold Flutter engine processes match the expected base/patch:5 outputs; unchanged AOT callers and UI callback remain retained.",
+    "Flutter Kernel inspection additionally compares File and Future<String> return types with original source APIs, retaining existing Color/Offset/UI callback and all 21 conditional environment checks.",
+    "Final source archives match submitted fixtures exactly and all four current build/compiler/artifact identities were checked."
+  ],
+  "failures_and_fixes": [
+    "Initial targeted unittest invocation used an unavailable test package import; reran with PYTHONPATH=test and passed.",
+    "First Flutter build overlapped fixture formatting, leaving only a baseline whitespace mismatch. Retained initial evidence and rebuilt/reverified both compiler and host stages from final fixtures."
+  ],
+  "exploration": "docs/qa/aot-isolate-propagation-exploration-20260928.json",
+  "next_blocker": "Production experimental compiler still rejects foundation at dart:developer. An isolated unaccepted copy additionally revealed vm:platform-const-if and child-isolate dispatch activation boundaries.",
+  "space_cleanup": {
+    "files": 2521,
+    "bytes": 2619692664,
+    "scope": "Inactive reference-host Dart .o/.a caches only; current dynamic tools/engine, SDKs and QA retained."
+  },
+  "size_observations": [
+    {
+      "kind": "base",
+      "old_run": "flutter-target-20260928-vm-base",
+      "new_run": "flutter-io-20260928-base",
+      "old_bytes": 6810664,
+      "new_bytes": 8735016,
+      "device_performance": false
+    },
+    {
+      "kind": "Flutter fixture (source changed)",
+      "old_run": "flutter-target-20260928-second",
+      "new_run": "flutter-io-20260928-final",
+      "old_bytes": 8801808,
+      "new_bytes": 10727264,
+      "device_performance": false
+    }
+  ],
+  "m1_passed": false,
+  "device_accepted": false,
+  "production_patch": false,
+  "not_verified": [
+    "Full Widget/framework lowering",
+    "Network and process APIs",
+    "Mobile file permissions",
+    "Child-isolate patch propagation",
+    "Android/iOS current-runtime cold start",
+    "Signatures/rollback",
+    "Physical-device startup/frame/memory performance"
+  ]
+}

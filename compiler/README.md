@@ -169,9 +169,9 @@ Pass its output directory to `scripts/verify_aot_lab.py --dynamic-calls-run-dir`
 
 ## Linked SDK libraries
 
-The resolver accepts `dart:core`, `dart:async`, `dart:collection`, `dart:math`, `dart:convert` and `dart:typed_data`. Imports/exports, prefixes and show/hide clauses are resolved on the original source. Public SDK references then use canonical library aliases in the lowered source, baseline and module; same-spelled symbols from separate imports cannot be merged by text alone. Existing primitive and Future spellings are preserved. An explicit unprefixed core import accompanies the aliases because a prefixed core import disables Dart's implicit core import.
+The resolver accepts `dart:core`, `dart:async`, `dart:collection`, `dart:math`, `dart:convert`, `dart:typed_data` and `dart:io`. Imports/exports, prefixes and show/hide clauses are resolved on the original source. Public SDK references then use canonical library aliases in the lowered source, baseline and module; same-spelled symbols from separate imports cannot be merged by text alone. Existing primitive and Future spellings are preserved. An explicit unprefixed core import accompanies the aliases because a prefixed core import disables Dart's implicit core import.
 
-All six libraries are part of the baseline contract, even if a particular application has no calls to one of them yet. The baseline retains callable SDK APIs and dynamic selectors so patches can first use an API (the fixture first uses base64Encode). This is a conservative code-retention choice with unmeasured performance/size costs, not permission to change SDK code or native libraries in a patch. The locked toolchain pins the SDK implementation.
+All seven libraries are part of the baseline contract, even if a particular application has no calls to one of them yet. The baseline retains callable SDK APIs and dynamic selectors so patches can first use an API (the fixture first uses base64Encode). This is a conservative code-retention choice with unmeasured performance/size costs, not permission to change SDK code or native libraries in a patch. The locked toolchain pins the SDK implementation.
 
 Resolved public SDK types, nested generics and accepted function types are usable in globals, parameters, results and generic bounds. Existing signature compatibility checks still apply. The `aot_sdk` fixture passes real Uint8List/List/Map/Queue/DateTime/Stream/Future objects across the boundary, preserves shared typed-array storage, calls SDK APIs from bytecode and catches a SDK FormatException in unchanged AOT. Its main and typed-array reader remain AOT. Independent source AOT is the output oracle. This is not a claim that every method in these libraries or every Stream lifecycle has passed runtime tests.
 
@@ -876,8 +876,13 @@ are archived, rechecked during analysis and must stay identical across a patch.
 This requires a package configuration that resolves the source-built `sky_engine`
 package. An arbitrary SDK package with modified UI declarations is rejected.
 
-The fixture covers `Color`, `Offset`, a UI-typed callback, and a UI conditional
-import. Resolve its local dependencies, then compile with an explicit limitation:
+The fixture covers `Color`, `Offset`, a UI-typed callback, a UI conditional
+import, and asynchronous `dart:io` file operations. `main`, `dataFile` and
+`blender` stay in AOT while `diskValue`, `origin` and `shade` are replaced.
+`File` and `Directory` cross typed boundaries; the patch first opens a
+`RandomAccessFile`, uses `FileMode.write`, flushes and closes it, dynamically
+reads the file and inspects `FileStat`. Each cold process creates and cleans up
+its own temporary directory. Resolve its local dependencies, then compile with an explicit limitation:
 
 ```sh
 (cd compiler/fixtures/aot_flutter_ui_baseline && ../../../.engine-workspace/engine/engine/src/out/host_release_arm64/dart-sdk/bin/dart pub get --offline)
@@ -923,11 +928,27 @@ queue and a bounded completion check. It compiles two original-source AOT
 snapshots and compares four separate processes: original baseline, original
 candidate, generated baseline and that unchanged baseline with bytecode loaded
 before the business entry point. The `Color`/`Offset` values and UI-typed callback
-must match exactly; the engine and baseline bytes must stay unchanged.
+and file readback (`io:base` / `io:patch:5`) must match exactly; the engine and baseline bytes must stay unchanged.
 
 This is a restricted macOS ARM64 host cold-start experiment with `dart:ui`, not
 full Widget rendering, a mobile updater or physical-device acceptance. The
 source compiler still rejects the minimal foundation graph at unlinked
-`dart:io`; additional SDK/language linkage remains required. The host checker
+`dart:developer`; additional SDK/language linkage remains required.
+The independent `aot_io_baseline` / `aot_io_patch` fixtures cover the same file
+operations on the standalone VM. Pass their completed build directory via
+`verify_aot_lab.py --io-run-dir` alongside current base/GC runs to compare
+original-source AOT with the unchanged baseline and its bytecode patch.
+Network, process execution and mobile file permissions are not covered by these
+file-operation fixtures. The host checker
 keeps `m1_passed`, `device_accepted` and `production_patch` false even when these
 fixture processes pass. No startup/frame/memory performance conclusion is made.
+
+A separate, unaccepted compiler-copy exploration found two later foundation
+boundaries after provisionally linking developer/isolate: the
+`vm:platform-const-if` pragma, and per-isolate dispatch activation. In the latter
+probe, replacing `worker` changed the parent result to `12`, but an unchanged
+AOT callback sent through `Isolate.run` still returned baseline `3`; original
+candidate AOT returned `12` in both places. Sending a new bytecode closure alone
+succeeded, so that result does not establish isolate support. The shipping
+experimental compiler still rejects `dart:developer` and `dart:isolate`.
+See [the exploration record](../docs/qa/aot-isolate-propagation-exploration-20260928.json).

@@ -79,6 +79,8 @@ void main(List<String> args) {
             'shade',
             'origin',
             'blender',
+            'dataFile',
+            'diskValue',
           }.contains(names[p.name.text] ?? p.name.text))
             names[p.name.text] ?? p.name.text: describe(p.function.returnType),
       },
