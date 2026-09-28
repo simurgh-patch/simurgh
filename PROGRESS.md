@@ -1,6 +1,6 @@
 # simurgh 进度与交接
 
-最后实质更新：2026-09-28 10:14 +08:00
+最后实质更新：2026-09-28 12:07 +08:00
 
 ## 当前状态
 
@@ -15,6 +15,8 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 2026-09-24 17:24 +08:00 用户授权优化空间后，仅清理独立宿主引擎构建目录中可重建的SwiftShader目标文件和静态库，保留源码、运行时可执行文件及历史QA输出；可用空间约2.0→9.2 GiB，验收后约9.0 GiB。新建基础AOT运行目录，保留先前ENOSPC失败报告。跨版本访问器完整`scripts/verify.sh`退出0：16 Dart＋166 Python＋7 Flutter共189项，分析通过；统一宿主原生20/20检查退出0，独立原始源码AOT与混合执行两侧逐行一致，真实源/生成Kernel的3.0/3.4/3.12语言版本、构建指纹和制品哈希已核对。通过证据docs/qa/aot-top-accessor-multilang-20260924.json，失败经过仍在incomplete记录。M1整体、移动真机冷启动、签名回退及性能门禁未通过；生产命令保持关闭。下一步处理剩余语言链接边界，并为移动真机验收准备足够构建空间和Android ARM64设备。
 
 ## 已实现
+
+- 2026-09-28 12:07 +08:00：M1受限Flutter UI宿主冷启动路径验收：编译器显式分离VM/Flutter平台策略，Flutter链接dart:ui并绑定19个UI源码fragment，跨目标或SDK源码变化拒绝；原始/生成Kernel的Color、Offset及UI类型回调签名、21项CFE条件常量一致。匹配当前补丁的宿主ARM64 Release Flutter embedder库2918步真实构建完成，既有运行时工具哈希未变；正式构建脚本再次验证并缓存复用，不称为第二次干净构建。C++探针在真实AOT引擎中运行四个独立冷进程，原始源码两侧与同一AOT基线无补丁/加载字节码的输出逐行一致，只安装origin/shade，main/blender保留AOT，基线与引擎字节不变。完整verify.sh退出0：16 Dart＋171 Python＋7 Flutter共194项；19项VM原生、7项Flutter编译检查、7项宿主检查及4项构建/身份保护检查通过。早期类型/测试导入/Kernel检查器错误及首次普通静态失败已修复并保留；独立dartaotruntime启动Flutter snapshot退出253的失败转由真实embedder验证，未冒充成功。低空间时仅清理旧参考宿主ANGLE/Vulkan的705个.o/.a缓存约2.9 GiB，保留历史证据及当前构建。QA：docs/qa/aot-flutter-ui-host-20260928.json。最小foundation入口下一阻塞为dart:io；Widget、完整框架、移动真机、签名回退和性能仍未验收，生产门禁关闭。下一步扩展实际Flutter SDK/语言链接并推进双端启动；按Important Changes提交推送main，实际以Git核对。
 
 - 2026-09-28 10:14 +08:00：M1固定独立宿主AOT平台条件扩展验收完成：明确14项true、7项未定义条件，环境和目标写入源码归档；支持相等比较、首个匹配优先及条件导出，SDK可用性条件不放开未链接API。21项条件两侧原始源码独立AOT与混合执行逐行一致，仅安装两个value函数，main保留AOT；四组当前编译器构建及源码/制品哈希核对通过，统一19项原生检查通过并观察21次Scavenge。完整scripts/verify.sh退出0：16 Dart＋168 Python＋7 Flutter共191项，编译器分析/格式及冻结输入核对通过。初次定向仅因拒绝错误文案断言不符而失败，修正后通过，保留日志。证据docs/qa/aot-platform-conditions-20260928.json。最小Flutter foundation探针仍在dart:ui处退出2且无基线，未宣称Flutter目标支持；历史原生全集/移动重建/双端真机冷启动/性能/签名回退未重跑或未验收，生产门禁保持关闭。下一步推进Flutter平台链接及剩余语言边界；按Important Changes提交推送main，实际以Git核对。
 
@@ -211,3 +213,9 @@ M0 基础工具已落地；用户已授权忽略空间检查，完整源码与�
 - 2026-09-28 09:48 +08:00：续接上一线程，扩展固定独立宿主AOT平台条件，显式区分14项true与7项未定义条件并归档目标环境；新增21项条件、导出链、相等比较和优先级样例。定向首次仅失败于拒绝错误文案断言，修正后通过；编译器分析/格式通过。四组当前指纹原生构建完成，统一19项检查通过，独立原始源码AOT与混合输出逐行一致，AOT未变且观察21次Scavenge；记录output/platform-conditions-native-results.json与output/platform-conditions-20260928-base/native-checks/report.json。完整scripts/verify.sh正在session31285运行，日志output/platform-conditions-verification.log，尚未整轮验收或提交。最小Flutter foundation探针在dart:ui处退出2，未生成基线，结果output/platform-condition-inspection/flutter-foundation/result.json；独立VM条件不代表Flutter平台支持。下一步等待完整普通回归、整理QA并按Important Changes提交推送，继续平台链接及剩余语言边界；移动真机/性能与生产门禁保持未完成。
 
 - 2026-09-28 10:14 +08:00：M1固定独立宿主AOT平台条件扩展验收完成：明确14项true、7项未定义条件，环境和目标写入源码归档；支持相等比较、首个匹配优先及条件导出，SDK可用性条件不放开未链接API。21项条件两侧原始源码独立AOT与混合执行逐行一致，仅安装两个value函数，main保留AOT；四组当前编译器构建及源码/制品哈希核对通过，统一19项原生检查通过并观察21次Scavenge。完整scripts/verify.sh退出0：16 Dart＋168 Python＋7 Flutter共191项，编译器分析/格式及冻结输入核对通过。初次定向仅因拒绝错误文案断言不符而失败，修正后通过，保留日志。证据docs/qa/aot-platform-conditions-20260928.json。最小Flutter foundation探针仍在dart:ui处退出2且无基线，未宣称Flutter目标支持；历史原生全集/移动重建/双端真机冷启动/性能/签名回退未重跑或未验收，生产门禁保持关闭。下一步推进Flutter平台链接及剩余语言边界；按Important Changes提交推送main，实际以Git核对。
+
+- 2026-09-28 11:36 +08:00：继续Flutter目标接入：显式vm/flutter平台策略，Flutter链接dart:ui，19个UI源码fragment对照固定引擎源码并绑定哈希，跨目标或SDK变化拒绝；新增Color/Offset/UI类型回调及条件分支样例。真实Flutter目标Kernel/AOT snapshot/字节码编译通过；7项独立Kernel检查通过，原始/生成UI返回类型、Flutter分支与21项CFE条件常量一致。未在引擎执行，实验命令必须显式--compile-only；直接独立dartaotruntime启动Flutter snapshot退出253（缺dart:_builtin），保留失败证据。检查器经历hashlib导入遗漏、Kernel ConstantExpression字段名/RecursiveVisitor API及AOT常量字段消除问题，已修正；首次普通验证在静态检查退出3，旧日志及冻结输入保留。最终完整verify.sh session37727运行，日志output/flutter-target-verification.log；四组当前指纹VM原生构建及19项检查已通过，报告output/flutter-target-20260928-vm-base/native-checks/report.json。另按已授权空间覆盖启动匹配当前补丁的宿主Flutter embedder库编译（session11759），仅扩展既有已核对dynamic目录，日志output/flutter-target-embedder-build.log/JSON；未改日常SDK、未移动验收。仍未整轮提交；下一步完整回归通过后更新QA并Important Changes提交推送，再检查真实引擎冷启动。
+
+- 2026-09-28 11:49 +08:00：宿主Flutter embedder实际编译至约2446/2918时可用空间降至487 MiB，复核后仅当前dynamic目录Ninja在运行。沿用用户“优化空间以便继续任务”授权，仅清理闲置参考host_release_arm64/obj/flutter/third_party/angle和vulkan-deps下705个.o/.a缓存（3,086,821,984字节），保留源码、SDK、引擎/运行时二进制、原生实验及历史QA制品，当前dynamic构建目录未清理。清理时空间约281 MiB→3.1 GiB，清单output/flutter-target-reference-cache-cleanup.json；构建及普通验证继续，未把空间整理或构建进度标为验收。
+
+- 2026-09-28 12:07 +08:00：M1受限Flutter UI宿主冷启动路径验收：编译器显式分离VM/Flutter平台策略，Flutter链接dart:ui并绑定19个UI源码fragment，跨目标或SDK源码变化拒绝；原始/生成Kernel的Color、Offset及UI类型回调签名、21项CFE条件常量一致。匹配当前补丁的宿主ARM64 Release Flutter embedder库2918步真实构建完成，既有运行时工具哈希未变；正式构建脚本再次验证并缓存复用，不称为第二次干净构建。C++探针在真实AOT引擎中运行四个独立冷进程，原始源码两侧与同一AOT基线无补丁/加载字节码的输出逐行一致，只安装origin/shade，main/blender保留AOT，基线与引擎字节不变。完整verify.sh退出0：16 Dart＋171 Python＋7 Flutter共194项；19项VM原生、7项Flutter编译检查、7项宿主检查及4项构建/身份保护检查通过。早期类型/测试导入/Kernel检查器错误及首次普通静态失败已修复并保留；独立dartaotruntime启动Flutter snapshot退出253的失败转由真实embedder验证，未冒充成功。低空间时仅清理旧参考宿主ANGLE/Vulkan的705个.o/.a缓存约2.9 GiB，保留历史证据及当前构建。QA：docs/qa/aot-flutter-ui-host-20260928.json。最小foundation入口下一阻塞为dart:io；Widget、完整框架、移动真机、签名回退和性能仍未验收，生产门禁关闭。下一步扩展实际Flutter SDK/语言链接并推进双端启动；按Important Changes提交推送main，实际以Git核对。

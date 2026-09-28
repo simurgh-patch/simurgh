@@ -863,3 +863,71 @@ parameter narrowing still fail original source validation.
 
 This is host ARM64 coverage of these cases, not complete variance compatibility,
 live-object migration, Flutter/mobile activation or device-performance acceptance.
+
+
+## Experimental Flutter compiler target
+
+The default target remains the standalone VM. `aot_patch.dart --target flutter`
+selects a separate Flutter AOT policy: `dart.library.ui` is true and
+`dart.library.cli` is absent. The graph, canonical imports and dynamic interface
+include `dart:ui`, and baseline/patch target changes are rejected. Resolved UI
+library fragments must match the independent pinned engine source; their hashes
+are archived, rechecked during analysis and must stay identical across a patch.
+This requires a package configuration that resolves the source-built `sky_engine`
+package. An arbitrary SDK package with modified UI declarations is rejected.
+
+The fixture covers `Color`, `Offset`, a UI-typed callback, and a UI conditional
+import. Resolve its local dependencies, then compile with an explicit limitation:
+
+```sh
+(cd compiler/fixtures/aot_flutter_ui_baseline && ../../../.engine-workspace/engine/engine/src/out/host_release_arm64/dart-sdk/bin/dart pub get --offline)
+(cd compiler/fixtures/aot_flutter_ui_patch && ../../../.engine-workspace/engine/engine/src/out/host_release_arm64/dart-sdk/bin/dart pub get --offline)
+python3 scripts/aot_lab.py --target flutter --compile-only \
+  --baseline compiler/fixtures/aot_flutter_ui_baseline/app.dart \
+  --candidate compiler/fixtures/aot_flutter_ui_patch/app.dart
+python3 scripts/verify_flutter_aot_lab.py --run-dir output/m1-aot-<run>
+```
+
+The compiler experiment creates Flutter Kernel, an AOT snapshot and validated
+bytecode with state `compiled-not-executed`. Its verifier independently compiles
+archived original sources, checks actual Kernel UI type links and conditional
+selection, and compares the condition environment with CFE constants. These are
+compiler checks, not runtime or device acceptance. The ordinary native verifier
+rejects compile-only results. `aot_lab.py --target flutter` without
+`--compile-only` exits nonzero before producing artifacts because engine execution
+is performed by the separate host verifier below. A direct attempt
+to start this Flutter snapshot in standalone `dartaotruntime` fails with a missing
+`dart:_builtin` library; it is not a valid substitute for a Flutter embedder.
+Full framework lowering, mobile engine cold-start integration, and
+performance gates remain incomplete. Production `release` and `patch` stay closed.
+
+
+### Restricted host Flutter engine execution
+
+Build only the host embedder library inside the already verified dynamic runtime
+GN directory. The builder verifies pinned source/patch identity and runtime-tool
+hashes, preserves GN arguments, and refuses to overwrite an evidence directory.
+It checks the normal space budget unless explicitly overridden:
+
+```sh
+python3 scripts/build_flutter_embedder_lab.py --execute --ignore-space-check
+python3 scripts/verify_flutter_ui_host.py \
+  --run-dir output/m1-aot-<run> \
+  --engine-build output/engine-builds/host-flutter-embedder-<build>/build.json \
+  --compiler-checks output/m1-aot-<run>/compiler-checks \
+  --output output/flutter-ui-host-<fresh-name>
+```
+
+The fixed C++ fixture runner uses the real AOT Flutter embedder, a platform task
+queue and a bounded completion check. It compiles two original-source AOT
+snapshots and compares four separate processes: original baseline, original
+candidate, generated baseline and that unchanged baseline with bytecode loaded
+before the business entry point. The `Color`/`Offset` values and UI-typed callback
+must match exactly; the engine and baseline bytes must stay unchanged.
+
+This is a restricted macOS ARM64 host cold-start experiment with `dart:ui`, not
+full Widget rendering, a mobile updater or physical-device acceptance. The
+source compiler still rejects the minimal foundation graph at unlinked
+`dart:io`; additional SDK/language linkage remains required. The host checker
+keeps `m1_passed`, `device_accepted` and `production_patch` false even when these
+fixture processes pass. No startup/frame/memory performance conclusion is made.

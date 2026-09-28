@@ -26,7 +26,8 @@ class _Class {
 }
 
 class _Classes {
-  _Classes(this.entities, this.records);
+  _Classes(this.entities, this.records, this.target);
+  final CompilerTarget target;
   final Map<Element, String> entities;
   final Map<String, Map<String, Object?>> records;
   final declarations = <InterfaceElement, _Class>{};
@@ -169,21 +170,21 @@ class _Classes {
       element is ClassElement &&
       element.isImplementableOutside &&
       !element.isPrivate &&
-      linkedSdkLibraries.contains(element.library.uri.toString()) &&
+      target.sdkLibraries.contains(element.library.uri.toString()) &&
       entities.containsKey(element);
 
   bool sdkSuperclass(InterfaceElement element) =>
       element is ClassElement &&
       element.isExtendableOutside &&
       !element.isPrivate &&
-      linkedSdkLibraries.contains(element.library.uri.toString()) &&
+      target.sdkLibraries.contains(element.library.uri.toString()) &&
       entities.containsKey(element);
 
   bool sdkMixin(InterfaceElement element) =>
       ((element is ClassElement && element.isMixableOutside) ||
           element is MixinElement) &&
       !element.isPrivate &&
-      linkedSdkLibraries.contains(element.library.uri.toString()) &&
+      target.sdkLibraries.contains(element.library.uri.toString()) &&
       entities.containsKey(element);
 
   Future<void> loadSdkAncestors(AnalysisSession session) async {

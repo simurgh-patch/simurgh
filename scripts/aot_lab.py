@@ -72,8 +72,13 @@ def main():
     parser.add_argument('--baseline', type=Path, default=ROOT / 'compiler/fixtures/aot_baseline/app.dart')
     parser.add_argument('--candidate', type=Path, default=ROOT / 'compiler/fixtures/aot_patch/app.dart')
     parser.add_argument('--output', type=Path)
+    parser.add_argument('--target', choices=['vm', 'flutter'], default='vm')
+    parser.add_argument('--compile-only', action='store_true',
+                        help='Compile experimental artifacts without claiming runtime execution')
     parser.add_argument('--build-runtime', action='store_true', help='Build dedicated dynamic-module AOT runtime; uses existing user-authorized disk override')
     args = parser.parse_args()
+    if args.target == 'flutter' and not args.compile_only:
+        raise ValueError('Flutter execution requires a matching engine embedder; use --compile-only for compiler experiments')
     identity = source_identity()
     packages = prepare_package_config()
     if args.output:
@@ -83,7 +88,8 @@ def main():
         output = Path(tempfile.mkdtemp(prefix=datetime.now(timezone.utc).strftime('m1-aot-%Y%m%dT%H%M%SZ-'), dir=ROOT / 'output'))
     report = {'kind': 'experimental-aot-function-replacement', 'state': 'building',
               'identity': identity, 'compiler_sha256': compiler_sha(),
-              'runner_sha256': sha(__file__), 'steps': [], 'complete_runtime_implemented': False,
+              'runner_sha256': sha(__file__), 'target': args.target, 'compile_only': args.compile_only,
+              'steps': [], 'complete_runtime_implemented': False,
               'm1_passed': False, 'production_patch': False}
     env = os.environ.copy()
     env['PATH'] = str(ROOT / '.tools/depot_tools') + os.pathsep + env.get('PATH', '')
@@ -138,28 +144,37 @@ def main():
                 raise ValueError(f'Runtime artifact changed: {name}')
         report['runtime_provenance'] = provenance
         base, patch = output / 'baseline', output / 'patch'
-        tool = [SDK / 'bin/dart', ROOT / 'compiler/bin/aot_patch.dart']
+        tool = [SDK / 'bin/dart', ROOT / 'compiler/bin/aot_patch.dart', '--target', args.target]
         run('generate-baseline', [*tool, 'baseline', args.baseline.resolve(), base])
         run('generate-patch', [*tool, 'patch', args.candidate.resolve(), base, patch])
         runtime = SDK / 'bin/dart'
-        platform = SDK / 'lib/_internal/vm_platform_strong.dill'
+        platform = (ENGINE / 'out/host_release_arm64/flutter_patched_sdk/platform_strong.dill'
+                    if args.target == 'flutter' else SDK / 'lib/_internal/vm_platform_strong.dill')
+        report['platform'] = {'path': str(platform), 'sha256': sha(platform)}
         for mode in ['no-aot', 'aot']:
-            run('kernel-' + mode, [runtime, '--packages=' + str(packages), DART_SOURCE / 'pkg/vm/bin/gen_kernel.dart', '--' + mode,
+            run('kernel-' + mode, [runtime, '--packages=' + str(packages), DART_SOURCE / 'pkg/vm/bin/gen_kernel.dart', '--' + mode, '--target=' + args.target,
                                   '--platform', platform, '--packages', packages, '--dynamic-interface',
                                   base / 'dynamic_interface.yaml', '-Ddart.vm.product=true', '-Ddart.vm.profile=false',
                                   '--output', base / (mode + '.dill'), base / 'launcher.dart'])
         run('snapshot', [DYNAMIC / 'gen_snapshot', '--snapshot-kind=app-aot-elf', '--elf=' + str(base / 'app.aot'), base / 'aot.dill'])
         before_hash = sha(base / 'app.aot')
-        run('bytecode', [runtime, '--packages=' + str(packages), DART_SOURCE / 'pkg/dart2bytecode/bin/dart2bytecode.dart', '--platform', platform,
+        run('bytecode', [runtime, '--packages=' + str(packages), DART_SOURCE / 'pkg/dart2bytecode/bin/dart2bytecode.dart', '--target=' + args.target, '--platform', platform,
                          '--packages', packages, '--import-dill', base / 'no-aot.dill', '--validate', base / 'dynamic_interface.yaml',
                          '-Ddart.vm.product=true', '-Ddart.vm.profile=false', '--output', patch / 'patch.bytecode', patch / 'module.dart'])
-        run('baseline-run', [DYNAMIC / 'dartaotruntime', base / 'app.aot'])
-        run('patched-run', [DYNAMIC / 'dartaotruntime', base / 'app.aot', patch / 'patch.bytecode'])
+        if not args.compile_only:
+            run('baseline-run', [DYNAMIC / 'dartaotruntime', base / 'app.aot'])
+            run('patched-run', [DYNAMIC / 'dartaotruntime', base / 'app.aot', patch / 'patch.bytecode'])
+        if sha(platform) != report['platform']['sha256']:
+            raise ValueError('Platform Kernel changed during compilation')
         if sha(base / 'app.aot') != before_hash:
             raise ValueError('Baseline AOT binary was modified during patch execution')
         report['artifacts'] = {str(path.relative_to(output)): {'bytes': path.stat().st_size, 'sha256': sha(path)}
                                for path in [base / 'app.aot', patch / 'patch.bytecode', base / 'manifest.json', patch / 'manifest.json',
                                             base / 'source_graph.json', patch / 'source_graph.json', base / 'dynamic_interface.yaml', *sorted(base.glob('*.dart')), *sorted(patch.glob('*.dart'))]}
+        if args.compile_only:
+            report['state'] = 'compiled-not-executed'
+            save()
+            return 0
         report['baseline_stdout'] = (output / 'baseline-run.log').read_text()
         report['patched_stdout'] = (output / 'patched-run.log').read_text()
         # Exit 0 means compilation/execution succeeded, not that arbitrary user

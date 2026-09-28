@@ -81,7 +81,7 @@ bool supportedType(TypeAnnotation? type, {bool allowVoid = true}) {
         type.importPrefix == null &&
         isTypeParameter(type))
       return true;
-    if (linkedSdkLibraries.any(
+    if (CompilerTarget.flutter.sdkLibraries.any(
       (uri) => type.importPrefix?.name.lexeme == sdkPrefix(uri),
     )) {
       return type.typeArguments?.arguments.every(
@@ -176,11 +176,19 @@ String declarationTokens(CompilationUnitMember declaration) {
 
 class Program {
   Program(this.source, this.identity) {
+    final graph = jsonDecode(identity) as Map<String, dynamic>;
+    if (jsonEncode(graph['sdk_libraries']) !=
+            jsonEncode(target.sdkLibraries.toList()) ||
+        jsonEncode(graph['conditional_environment']) !=
+            jsonEncode(target.environment)) {
+      reject('Source graph target policy mismatch');
+    }
     final parsed = parseString(content: source, throwIfDiagnostics: false);
     if (parsed.errors.isNotEmpty)
       reject('Invalid Dart source: ${parsed.errors}');
     final unit = parsed.unit;
-    if (unit.directives.map((d) => d.toSource()).join('\n') != sdkImports) {
+    if (unit.directives.map((d) => d.toSource()).join('\n') !=
+        target.sdkImports) {
       reject('Expected canonical linked SDK imports');
     }
     for (final declaration in unit.declarations.whereType<GenericTypeAlias>()) {
@@ -275,6 +283,10 @@ class Program {
   }
   final String source;
   final String identity;
+  CompilerTarget get target => CompilerTarget.named(
+    (jsonDecode(identity) as Map<String, dynamic>)['conditional_target']
+        as String,
+  );
   String get languageVersion =>
       (jsonDecode(identity) as Map<String, dynamic>)['language_version']
           as String;
@@ -309,6 +321,7 @@ class Program {
       '${f.returnType!.toSource()} ${f.name.lexeme}${f.functionExpression.typeParameters?.toSource() ?? ''}${f.functionExpression.parameters!.toSource()}';
   Map<String, Object?> manifest() => {
     'schema': 1,
+    'compiler_target': target.name,
     'language_version': languageVersion,
     'library_language_versions': libraryVersions,
     'emitted_libraries': {
@@ -609,7 +622,7 @@ void writeLinkedSources(
 
 void baseline(Program program, Directory output) {
   final generated = StringBuffer(
-    '// @dart=${program.languageVersion}\n// Generated M1 experimental AOT baseline.\n$sdkImports\n',
+    '// @dart=${program.languageVersion}\n// Generated M1 experimental AOT baseline.\n${program.target.sdkImports}\n',
   );
   for (final declaration in program.aliases.values) {
     generated.writeln(declaration.toSource());
@@ -731,7 +744,7 @@ Future<void> main(List<String> args) async {
 }
 
 String dynamicInterfaceText(Program program) =>
-    "callable:\n${linkedSdkLibraries.map((uri) => "  - library: '$uri'\n").join()}  - library: 'app.dart'\n${program.splitLibraries ? program.libraryVersions.keys.map((uri) => "  - library: '${program.libraryFile(uri)}'\n").join() : ''}"
+    "callable:\n${program.target.sdkLibraries.map((uri) => "  - library: '$uri'\n").join()}  - library: 'app.dart'\n${program.splitLibraries ? program.libraryVersions.keys.map((uri) => "  - library: '${program.libraryFile(uri)}'\n").join() : ''}"
     '${dynamicClassInterface(program)}'
     'dynamic-callable-selectors:\n${program.dynamicSelectors.map((selector) => '  - ${jsonEncode(selector)}\n').join()}';
 
@@ -832,6 +845,13 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       manifest['compiler_sha256'] != compilerHash ||
       manifest['toolchain_sha256'] != toolchainHash) {
     reject('Baseline source, compiler or toolchain fingerprint mismatch');
+  }
+  if (program.target.name != original.target.name) {
+    reject('Compiler target changes require a new baseline');
+  }
+  if (jsonEncode((jsonDecode(program.identity) as Map)['sdk_source_hashes']) !=
+      jsonEncode((jsonDecode(original.identity) as Map)['sdk_source_hashes'])) {
+    reject('Linked SDK source changes require a new baseline');
   }
   final before = original.functions.keys.toSet();
   final originalClasses = original.classes.keys.toSet();
@@ -1082,7 +1102,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       moduleGlobals.isEmpty)
     reject('No function body changes');
   final source = StringBuffer(
-    '// @dart=${program.languageVersion}\n$sdkImports\nimport ${jsonEncode(File('${base.path}/app.dart').absolute.uri.toString())} as ${prefix}Baseline;\n',
+    '// @dart=${program.languageVersion}\n${program.target.sdkImports}\nimport ${jsonEncode(File('${base.path}/app.dart').absolute.uri.toString())} as ${prefix}Baseline;\n',
   );
   // Typedefs have no runtime identity. Each module re-declares its aliases,
   // qualifying retained classes while keeping generic constructor forwarding.
@@ -1203,6 +1223,7 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       'baseline_fingerprint': baselineKey(original.identity),
       'toolchain_sha256': toolchainHash,
       'compiler_sha256': compilerHash,
+      'compiler_target': program.target.name,
       'complete_runtime_implemented': false,
       'production_patch': false,
     }),
@@ -1211,18 +1232,23 @@ Future<void> patch(Program program, Directory base, Directory output) async {
 
 Future<void> main(List<String> args) async {
   try {
+    var target = CompilerTarget.vm;
+    if (args.length >= 2 && args[0] == '--target') {
+      target = CompilerTarget.named(args[1]);
+      args = args.sublist(2);
+    }
     if (args.length < 3 ||
         !{'baseline', 'patch'}.contains(args[0]) ||
         (args[0] == 'baseline' ? args.length != 3 : args.length != 4)) {
       reject(
-        'Usage: aot_patch.dart baseline SOURCE NEW_OUTPUT | patch SOURCE BASELINE NEW_OUTPUT',
+        'Usage: aot_patch.dart [--target vm|flutter] baseline SOURCE NEW_OUTPUT | patch SOURCE BASELINE NEW_OUTPUT',
       );
     }
     final file = File(args[1]);
     final output = Directory(args.last);
     if (output.existsSync())
       reject('Output already exists; refusing to overwrite');
-    final graph = await loadSourceGraph(file);
+    final graph = await loadSourceGraph(file, target: target);
     final program = Program(graph.source, graph.identity);
     if (args[0] == 'baseline') {
       output.createSync(recursive: true);

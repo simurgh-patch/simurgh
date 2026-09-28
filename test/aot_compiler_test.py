@@ -1,4 +1,5 @@
 """Boundary checks against the actual pinned Dart AST transformer (not mocks)."""
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -1402,6 +1403,78 @@ void main() { p.value += 1; }
             self.assertEqual(result.returncode, 2, result.stdout)
             self.assertIn(error, result.stderr)
             self.assertFalse(dest.exists())
+
+    def test_flutter_execution_requires_explicit_compile_only(self):
+        destination = self.root / 'unavailable-flutter-runtime'
+        result = subprocess.run(['python3', str(ROOT / 'scripts/aot_lab.py'),
+                                 '--target', 'flutter', '--output', str(destination)],
+                                cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Flutter execution requires a matching engine embedder', result.stderr)
+        self.assertFalse(destination.exists())
+
+    def flutter_ui_fixture(self, name, side='baseline', sky_root=None):
+        target = self.root / name
+        self.copy_configured_fixture(ROOT / f'compiler/fixtures/aot_flutter_ui_{side}', target)
+        sky_root = sky_root or ROOT / '.engine-workspace/engine/engine/src/out/host_release_arm64/gen/dart-pkg/sky_engine'
+        (target / '.dart_tool').mkdir()
+        (target / '.dart_tool/package_config.json').write_text(json.dumps({
+            'configVersion': 2, 'packages': [{'name': 'sky_engine',
+                'rootUri': sky_root.as_uri() + '/', 'packageUri': 'lib/', 'languageVersion': '3.12'}]}))
+        return target
+
+    @unittest.skipUnless((ROOT / '.engine-workspace/engine/engine/src/out/host_release_arm64/gen/dart-pkg/sky_engine').exists(), 'Source-built Flutter SDK not prepared')
+    def test_flutter_ui_target_preserves_sdk_types_and_aot_callers(self):
+        source = self.flutter_ui_fixture('flutter-base')
+        candidate = self.flutter_ui_fixture('flutter-patch', 'patch')
+        base, patch = self.root / 'base', self.root / 'patch'
+        result = self.command('--target', 'flutter', 'baseline', source / 'app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        result = self.command('--target', 'flutter', 'patch', candidate / 'app.dart', base, patch)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((patch / 'manifest.json').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['origin', 'shade'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        self.assertEqual(manifest['replaced_globals'], [])
+        graph = json.loads((base / 'source_graph.json').read_text())
+        self.assertEqual(graph['conditional_target'], 'pinned-flutter-aot')
+        self.assertEqual(graph['conditional_environment']['dart.library.ui'], 'true')
+        self.assertIsNone(graph['conditional_environment']['dart.library.cli'])
+        self.assertIn('dart:ui', graph['sdk_libraries'])
+        self.assertEqual(set(graph['libraries']), {'app:entry', 'app:flutter.dart'})
+        self.assertEqual(set(graph['conditional_sources']), {'app:fallback.dart'})
+        self.assertEqual(len(graph['sdk_source_hashes']), 19)
+        self.assertIn("library: 'dart:ui'", (base / 'dynamic_interface.yaml').read_text())
+        for name, digest in graph['sdk_source_hashes'].items():
+            original = ROOT / '.engine-workspace/engine/engine/src/flutter/lib/ui' / name.removeprefix('dart:ui/')
+            self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(), digest)
+
+    @unittest.skipUnless((ROOT / '.engine-workspace/engine/engine/src/out/host_release_arm64/gen/dart-pkg/sky_engine').exists(), 'Source-built Flutter SDK not prepared')
+    def test_flutter_target_rejects_cross_target_and_modified_sdk(self):
+        source = self.flutter_ui_fixture('target-boundary')
+        (source / 'app.dart').write_text('int f() => 1; void main() { print(f()); }')
+        base = self.root / 'vm-base'
+        result = self.command('baseline', source / 'app.dart', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        (source / 'app.dart').write_text('int f() => 2; void main() { print(f()); }')
+        dest = self.root / 'cross-target'
+        result = self.command('--target', 'flutter', 'patch', source / 'app.dart', base, dest)
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Compiler target changes require a new baseline', result.stderr)
+        self.assertFalse(dest.exists())
+        sky = self.root / 'modified-sky'
+        shutil.copytree(ROOT / '.engine-workspace/engine/engine/src/out/host_release_arm64/gen/dart-pkg/sky_engine', sky)
+        painting = sky / 'lib/ui/painting.dart'
+        painting.write_text(painting.read_text() + '\n// Changed SDK input\n')
+        modified = self.flutter_ui_fixture('modified-sdk', sky_root=sky)
+        dest = self.root / 'modified-sdk-output'
+        result = self.command('--target', 'flutter', 'baseline', modified / 'app.dart', dest)
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Flutter SDK source differs from pinned checkout: painting.dart', result.stderr)
+        self.assertFalse(dest.exists())
+        result = self.command('--target', 'web', 'baseline', source / 'app.dart', self.root / 'unknown-target')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Unsupported compiler target', result.stderr)
 
     def test_invalid_covariant_modifier_positions_remain_rejected(self):
         cases = [

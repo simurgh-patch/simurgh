@@ -56,3 +56,21 @@ use the same marker. Rebuild the host runtime with
 `python3 scripts/aot_lab.py --build-runtime` when migrating an existing checkout;
 previous compiled artifacts retain their historical provenance and are not
 retagged. Mobile engines also require rebuilding before using the renamed ABI.
+
+
+## Host Flutter UI fixture
+
+The experimental `scripts/build_flutter_embedder_lab.py` builds only
+`libflutter_engine.dylib` in the previously verified host dynamic-runtime output.
+It preserves the existing GN configuration and checks source identity plus
+runtime-tool hashes before and after the build. It does not replace reference or
+mobile engines. A cached successful Ninja build is recorded as reuse, not as a
+fresh or reproducible build claim.
+
+`runtime/probes/flutter_ui_fixture_runner.cc` is a fixed acceptance harness for
+the UI compiler fixture, with a software renderer, a platform task queue, AOT
+mode enforcement and a timeout. `scripts/verify_flutter_ui_host.py` compiles it
+against the pinned engine header, verifies artifact identities, and compares
+original and mixed execution in cold processes. See the compiler README for the
+complete commands. Passing this host fixture does not enable production commands
+or establish Widget, mobile, rollback, signing or performance acceptance.

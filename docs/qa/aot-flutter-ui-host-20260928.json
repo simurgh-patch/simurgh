@@ -1,0 +1,101 @@
+{
+  "recorded_at": "2026-09-28 12:07 +08:00",
+  "scope": "Pinned Flutter dart:ui compiler target and restricted macOS ARM64 AOT/bytecode cold-process engine experiment",
+  "evidence": {
+    "flutter_build": "output/flutter-target-20260928-second/build.json",
+    "compiler_checks": "output/flutter-target-20260928-second/compiler-checks-verified/report.json",
+    "host_checks": "output/flutter-target-20260928-host-final/report.json",
+    "full_host_engine_build": "output/flutter-target-embedder-build.json",
+    "full_host_engine_log": "output/flutter-target-embedder-build.log",
+    "tracked_builder_reuse": "output/flutter-target-20260928-host-build/build.json",
+    "vm_native_report": "output/flutter-target-20260928-vm-base/native-checks/report.json",
+    "ordinary_log": "output/flutter-target-verification.log",
+    "initial_ordinary_failure": "output/flutter-target-verification-initial.log",
+    "input_freeze": "output/flutter-target-frozen-inputs.json",
+    "final_input_hashes": "output/flutter-target-final-inputs.json",
+    "host_guards": "output/flutter-target-inspection/host-guards.json",
+    "cache_cleanup": "output/flutter-target-reference-cache-cleanup.json",
+    "foundation_probe": "output/flutter-target-inspection/foundation-result.json"
+  },
+  "checks": {
+    "ordinary_exit_code": 0,
+    "dart_tests": 16,
+    "python_tests": 171,
+    "flutter_widget_tests": 7,
+    "compiler_analysis": "passed",
+    "compiler_format": "passed",
+    "vm_native_checks": 19,
+    "flutter_compiler_checks": 7,
+    "flutter_host_checks": 7,
+    "host_guard_checks": 4,
+    "all_passed": true
+  },
+  "compiler_sha256": "96ede0871ce5f8751d5138b2f2cd3b9839ec958be9d476650b9c6086aea662d6",
+  "input_sha256": {
+    "compiler/bin/aot_patch.dart": "347989e8dc5b8edf4645b2d42261c2cd8094348d91482046919d33ecda7bde88",
+    "compiler/lib/source_graph.dart": "c162cef515ec0b7cde596354544e6b917b28378d97a4276ecc7cd321b0b49043",
+    "compiler/lib/class_lowering.dart": "1f47b58ba330868af1a2074427aa68d565622304a46346def0615f74980ee53a",
+    "compiler/bin/inspect_kernel_api.dart": "515cf8784fcc23cc32cd4598fed47064d3c537f159e6fefd96d0cc11be303aab",
+    "scripts/aot_lab.py": "77b34c36e549fd1e4cb9db4c083f067a562927d52af09b19152a4c19c5ee3b92",
+    "scripts/verify_flutter_aot_lab.py": "b8e5179826446e43c2cf5a4a144684ec7aa6ff953fd6c9c4f00c1298263440cd",
+    "scripts/verify_aot_lab.py": "79bef9f05c87a417213d2ec2a33a53f751f5c470b48b724dc63bfef0e485e242",
+    "test/aot_compiler_test.py": "996232a1fbaab50c2264b4fe9d9537f44612bdf5b1d6e33d0013c3b465463bae",
+    "toolchain.lock.json": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "runtime/patches/manifest.json": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "compiler/fixtures/aot_flutter_ui_baseline/app.dart": "ae64305846199970618b418d0fb4fb74c603bf2585a9c7012c6050eab9fcbf2b",
+    "compiler/fixtures/aot_flutter_ui_baseline/fallback.dart": "6840b7621ca278538cc20e38d3f69fd49793c26f3cef1a8ffbfc656e30af8d71",
+    "compiler/fixtures/aot_flutter_ui_baseline/flutter.dart": "9330fc3ef890875fefe4f6e7a073afb4e10525e1a24c9df1c861b0f1215bf02e",
+    "compiler/fixtures/aot_flutter_ui_baseline/pubspec.lock": "9141a338d7df11b1efcfb994142037154a0026ec20ba4afd9592609ccccaa922",
+    "compiler/fixtures/aot_flutter_ui_baseline/pubspec.yaml": "91d37727458551d0e07980c835678763e5e7c9d57b112ddd194b8aeb5b11e3e4",
+    "compiler/fixtures/aot_flutter_ui_patch/app.dart": "83320acbe16150cb743f9b56d56b9b63c7b0594004feb34d4395024e0206b7fa",
+    "compiler/fixtures/aot_flutter_ui_patch/fallback.dart": "6840b7621ca278538cc20e38d3f69fd49793c26f3cef1a8ffbfc656e30af8d71",
+    "compiler/fixtures/aot_flutter_ui_patch/flutter.dart": "9330fc3ef890875fefe4f6e7a073afb4e10525e1a24c9df1c861b0f1215bf02e",
+    "compiler/fixtures/aot_flutter_ui_patch/pubspec.lock": "9141a338d7df11b1efcfb994142037154a0026ec20ba4afd9592609ccccaa922",
+    "compiler/fixtures/aot_flutter_ui_patch/pubspec.yaml": "91d37727458551d0e07980c835678763e5e7c9d57b112ddd194b8aeb5b11e3e4",
+    "scripts/build_flutter_embedder_lab.py": "0b7be31c691e3f14d40c850b387c999968fe5456303a0dcbc02070c511ffce0c",
+    "scripts/verify_flutter_ui_host.py": "b1408b44b6ba1ec6edc3a81ed62b7b9a4b12d698fc7bbecbb70d1e3e1cdabb0d",
+    "runtime/probes/flutter_ui_fixture_runner.cc": "a1f4618651bef7d98d581a2554a9c015ed1e85f8acb3044239621dd0c8b8be65"
+  },
+  "report_sha256": {
+    "output/flutter-target-20260928-vm-base/native-checks/report.json": "f8ed880aa53632f06b713ca0506dff7cc18e29b819b3c468b6a9c8f0af28a022",
+    "output/flutter-target-20260928-second/compiler-checks-verified/report.json": "a451d64cc380b7390702466a9f76142959dd49592462c96ddf78e223264ad99e",
+    "output/flutter-target-20260928-host-final/report.json": "d601611b494c9f7bd0c2a340246ac01267b4387698201e74e9183d863fbd1062",
+    "output/flutter-target-verification.log": "3451777533fe1bc5046ed7d0d8db741762965e104094905d3084d4568c2dc1d7"
+  },
+  "host_engine_sha256": "aa920d8d6c1b3f3a75d964a70113d3fe91cb27c1d9f2ce52ec58a7fad3953b87",
+  "baseline_aot_sha256": "5003a0ff2f2c17b89803cb67ef59116b95a2aeaf18747f6c72335b200ddd7a09",
+  "probe_sha256": "c075f6a11e33d8f0c821162b2aae7b06a2f3f44dcd3b770b99381fcdea8f9874",
+  "sdk_ui_fragment_count": 19,
+  "observed_vm_scavenges": 21,
+  "verified": [
+    "VM and Flutter have explicit separate condition environments, SDK imports, dynamic contracts and baseline identities. Cross-target patches and changed UI SDK source fragments fail closed.",
+    "Real Flutter CFE confirms all 21 environment values. Original-source and generated Kernel preserve Color, Offset and UI-typed callback signatures.",
+    "A matching Release ARM64 host Flutter engine library was built from pinned patched sources (2918 Ninja steps), preserving existing dynamic runtime tools. The committed builder then reused it with no work; this is not a second clean build.",
+    "Four real AOT engine processes compare original baseline/candidate with generated baseline/bytecode update. Both sides match exactly; unchanged main/blender remain AOT, only origin/shade are installed.",
+    "Host probe enforces AOT engine mode, a bounded completion check, task ordering, engine shutdown and unchanged baseline/engine bytes.",
+    "Space gate, fresh-output protection, read-only planning and incorrect-engine-hash rejection were executed independently; no forbidden output or evidence overwrite occurred.",
+    "The final ordinary run used unchanged frozen compiler/test inputs. Host builder/verifier/C++ probe were added afterward and separately compiled and verified against the real engine; final hashes match those execution records."
+  ],
+  "failures_and_fixes": [
+    "An early CompilerTarget draft used duplicate const-map keys and a shadowed target variable; corrected before real target compilation.",
+    "A directed test initially omitted the hashlib import; corrected and reran both Flutter tests successfully.",
+    "Kernel inspection initially used the wrong ConstantExpression field and a generic RecursiveVisitor API; fixed to the pinned Kernel API. The first verify.sh stopped at static analysis with exit 3; preserved its log and fully reran after correction.",
+    "AOT CFE removes const fields and folds environment values into main; inspect the actual Kernel string-list values instead of missing fields.",
+    "Running a Flutter snapshot in standalone dartaotruntime exited 253 because dart:_builtin was absent. Built and used the actual Flutter AOT embedder instead; the failed standalone evidence remains under output/flutter-target-inspection."
+  ],
+  "cache_cleanup": {
+    "removed_rebuildable_files": 705,
+    "removed_bytes": 3086821984,
+    "scope": "Inactive reference host ANGLE/Vulkan .o/.a caches only; current dynamic output, sources, SDKs, binaries and historical QA artifacts preserved"
+  },
+  "limitations": [
+    "Only the fixed dart:ui Color/Offset/callback fixture was executed. No Widget rendering or full framework lowering acceptance.",
+    "The minimal foundation source graph now passes dart:ui but still rejects unlinked dart:io with exit 2 and no baseline output.",
+    "No mobile engine rebuild, Android/iOS device cold start, signatures, rollback or performance acceptance in this round.",
+    "Historical native suites were not rerun; the host UI execution report does not promote M1 or production gates."
+  ],
+  "engine_executed": true,
+  "device_accepted": false,
+  "m1_passed": false,
+  "production_patch": false
+}

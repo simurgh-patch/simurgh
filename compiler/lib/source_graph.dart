@@ -140,11 +140,42 @@ const linkedSdkLibraries = {
   'dart:typed_data',
 };
 String sdkPrefix(String uri) => '${entityPrefix}sdk_${uri.substring(5)}';
-String get sdkImports =>
-    "import 'dart:core';\n" +
-    linkedSdkLibraries
-        .map((uri) => "import '$uri' as ${sdkPrefix(uri)};")
-        .join('\n');
+
+// The generated SDK imports and condition values must belong to one target.
+// UI availability is never inferred from the machine running the compiler.
+class CompilerTarget {
+  const CompilerTarget._(this.name, this.sdkLibraries, this.environment);
+  final String name;
+  final Set<String> sdkLibraries;
+  final Map<String, String?> environment;
+
+  static const vm = CompilerTarget._(
+    'pinned-standalone-vm-aot',
+    linkedSdkLibraries,
+    pinnedVmConditionalEnvironment,
+  );
+  static final flutter = CompilerTarget._(
+    'pinned-flutter-aot',
+    const {...linkedSdkLibraries, 'dart:ui'},
+    Map.unmodifiable({
+      ...pinnedVmConditionalEnvironment,
+      'dart.library.cli': null,
+      'dart.library.ui': 'true',
+    }),
+  );
+
+  static CompilerTarget named(String name) => switch (name) {
+    'vm' || 'pinned-standalone-vm-aot' => vm,
+    'flutter' || 'pinned-flutter-aot' => flutter,
+    _ => _reject('Unsupported compiler target: $name'),
+  };
+
+  String get sdkImports =>
+      "import 'dart:core';\n" +
+      sdkLibraries
+          .map((uri) => "import '$uri' as ${sdkPrefix(uri)};")
+          .join('\n');
+}
 
 String _hash(String text) => sha256.convert(utf8.encode(text)).toString();
 Never _reject(String message) => throw FormatException(message);
@@ -778,7 +809,13 @@ List<Map<String, String>> _dynamicRetentionRoots(
   return [for (final key in keys) roots[key]!];
 }
 
-Future<SourceGraph> loadSourceGraph(File entryFile) async {
+Future<SourceGraph> loadSourceGraph(
+  File entryFile, {
+  CompilerTarget target = CompilerTarget.vm,
+}) async {
+  final sdkImports = target.sdkImports;
+  final conditionalEnvironment = target.environment;
+  final linkedSdkLibraries = target.sdkLibraries;
   final entry = File(entryFile.resolveSymbolicLinksSync());
   final root = entry.parent.uri;
   final libraries = <String, _Library>{};
@@ -793,10 +830,12 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
   final packageHooks = <File>[];
   final conditionalSources = <String, String>{};
   final conditionalInputs = <File, String>{};
+  final sdkSourceInputs = <File, String>{};
+  final sdkSourceHashes = <String, String>{};
   final collection = AnalysisContextCollectionImpl(
     includedPaths: [entry.path],
     declaredVariables: {
-      for (final entry in pinnedVmConditionalEnvironment.entries)
+      for (final entry in target.environment.entries)
         if (entry.value != null) entry.key: entry.value!,
     },
   );
@@ -921,7 +960,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (directive is NamespaceDirective &&
           directive.configurations.isNotEmpty) {
         for (final configuration in directive.configurations) {
-          if (!pinnedVmConditionalEnvironment.containsKey(
+          if (!conditionalEnvironment.containsKey(
             configuration.name.toSource(),
           )) {
             _reject('Unsupported conditional environment in $uri');
@@ -1112,6 +1151,31 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (result is! LibraryElementResult)
         _reject('Cannot resolve SDK library: $uri');
       final library = result.element;
+      if (uri == 'dart:ui') {
+        // The embedder resolver may be supplied by package configuration. Check
+        // every resolved UI fragment against our independent pinned checkout,
+        // rather than trusting an arbitrary package named sky_engine.
+        final pinnedRoot = Directory.fromUri(
+          Platform.script.resolve(
+            '../../.engine-workspace/engine/engine/src/flutter/lib/ui/',
+          ),
+        );
+        for (final fragment in library.fragments) {
+          final actual = File(fragment.source.fullName);
+          final name = actual.uri.pathSegments.last;
+          final pinned = File.fromUri(pinnedRoot.uri.resolve(name));
+          if (!actual.existsSync() || !pinned.existsSync()) {
+            _reject('Flutter SDK source cannot be verified: $name');
+          }
+          final text = actual.readAsStringSync();
+          if (text != pinned.readAsStringSync()) {
+            _reject('Flutter SDK source differs from pinned checkout: $name');
+          }
+          sdkSourceInputs[actual] = text;
+          sdkSourceInputs[pinned] = text;
+          sdkSourceHashes['dart:ui/$name'] = _hash(text);
+        }
+      }
       sdkLibraries.add(library);
       for (final entry in library.exportNamespace.definedNames2.entries) {
         final element = entry.value;
@@ -1138,7 +1202,7 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       }
     }
     final records = <String, Map<String, Object?>>{};
-    final classes = _Classes(entities, records);
+    final classes = _Classes(entities, records, target);
     for (final library in sorted) {
       for (final declaration in resolved[library.uri]!.unit.declarations.where(
         (node) =>
@@ -1465,6 +1529,11 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       if (library.file.readAsStringSync() != library.source)
         _reject('Source graph changed during compilation');
     }
+    for (final input in sdkSourceInputs.entries) {
+      if (input.key.readAsStringSync() != input.value) {
+        _reject('Flutter SDK source changed during compilation');
+      }
+    }
     for (final input in conditionalInputs.entries) {
       if (input.key.readAsStringSync() != input.value) {
         _reject('Conditional source changed during compilation');
@@ -1486,8 +1555,8 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
     return SourceGraph(source.toString(), {
       'schema': 1,
       'entry': 'app:entry',
-      'conditional_target': 'pinned-standalone-vm-aot',
-      'conditional_environment': pinnedVmConditionalEnvironment,
+      'conditional_target': target.name,
+      'conditional_environment': target.environment,
       'entry_package_uri': packageConfig.toPackageUri(entry.uri)?.toString(),
       'language_version': languageVersion,
       'library_language_versions': languageVersions,
@@ -1514,6 +1583,10 @@ Future<SourceGraph> loadSourceGraph(File entryFile) async {
       'entities': records,
       'classes': classes.manifest,
       'sdk_libraries': linkedSdkLibraries.toList(),
+      'sdk_source_hashes': {
+        for (final key in (sdkSourceHashes.keys.toList()..sort()))
+          key: sdkSourceHashes[key],
+      },
       // Retain legal SDK inheritance/implementation contracts before patches
       // first use them. Analyzer still enforces original source restrictions.
       'sdk_superclasses': [
