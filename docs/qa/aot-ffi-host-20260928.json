@@ -1,0 +1,174 @@
+{
+  "recorded_at": "2026-09-28T17:16:40.381382+08:00",
+  "scope": "Restricted fixed FFI ABI with automatic AOT bridges; macOS ARM64 VM and Flutter host only",
+  "compiler_sha256": "1ec8f43884b8fb2b2acf88d4d9324f5c532fb085a4d9252af3a82a1153289b62",
+  "identity": {
+    "toolchain_sha256": "74637f34a3619993c5241b742bfab65cb42230d1ff1f9dcf1791e3a2e6d44947",
+    "engine_revision": "0cd610717bde95fd88343c64f81c11ba4e5c0010",
+    "dart_revision": "d684a576a6aa954ae107a03b2b4e1d61c3bebe93",
+    "runtime_patchset_sha256": "ec1dd64768744ebca0fed2521074c82ba8e7d25e7afc39360c573e75510b9690",
+    "runtime_source_files": {
+      "runtime/vm/compiler/aot/precompiler.cc": "06d539ccc068b90dd02717e357a4a6fad65eb90682ead07049865281ed726093",
+      "pkg/front_end/lib/src/kernel/dynamic_module_validator.dart": "4005c1e8b5626a347b32b00bd5dafb61841dde71dff3f7a88fedbf5fc7a2aa34",
+      "runtime/vm/object.cc": "cb73d949ed4f8da5da6f80c20057cf90e184768daafb9dee808ebe976cc2f667",
+      "pkg/front_end/lib/src/source/source_enum_builder.dart": "58691362e295475b2f74777f8aff91cab82e456119e9b20904cc27909342d7dd"
+    }
+  },
+  "checks": {
+    "ordinary_exit_code": 0,
+    "dart_tests": 16,
+    "python_tests": 186,
+    "flutter_widget_tests": 7,
+    "ffi_native_checks": 57,
+    "core_native_checks": 7,
+    "flutter_compiler_checks": 7,
+    "flutter_host_checks": 7,
+    "all_passed": true
+  },
+  "python_seconds": 2287.278,
+  "ffi_fixtures": {
+    "native": {
+      "checks": 8,
+      "installed_functions": [
+        "compute"
+      ]
+    },
+    "struct": {
+      "checks": 8,
+      "installed_functions": [
+        "Pair.score",
+        "work"
+      ]
+    },
+    "callback": {
+      "checks": 8,
+      "installed_functions": [
+        "compute",
+        "make"
+      ]
+    },
+    "callback_gc": {
+      "checks": 9,
+      "installed_functions": [
+        "listen",
+        "main",
+        "make"
+      ],
+      "scavenges": 31
+    },
+    "address": {
+      "checks": 8,
+      "installed_functions": [
+        "compute"
+      ]
+    },
+    "pointer": {
+      "checks": 8,
+      "installed_functions": [
+        "work"
+      ]
+    },
+    "lookup": {
+      "checks": 8,
+      "installed_functions": [
+        "compute",
+        "target"
+      ]
+    }
+  },
+  "observed_core_scavenges": 21,
+  "build_sha256": {
+    "native": "103b0e9ef29a0e0b06b017cf4563964894a669c152ce5f7f1e7ed1960b9ccef8",
+    "struct": "4da3f0415726fc0f0308afbdc5b976ad728e07cf6ff739419d6fd78c0f12c4ed",
+    "callback": "fe34c0cbf4328e477e0d8544d9d77bbf29fe4120f58c62ee68abb209b096bdec",
+    "callback_gc": "e59b81389c06133719184edeec18581c2ff42f992999ed95f6eb2a0ce1fcb2bd",
+    "address": "3d008b3b5a4a42ab861c1ff278e6a5ab3f1328be21a114ef2298abaa871ae1b2",
+    "pointer": "783fe9af393fb3f5aee8ce83996bffe0d7668191d72ffaa74ed667eeab4f25f2",
+    "lookup": "55248e027bc07ec6dfbf660ac4f7f31fb82c6cf5fcee08c5357c2fbfbc38e267",
+    "base": "0d90914506e33b1ea616c17609ce06fc6f94d44fd9986b317c88bc0a1eb62ddb",
+    "gc": "b84828cae1d02c16cec6feff564f2da4182a9147f879f0a6b7dc52222736fbd7",
+    "flutter": "9c7e36d6d8f3cd52dff5836644842e125bf35aa1be42d6ddc489cc089d015e73"
+  },
+  "input_sha256": {
+    "compiler/fixtures/aot_ffi_address_baseline/app.dart": "4081dd692a40e81ea8cb7cf7e603c0c64b4f21cc51b57766fec891c8cd80f8a3",
+    "compiler/fixtures/aot_ffi_address_patch/app.dart": "4738dfc45c56f56a4d9a5196d6d6b10885e0a8bbe3f9a57d695cf594e27e7b16",
+    "compiler/fixtures/aot_ffi_callback_baseline/app.dart": "63802721c0da69f5e6cf5741e2ccfa0089d0fcc9de07a3b1506fb82cdc8b8e6a",
+    "compiler/fixtures/aot_ffi_callback_gc_baseline/app.dart": "86b251b6cb70a87aaadb2601ce8d5d2f9e32a16a8558b08b1949944867755cac",
+    "compiler/fixtures/aot_ffi_callback_gc_patch/app.dart": "c89ce7fd2d950b37f8bfb43751056db865cfe372a4226139522ad32f579b9ef1",
+    "compiler/fixtures/aot_ffi_callback_patch/app.dart": "de74a9b4d8547ee32e18abce512d9f348119442c71a303968a484a9d7463d38b",
+    "compiler/fixtures/aot_ffi_lookup_baseline/app.dart": "02bf38d78d239ce67bb1ecf48f67a2d512fa919c158d2224dc950c91f1bbf8c0",
+    "compiler/fixtures/aot_ffi_lookup_patch/app.dart": "d4ca8d61bea6a4a36eb3784dc6cc830ed5c4c807c19476e7898d49f6ea834d70",
+    "compiler/fixtures/aot_ffi_native_baseline/app.dart": "e45ae499dde3519b2fc8194ce594cbcd053462240e99a9b8c3bbe8de5d6660f3",
+    "compiler/fixtures/aot_ffi_native_patch/app.dart": "8c9415effcada6425409ab3cd4e3af445db8f87b8c7cbf21daad0238a71bd18f",
+    "compiler/fixtures/aot_ffi_pointer_baseline/app.dart": "3bc1116480498cb7e8375296122e2adc0528fc7c68ce4b6d641c82aa85202602",
+    "compiler/fixtures/aot_ffi_pointer_patch/app.dart": "816b33a2a6cd6ece0326c511455e8ddcf1aa103e4078969b8c4792051a803b2c",
+    "compiler/fixtures/aot_ffi_struct_baseline/app.dart": "25689c5e6b299bcc21f24be0b32c35ad4292ef4900aacac5f763ee5aff57aca3",
+    "compiler/fixtures/aot_ffi_struct_patch/app.dart": "56a41783c8431ae8f554fb81aa502562654e9f6b0055528ee2f1cf95af740c86",
+    "compiler/fixtures/aot_flutter_ffi_baseline/app.dart": "47d46cca081a0d3b2cfa14f454c678eaa1b2ea30a0ad55653192f5c49fba2ab5",
+    "compiler/fixtures/aot_flutter_ffi_baseline/pubspec.lock": "9141a338d7df11b1efcfb994142037154a0026ec20ba4afd9592609ccccaa922",
+    "compiler/fixtures/aot_flutter_ffi_baseline/pubspec.yaml": "55b04275e2aa061f7a8da90880120159adedcbc3ba1592cad5a73223fefdf694",
+    "compiler/fixtures/aot_flutter_ffi_patch/app.dart": "e56bb90d9c80eb5b6f7ef6f291f8f2a8b45adfcbbd09570cf2beebcd77a1cbad",
+    "compiler/fixtures/aot_flutter_ffi_patch/pubspec.lock": "9141a338d7df11b1efcfb994142037154a0026ec20ba4afd9592609ccccaa922",
+    "compiler/fixtures/aot_flutter_ffi_patch/pubspec.yaml": "55b04275e2aa061f7a8da90880120159adedcbc3ba1592cad5a73223fefdf694",
+    "compiler/lib/native_bindings.dart": "5186217d91f11a9b9e99d582d972567e310ad60590f4e3e26ac7f98564a1f1eb",
+    "scripts/verify_ffi_aot_lab.py": "8e93f6240bb7ce40b4fa657f836699294b6c720ecac5f4d3f63578b9ef1b8c9a",
+    "compiler/README.md": "9b862b8b13e616feddbb1f76a23a548ba9a379a92844e13fdc98985eada61ab4",
+    "compiler/bin/aot_patch.dart": "ca4452220895c7edd047b562fed424dd8cfb13d36ea777dc17354e293a4636e8",
+    "compiler/lib/class_lowering.dart": "92f4327aa8a820435711784ef18152e88a15c5581f713a2427da43f4ceb4961d",
+    "compiler/lib/source_graph.dart": "f68bc50ce538b3204cceb3f7f22ab584baddcec3026b69b35e407173cf705df8",
+    "scripts/aot_lab.py": "3a5470e6bd8166526ab9e6fb7286cfc57181fe141698872d6a17670919f16756",
+    "scripts/verify_flutter_aot_lab.py": "8216a71d9bb9364cef3778a560a99796a8411d0977fbae2a7fd89b51adc19315",
+    "scripts/verify_flutter_ui_host.py": "b24886151d6f50c2170bea96e60b7ddcba95a4004f2a7b70f92beff938c78e04",
+    "test/aot_compiler_test.py": "f62960b01401d6f7f1b1099d845519505bbce995112329c6ba610065fac5b334"
+  },
+  "evidence_sha256": {
+    "output/ffi-accepted-native-checks/report.json": "fb79fe90dfe4ad03b298ed3af002f704efd5d313d25111092fd99d2ac45eb56c",
+    "output/ffi-accepted-struct-checks/report.json": "88880916b45adbad1417b6f70a3d074d24db63c3eae4953d21f8d5019463ef64",
+    "output/ffi-accepted-callback-checks/report.json": "b2b44fc3c7cceeb169b420a98948fb079d7b31fd8c3645a167085a7ac76a8f0d",
+    "output/ffi-accepted-callback_gc-checks/report.json": "bc760f943d662ccd8114c8d381af24a4db64f92c4ee075021bc10b634f72f03c",
+    "output/ffi-accepted-address-checks/report.json": "8547af88565808a126f88876af3bdce6ab563fb1c814e49f7513bc5f31f510ab",
+    "output/ffi-accepted-pointer-checks/report.json": "8608d77da03e05259ddfef1580c81f5cfa5ace590cd07b9c307280bb7604c4d6",
+    "output/ffi-accepted-lookup-checks/report.json": "519bdcbbbba6da7c38dedb19a0c0de969b99c3e1fdb75532a7cd53b9d7eb7f86",
+    "output/ffi-accepted-flutter-compiler/report.json": "0b9e8def6ae4b141990b2031bb2bbd153c4778d98ecb5e8be53adb0f4fc75fb0",
+    "output/ffi-accepted-flutter-host/report.json": "a1dbdb64aa28364cb20a55cf28edd6176763463efb4fb3d1c2502b7e911c5d9c",
+    "output/ffi-accepted-core-checks/report.json": "bffdec3b9a956cbd3d376fa67cda961641f17604cb0bac8e0c9ac900cc864b16",
+    "output/ffi-ordinary-result.json": "3a46964ed5679cdfd740d0b936e158626b642a7931e79b9f3c2a6ac3d40c2d04",
+    "output/ffi-full-verification.log": "67759b1e01d93e1dec5bde15660f425b5d818b0c2f19508e299702b9fa3b5002",
+    "output/ffi-full-verification-second.log": "91a2d96a5aa8c05512730300ad277162ae45b66fbf9c01090fca827689254bed",
+    "output/ffi-directed-first.log": "01398c58dca26d27fe9118d037a2379ad7ed20f36e0ecb61446ae736e584c255",
+    "output/ffi-main-analysis.log": "7dab5cd68ca8bff83014e58c37bc190a39c6ce3aff26232dbc806a93eb3cd035",
+    "output/ffi-accepted-analysis.log": "7dab5cd68ca8bff83014e58c37bc190a39c6ce3aff26232dbc806a93eb3cd035",
+    "output/ffi-frozen-inputs.json": "e53409abcb58c82f983e2276b65665fb2926d9e58a99a2cfca071a34166a357b",
+    "output/ffi-callback-dependency-directed.log": "df3b25de7478d6624138f694acda6b8fcc95b310d8f84c6da53d94f1238bc593",
+    "output/ffi-address-adjusted-directed.log": "e71d9dede31842e6c5431dcec50bdd56da560096e9581a549223f9a54e33feb4",
+    "output/ffi-final-gc/build.json": "37db3226c3e91473a3b3bbacec264b198c000484c6ad038511803b83af22a8bc",
+    "output/ffi-final-address-checks/report.json": "3fcb1d22b9d2acbef919a19c2f425a6d1df7aae2f1ab55cc2450702bf178550a",
+    "output/ffi-final-address-checks/baseline-original.log": "6b504fc141bb8a8933d3e938f70e50a0b72d3051cebd96093d655f1fd98d7a08",
+    "output/ffi-address-explicit-oracle/2.log": "c331ed4609f98e4c1015bb2bc5477a30f13158a290ac305502c4d7cd629bba95",
+    "output/ffi-address-explicit-oracle/official-run.log": "c331ed4609f98e4c1015bb2bc5477a30f13158a290ac305502c4d7cd629bba95",
+    "output/ffi-address-live-binding-oracle/2.log": "d40de54b7e305839c83a479e8570bff23354093d1064a5cd90cb3f91f73ae2e5",
+    "output/ffi-callback-metadata-runtime/build.json": "a1ea8772d01beffd0895adec709f3b36f794e15ea12a79d4ee6a116b819861ab",
+    "output/ffi-callback-metadata-original/report.json": "65babc269c1543034c17be4c59025b4eb4363f2d71b0d5c4d10b771f9cb5f70e",
+    "output/ffi-final-widget-boundary.log": "e1ea9d52cb57c0608d2c41277e5e9e3eb830a7e4daec98883bc0e8ece4b934e4"
+  },
+  "host_engine_sha256": "aa920d8d6c1b3f3a75d964a70113d3fe91cb27c1d9f2ce52ec58a7fad3953b87",
+  "engine_rebuilt_this_increment": false,
+  "failures_and_repairs": [
+    "Prototype direct bytecode NativeCallable intrinsics failed with missing private class/function and call-site-only errors. Automatic concrete AOT ABI bridges replace these operations.",
+    "Original address-only AOT failed to resolve String: null with both host snapshot/runtime variants, even with explicit Native symbol/asset. The accepted fixture also invokes abs directly; address-only equivalence remains unresolved.",
+    "Adding metadata to a changed Pointer.fromFunction target made it module-local while the retained callback still executed the old AOT slot: mixed 21 versus original 30. Native dependencies now reject module-local targets; a dedicated negative subcase passes.",
+    "First full verify was deliberately interrupted with exit 130 after identifying the callback dependency bug. Compiler/test changes were frozen before restarting the entire suite and rebuilding all accepted artifacts.",
+    "First core GC invocation used nonexistent aot_gc_baseline; failure retained, corrected to the existing aot_baseline."
+  ],
+  "limitations": [
+    "No full Widget baseline; main compiler stops at vm:keep-name. Deeper super.initInstances is isolated exploration only.",
+    "No native ABI/layout/binding/compile-time callback-contract updates; new baseline required.",
+    "Native.addressOf-only original/mixed equivalence unresolved.",
+    "Listener test schedules asynchronous delivery from the same thread; no foreign native thread acceptance.",
+    "No new mobile runtime build, physical-device execution, signatures/rollback or measured performance.",
+    "Production release/patch commands remain exit 3."
+  ],
+  "m1_passed": false,
+  "device_accepted": false,
+  "production_patch": false
+}

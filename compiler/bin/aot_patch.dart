@@ -24,6 +24,7 @@ final compilerHash = hash(
       'bin/aot_patch.dart',
       'lib/source_graph.dart',
       'lib/class_lowering.dart',
+      'lib/native_bindings.dart',
       'lib/extension_lowering.dart',
       '../runtime/patches/manifest.json',
     ])
@@ -240,6 +241,12 @@ class Program {
       if (name.startsWith('_') || name.startsWith(prefix)) {
         reject('Private or reserved function name: $name');
       }
+      if ((declaration.externalKeyword != null &&
+              entities[name]?['kind'] == 'native-binding') ||
+          entities[name]?['kind'] == 'native-bridge') {
+        natives[name] = declaration;
+        continue;
+      }
       if (functions.containsKey(name)) reject('Duplicate function: $name');
       final fn = declaration.functionExpression;
       if (declaration.isGetter ||
@@ -326,6 +333,7 @@ class Program {
   final extensions = <String, ExtensionDeclaration>{};
   final aliases = <String, GenericTypeAlias>{};
   final functions = <String, FunctionDeclaration>{};
+  final natives = <String, FunctionDeclaration>{};
   final classes = <String, CompilationUnitMember>{};
   final globals = <String, TopLevelVariableDeclaration>{};
   String signature(FunctionDeclaration f) =>
@@ -511,7 +519,11 @@ String nodeText(
   var text = program.source.substring(node.offset, node.end);
   if (baselineNames != null) {
     final edits = CallEdits(
-      {...program.functions.keys, ...isolateBridgeSymbols},
+      {
+        ...program.functions.keys,
+        ...program.natives.keys,
+        ...isolateBridgeSymbols,
+      },
       program.classes.keys.toSet(),
       program.globals.keys.toSet(),
     )..walk(node);
@@ -647,6 +659,9 @@ void baseline(Program program, Directory output) {
   }
   for (final declaration in program.globals.values.toSet()) {
     generated.writeln(declaration.toSource());
+  }
+  for (final declaration in program.natives.values) {
+    generated.writeln(nodeText(program, declaration));
   }
   for (final declaration in program.extensions.values) {
     generated.writeln(nodeText(program, declaration));
@@ -807,6 +822,7 @@ String dynamicClassInterface(Program program) {
             (entry) =>
                 entry.value is! EnumDeclaration &&
                 entry.value is! ExtensionTypeDeclaration &&
+                program.entities[entry.key]?['native_layout'] != true &&
                 entry.value.finalKeyword == null &&
                 entry.value.sealedKeyword == null,
           )
@@ -906,7 +922,27 @@ Future<void> patch(Program program, Directory base, Directory output) async {
       jsonEncode((jsonDecode(original.identity) as Map)['sdk_source_hashes'])) {
     reject('Linked SDK source changes require a new baseline');
   }
+  if (jsonEncode((jsonDecode(program.identity) as Map)['native_owners']) !=
+      jsonEncode((jsonDecode(original.identity) as Map)['native_owners']))
+    reject('Native class additions or removals require a new baseline');
   final before = original.functions.keys.toSet();
+  if (jsonEncode((jsonDecode(program.identity) as Map)['native_contracts']) !=
+      jsonEncode((jsonDecode(original.identity) as Map)['native_contracts']))
+    reject('Native bindings require a new baseline');
+  if (program.natives.keys
+          .toSet()
+          .difference(original.natives.keys.toSet())
+          .isNotEmpty ||
+      original.natives.keys
+          .toSet()
+          .difference(program.natives.keys.toSet())
+          .isNotEmpty)
+    reject('Native declaration changes require a new baseline');
+  for (final name in original.natives.keys) {
+    if (declarationTokens(program.natives[name]!) !=
+        declarationTokens(original.natives[name]!))
+      reject('Native signatures require a new baseline');
+  }
   final originalClasses = original.classes.keys.toSet();
   // Immutable compiler-generated adapters can become unused when an index
   // setter or a private interface obligation is removed. They remain in the baseline snapshot; no user
@@ -1135,13 +1171,31 @@ Future<void> patch(Program program, Directory base, Directory output) async {
             invalidated.length +
             changedExtensionReferences.length;
   }
+  final nativeOwners =
+      ((jsonDecode(original.identity) as Map)['native_owners'] as List)
+          .cast<String>()
+          .toSet();
+  if (replacedClasses.intersection(nativeOwners).isNotEmpty)
+    reject('Native class layout or binding changes require a new baseline');
+  for (final declaration in program.natives.values) {
+    if (referencesTo(declaration, {
+      ...replacedClasses,
+      ...replacedAliases,
+      ...replacedGlobals,
+      // A retained static callback cannot follow a target whose new signature
+      // or metadata keeps it module-local instead of updating its AOT slot.
+      ...moduleOnly,
+    }).isNotEmpty)
+      reject('Native ABI dependencies require a new baseline');
+  }
   if (moduleOnly.contains('main'))
     reject('Entry metadata changes require a new baseline');
   final baselineClasses = originalClasses.difference(replacedClasses);
   final baselineGlobals = originalGlobals.difference(replacedGlobals);
   final addedGlobals = program.globals.keys.toSet().difference(originalGlobals);
   final moduleGlobals = {...replacedGlobals, ...addedGlobals};
-  final baselineFunctions = before.difference(moduleOnly);
+  final baselineFunctions = before.difference(moduleOnly)
+    ..addAll(original.natives.keys);
   final addedClasses =
       program.classes.keys.toSet().difference(originalClasses).toList()..sort();
   final moduleClasses = {...addedClasses, ...replacedClasses}.toList()..sort();
@@ -1359,7 +1413,17 @@ Future<void> main(List<String> args) async {
     final output = Directory(args.last);
     if (output.existsSync())
       reject('Output already exists; refusing to overwrite');
-    final graph = await loadSourceGraph(file, target: target);
+    final nativeDefaults = args[0] == 'patch'
+        ? ((jsonDecode(File('${args[2]}/source_graph.json').readAsStringSync())
+                      as Map)['native_default_assets']
+                  as Map)
+              .cast<String, String>()
+        : <String, String>{};
+    final graph = await loadSourceGraph(
+      file,
+      target: target,
+      nativeDefaultAssets: nativeDefaults,
+    );
     final program = Program(graph.source, graph.identity);
     if (args[0] == 'baseline') {
       output.createSync(recursive: true);

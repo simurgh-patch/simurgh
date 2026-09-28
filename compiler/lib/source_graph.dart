@@ -19,6 +19,7 @@ import 'package:package_config/package_config.dart';
 import 'package:yaml/yaml.dart';
 
 part 'class_lowering.dart';
+part 'native_bindings.dart';
 part 'extension_lowering.dart';
 
 // Pinned standalone VM AOT environment, independently checked with source AOT.
@@ -147,6 +148,7 @@ const linkedSdkLibraries = {
   'dart:io',
   'dart:isolate',
   'dart:developer',
+  'dart:ffi',
 };
 String sdkPrefix(String uri) => '${entityPrefix}sdk_${uri.substring(5)}';
 
@@ -513,6 +515,11 @@ class _References extends RecursiveAstVisitor<void> {
 
   @override
   void visitAnnotation(Annotation node) {
+    final native = classes?.natives.annotations[node];
+    if (native != null) {
+      edits.add(_Edit(node.offset, node.end, native));
+      return;
+    }
     if (dispatchUnsafePragmas.contains(compilerPragmaName(node))) {
       edits.add(_Edit(node.offset, node.end, ''));
       return;
@@ -545,8 +552,156 @@ class _References extends RecursiveAstVisitor<void> {
     }
   }
 
+  String nativeExpression(Expression expression) {
+    final refs = _References(
+      entities,
+      classes: classes,
+      libraryUri: libraryUri,
+      receiver: receiver,
+      owner: owner,
+    );
+    expression.accept(refs);
+    final unit = expression.root as CompilationUnit;
+    return _rewrite(
+      unit.declaredFragment!.source.contents.data,
+      expression,
+      refs.edits,
+    );
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    final element = node.constructorName.element;
+    if (element?.library.uri.toString() == 'dart:ffi' &&
+        element?.enclosingElement.name == 'NativeCallable' &&
+        {'isolateLocal', 'listener'}.contains(element?.name)) {
+      final callback = node.argumentList.arguments.first;
+      final callbackType = callback.staticType;
+      if (callbackType is! FunctionType)
+        _reject('Native callbacks need a concrete function type');
+      final named = node.argumentList.arguments
+          .whereType<NamedExpression>()
+          .toList();
+      final options = named.isEmpty
+          ? ''
+          : ', exceptionalReturn: ${nativeExpression(named.single.expression)}';
+      final resultType = classes!.typeText(node.staticType!, names: entities);
+      final nativeType = classes!.typeText(
+        (node.staticType as InterfaceType).typeArguments.single,
+        names: entities,
+      );
+      final symbol = classes!.natives.bridge(
+        libraryUri!,
+        resultType,
+        classes!.typeText(callbackType, names: entities),
+        '${sdkPrefix('dart:ffi')}.NativeCallable<$nativeType>.${element!.name}(target$options)',
+      );
+      replace(node.offset, callback.offset, '$symbol(');
+      callback.accept(this);
+      replace(callback.end, node.end, ')');
+      return;
+    }
+    if (element?.library.uri.toString() == 'dart:ffi' &&
+        element?.enclosingElement.name == 'NativeCallable')
+      _reject('Unsupported native callback factory: ${element?.name}');
+    super.visitInstanceCreationExpression(node);
+  }
+
   @override
   void visitMethodInvocation(MethodInvocation node) {
+    final method = node.methodName.element;
+    if (method?.library?.uri.toString() == 'dart:ffi' &&
+        method?.name == 'lookupFunction') {
+      final target = node.target;
+      if (target == null ||
+          node.isNullAware ||
+          node.isCascaded ||
+          node.typeArguments?.arguments.length != 2)
+        _reject('FFI lookupFunction requires explicit ABI types and receiver');
+      final native = classes!.typeText(
+        node.typeArguments!.arguments.first.type!,
+        names: entities,
+      );
+      final dart = classes!.typeText(node.staticType!, names: entities);
+      final args = node.argumentList.arguments;
+      final options = args.length == 1
+          ? ''
+          : ', isLeaf: ${nativeExpression((args.last as NamedExpression).expression)}';
+      final symbol = classes!.natives.bridge(
+        libraryUri!,
+        dart,
+        '',
+        'library.lookupFunction<$native, $dart>(target$options)',
+        formals:
+            '${sdkPrefix('dart:ffi')}.DynamicLibrary library, String target',
+      );
+      final invocation =
+          '$symbol(${nativeExpression(target)}, ${nativeExpression(args.first)})';
+      replace(node.offset, node.end, invocation);
+      return;
+    }
+    if (method?.library?.uri.toString() == 'dart:ffi' &&
+        method?.enclosingElement?.name == 'Pointer' &&
+        method?.name == 'fromFunction') {
+      final result = classes!.typeText(node.staticType!, names: entities);
+      final nativeFunction =
+          (node.staticType as InterfaceType).typeArguments.single
+              as InterfaceType;
+      final native = classes!.typeText(
+        nativeFunction.typeArguments.single,
+        names: entities,
+      );
+      final args = node.argumentList.arguments.map(nativeExpression).join(', ');
+      final symbol = classes!.natives.bridge(
+        libraryUri!,
+        result,
+        '',
+        '${sdkPrefix('dart:ffi')}.Pointer.fromFunction<$native>($args)',
+      );
+      replace(node.offset, node.end, '$symbol()');
+      return;
+    }
+    if (method?.library?.uri.toString() == 'dart:ffi' &&
+        method?.enclosingElement?.name == 'Native' &&
+        method?.name == 'addressOf') {
+      final result = classes!.typeText(node.staticType!, names: entities);
+      final native = classes!.typeText(
+        (node.staticType as InterfaceType).typeArguments.single,
+        names: entities,
+      );
+      final argument = nativeExpression(node.argumentList.arguments.single);
+      final symbol = classes!.natives.bridge(
+        libraryUri!,
+        result,
+        '',
+        '${sdkPrefix('dart:ffi')}.Native.addressOf<$native>($argument)',
+      );
+      replace(node.offset, node.end, '$symbol()');
+      return;
+    }
+    if (method?.library?.uri.toString() == 'dart:ffi' &&
+        method?.name == 'asFunction') {
+      final target = node.target;
+      if (target == null || node.isNullAware || node.isCascaded)
+        _reject('FFI asFunction requires an explicit non-null receiver');
+      final result = classes!.typeText(node.staticType!, names: entities);
+      final args = node.argumentList.arguments
+          .whereType<NamedExpression>()
+          .toList();
+      final options = args.isEmpty
+          ? ''
+          : 'isLeaf: ${nativeExpression(args.single.expression)}';
+      final symbol = classes!.natives.bridge(
+        libraryUri!,
+        result,
+        classes!.typeText(target.staticType!, names: entities),
+        'target.asFunction<$result>($options)',
+      );
+      replace(node.offset, node.offset, '$symbol(');
+      target.accept(this);
+      replace(target.end, node.end, ')');
+      return;
+    }
     final bridge = isolateBridge(node.methodName.element);
     if (bridge != null) {
       replace(node.offset, node.methodName.end, bridge);
@@ -965,6 +1120,7 @@ List<Map<String, String>> _dynamicRetentionRoots(
   }
   add('invoke:call', 'receiver.call()', 0);
   for (final library in sdkLibraries) {
+    if (library.uri.toString() == 'dart:ffi') continue;
     for (final element in [
       ...library.classes,
       ...library.enums,
@@ -985,6 +1141,7 @@ List<Map<String, String>> _dynamicRetentionRoots(
 Future<SourceGraph> loadSourceGraph(
   File entryFile, {
   CompilerTarget target = CompilerTarget.vm,
+  Map<String, String> nativeDefaultAssets = const {},
 }) async {
   final sdkImports = target.sdkImports;
   final conditionalEnvironment = target.environment;
@@ -1112,7 +1269,9 @@ Future<SourceGraph> loadSourceGraph(
       }
     }
     for (final directive in result.unit.directives) {
-      if (directive is LibraryDirective && directive.metadata.isEmpty) continue;
+      if (directive is LibraryDirective &&
+          directive.metadata.every((a) => _ffiAnnotation(a, 'DefaultAsset')))
+        continue;
       if (directive is PartOfDirective && directive.metadata.isEmpty) {
         if (!partOwners.containsKey(file.path)) {
           _reject('Part cannot be an entrypoint or imported library: $uri');
@@ -1378,7 +1537,7 @@ Future<SourceGraph> loadSourceGraph(
       }
     }
     final records = <String, Map<String, Object?>>{};
-    final classes = _Classes(entities, records, target);
+    final classes = _Classes(entities, records, target, nativeDefaultAssets);
     for (final library in sorted) {
       for (final declaration in resolved[library.uri]!.unit.declarations.where(
         (node) =>
@@ -1485,10 +1644,21 @@ Future<SourceGraph> loadSourceGraph(
         if (element == null || records.containsKey(symbol))
           _reject('Invalid or duplicate entity in ${library.uri}: $name');
         entities[element] = symbol;
+        if (declaration.externalKeyword != null) {
+          classes.natives.register(
+            library,
+            null,
+            declaration,
+            name,
+            element,
+            symbol,
+          );
+        }
         records[symbol] = {
           'library': library.ownerUri,
           'name': name,
           'entity': id,
+          if (declaration.externalKeyword != null) 'kind': 'native-binding',
           if (declaration.functionExpression.body.isAsynchronous)
             'async_return_supported': supportsAsyncReturn(element.returnType),
         };
@@ -1710,6 +1880,7 @@ Future<SourceGraph> loadSourceGraph(
     }
     source.write(classes.lower());
     source.write(extensions.lower());
+    for (final bridge in classes.natives.bridges.values) source.writeln(bridge);
     // A coherent graph is required: don't bind mixed versions of source files.
     for (final library in sorted) {
       if (library.file.readAsStringSync() != library.source)
@@ -1769,6 +1940,12 @@ Future<SourceGraph> loadSourceGraph(
       'entities': records,
       'classes': classes.manifest,
       'sdk_libraries': linkedSdkLibraries.toList(),
+      'native_contracts': {
+        for (final key in (classes.natives.contracts.keys.toList()..sort()))
+          key: classes.natives.contracts[key],
+      },
+      'native_default_assets': classes.natives.defaults,
+      'native_owners': classes.natives.owners.toList()..sort(),
       'omitted_optimization_pragmas': dispatchUnsafePragmas.toList(),
       'sdk_source_hashes': {
         for (final key in (sdkSourceHashes.keys.toList()..sort()))

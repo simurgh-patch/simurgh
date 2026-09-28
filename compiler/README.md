@@ -53,7 +53,7 @@ Currently supported: a graph of local libraries under the entry file's directory
 
 Explicitly rejected: unresolved or native-hook/plugin packages, SDK libraries outside the linked set, imports outside the entry source root or configured package library roots, deferred imports and conditional environments outside the pinned standalone VM AOT set, unsupported inferred global types, deleted globals, deleted standalone functions, unrelated signature changes, unsupported generic bounds, void-async top-level/method declarations, external constructors, dynamic selectors absent from the baseline contract and reserved generated identifiers. Removing existing classes is rejected. Changes to fields, constructors, hierarchy or member sets create a fresh class version and relocate dependencies; removed method helpers are retired only with their owning class. A newly added class extending a retained final/sealed/interface baseline class is rejected. A relocated existing subclass brings such ancestors into its module as well. Local declarations shadowing the entry name `main` remain conservatively rejected. Not every expression position for tear-offs is supported; SDK on-constraint super method tear-offs are covered by the SDK mixin fixture. Compiler diagnostics remain authoritative for unsupported Dart semantics beyond the syntactic checks. There is no warning-and-publish bypass.
 
-For the pinned standalone VM/AOT target, conditional imports and exports use the explicit environment archived as `conditional_target` and `conditional_environment` in the source graph. `async`, `collection`, `concurrent`, `convert`, `core`, `developer`, `ffi`, `io`, `isolate`, `math`, `typed_data`, `cli`, `nativewrappers` and `vmservice_io` library conditions are `"true"`. `mirrors`, `html`, `js`, `js_util`, `js_interop`, `js_interop_unsafe` and `ui` are absent, including for comparisons against `"false"` or `""`. The first matching condition wins. This is a standalone host AOT environment, not a Flutter target (`dart:ui` is not available). Library availability conditions do not expand the linked SDK API set: a selected `dart:ffi` import still fails closed. Other condition names, custom environment definitions and deferred imports remain rejected. Selected branches join the execution graph; named inactive local/package files are checked for containment, archived and hashed but not lowered. All named local branch files must exist. The `aot_platform_conditions` fixture independently compiles original sources to AOT and compares both sides with mixed execution, including exports, equality and precedence.
+For the pinned standalone VM/AOT target, conditional imports and exports use the explicit environment archived as `conditional_target` and `conditional_environment` in the source graph. `async`, `collection`, `concurrent`, `convert`, `core`, `developer`, `ffi`, `io`, `isolate`, `math`, `typed_data`, `cli`, `nativewrappers` and `vmservice_io` library conditions are `"true"`. `mirrors`, `html`, `js`, `js_util`, `js_interop`, `js_interop_unsafe` and `ui` are absent, including for comparisons against `"false"` or `""`. The first matching condition wins. This is a standalone host AOT environment, not a Flutter target (`dart:ui` is not available). Library availability conditions do not expand the linked SDK API set: a selected unlinked library such as `dart:nativewrappers` still fails closed; restricted `dart:ffi` linkage is described below. Other condition names, custom environment definitions and deferred imports remain rejected. Selected branches join the execution graph; named inactive local/package files are checked for containment, archived and hashed but not lowered. All named local branch files must exist. The `aot_platform_conditions` fixture independently compiles original sources to AOT and compares both sides with mixed execution, including exports, equality and precedence.
 
 The generated installer checks the baseline fingerprint and all replacement types before mutating slots. The fingerprint binds the complete original source graph, toolchain lock and all three compiler source files. Logical identities are independent of the checkout's absolute location. Baseline and patch archives contain `source_graph.json` with original sources, dependencies and logical-to-generated symbol mappings; archived-source tampering is rejected. Class-shape hashes record the frozen structural baseline. **This is compatibility binding, not authentication:** bytecode is trusted local experimental input. No signature parser, untrusted-bytecode hardening, rollback, mobile startup hook, network service or published update is implemented.
 
@@ -175,7 +175,7 @@ All eight libraries are part of the baseline contract, even if a particular appl
 
 Resolved public SDK types, nested generics and accepted function types are usable in globals, parameters, results and generic bounds. Existing signature compatibility checks still apply. The `aot_sdk` fixture passes real Uint8List/List/Map/Queue/DateTime/Stream/Future objects across the boundary, preserves shared typed-array storage, calls SDK APIs from bytecode and catches a SDK FormatException in unchanged AOT. Its main and typed-array reader remain AOT. Independent source AOT is the output oracle. This is not a claim that every method in these libraries or every Stream lifecycle has passed runtime tests.
 
-Package constructs outside the supported lowered source subset, unlinked SDK libraries such as ffi, ordinary extension operators and broader SDK coverage remain incomplete. Ordinary extension declarations and io/isolate linkage are covered by the later sections; unsupported boundaries still fail closed.
+Package constructs outside the supported lowered source subset, unlinked SDK libraries such as nativewrappers, ordinary extension operators and broader SDK coverage remain incomplete. Ordinary extension declarations and io/isolate linkage are covered by the later sections; unsupported boundaries still fail closed.
 
 ```sh
 python3 scripts/aot_lab.py --baseline compiler/fixtures/aot_sdk_baseline/app.dart --candidate compiler/fixtures/aot_sdk_patch/app.dart
@@ -1079,9 +1079,8 @@ the independent framework's Flutter, build `--target flutter --compile-only`,
 then use `verify_flutter_aot_lab.py --fixture extensions` followed by the host
 verifier. `dart2js:prefer-inline` is preserved as an optimization hint on this
 host target; unknown pragmas remain rejected. This restricted flow establishes
-neither full Unicode conformance nor Widget rendering. The next Widget source
-boundary is `dart:ffi` in framework desktop-window implementations; merely
-passing characters compilation does not establish FFI or Widget support.
+neither full Unicode conformance nor Widget rendering. This characters result does not establish FFI or Widget support. Restricted
+FFI support is described below; full Widget source lowering remains incomplete.
 
 
 ## Extension type representation
@@ -1117,5 +1116,68 @@ dependency with the pinned source-built Dart SDK, build with `--target flutter
 --compile-only`, and use `verify_flutter_aot_lab.py --fixture extension-types`
 then `verify_flutter_ui_host.py`. The fixture exercises retained UI-typed callers
 and callback tear-offs in real host engine cold processes. It does not import or
-render the full Widget framework, whose FFI boundary remains unsupported. Mobile
+render the full Widget framework. Restricted FFI support is described below. Mobile
 cold activation, signatures/rollback and performance acceptance remain incomplete.
+
+
+## Fixed native ABI and FFI callbacks
+
+Restricted `dart:ffi` linkage retains top-level and static `@Native` bindings in
+AOT. The compiler preserves the original native symbol, asset ID and `isLeaf`.
+An explicit asset ID wins over a library `@DefaultAsset`; otherwise the original
+library URI is archived and reused when a candidate source is relocated. The
+existing Dart FFI annotations are supported; no Simurgh annotations or handwritten
+bridge functions are required.
+
+Struct, Union and Opaque declarations retain native layouts and external fields.
+They are not exposed as extendable dynamic-module classes. Dart method bodies can
+change while their native layout remains fixed. Adding/removing a native owner,
+changing layout, symbols, asset IDs, signatures or dependencies of the native ABI
+requires a new baseline. External declarations without a recognized static
+`@Native` binding remain rejected. Native binary deployment is not implemented.
+
+FFI intrinsics require concrete AOT call sites. The compiler automatically emits
+and retains typed ABI bridges for `NativeCallable.isolateLocal`,
+`NativeCallable.listener`, `Pointer.asFunction`, `Pointer.fromFunction`,
+`Native.addressOf` and `DynamicLibrary.lookupFunction`. A changed bytecode closure
+can enter the precompiled callback thunk, execute its Dart body, and return to
+native code. These bridges have stable contracts; changing a callback signature
+or its compile-time exceptional return requires a new baseline. A retained static
+callback also requires a new baseline if metadata/signature changes move its
+Dart target into a module-local function; retaining the old callback slot would
+otherwise execute stale code. Other callback
+factories, null-aware/cascade function conversions, and ABI contracts absent from
+the baseline are rejected. This is not arbitrary FFI compatibility or a promise
+that every native operation can execute directly in bytecode.
+
+The `aot_ffi_{native,struct,callback,callback_gc,address,pointer,lookup}_*` fixtures
+cover system `abs`, allocation/free, Struct fields, pointer reads/writes, local
+and asynchronous callbacks, exceptional returns, native addresses, dynamic
+symbol lookup and static callbacks to a changed Dart function. Build each with
+`scripts/aot_lab.py`, then verify it against both original-source AOT programs:
+
+```sh
+python3 scripts/verify_ffi_aot_lab.py \
+  --run-dir output/ffi-final-callback_gc --fixture callback_gc \
+  --output output/ffi-callback-gc-checks
+```
+
+The address fixture also calls the native binding directly. In the pinned host
+SDK, an original-source AOT program that only takes `Native.addressOf` can fail
+with a `String: null` native symbol; adding a direct binding call makes the
+original program executable. The address-only case is recorded as an unresolved
+upstream/retention boundary, not equivalent original/mixed execution.
+
+The verifier checks compiler/runtime/source identity, artifact hashes, exact
+installed-function sets, original versus mixed outputs and unchanged baseline
+AOT. The callback GC case requires observed collections with captured values
+across an await, and changes `main` as well as `make` and `listen`; it does not
+prove retention of that fixture's main function.
+
+`aot_flutter_ffi_*` combines native callbacks with `dart:ui` Offset values. Resolve
+the locked local sky_engine dependencies with the independent Dart SDK, compile
+with `--target flutter --compile-only`, then run
+`verify_flutter_aot_lab.py --fixture ffi` and `verify_flutter_ui_host.py`.
+Only `compute` is installed; UI callers and main remain in AOT. Host cold-process
+checks are separate from mobile validation. Full Widget lowering, Android/iOS
+ARM64 device execution, signatures/rollback and performance gates remain open.

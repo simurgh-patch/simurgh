@@ -34,7 +34,7 @@ def sha(path):
 
 def compiler_sha():
     components = ''.join(f'{name}\0{sha(ROOT / "compiler" / name)}\n' for name in
-                         ['bin/aot_patch.dart', 'lib/source_graph.dart', 'lib/class_lowering.dart', 'lib/extension_lowering.dart', '../runtime/patches/manifest.json'])
+                         ['bin/aot_patch.dart', 'lib/source_graph.dart', 'lib/class_lowering.dart', 'lib/native_bindings.dart', 'lib/extension_lowering.dart', '../runtime/patches/manifest.json'])
     return hashlib.sha256(components.encode()).hexdigest()
 
 

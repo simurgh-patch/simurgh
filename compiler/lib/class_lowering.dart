@@ -26,7 +26,15 @@ class _Class {
 }
 
 class _Classes {
-  _Classes(this.entities, this.records, this.target);
+  _Classes(
+    this.entities,
+    this.records,
+    this.target,
+    Map<String, String> defaults,
+  ) {
+    natives = _NativeBindings(this, defaults);
+  }
+  late final _NativeBindings natives;
   final CompilerTarget target;
   final Map<Element, String> entities;
   final Map<String, Map<String, Object?>> records;
@@ -64,6 +72,7 @@ class _Classes {
       'entity': id,
       'kind': 'class',
       if (node is ExtensionTypeDeclaration) 'generated': 'extension-type',
+      if (natives.nativeClass(element)) 'native_layout': true,
     };
   }
 
@@ -195,7 +204,9 @@ class _Classes {
   Future<void> loadSdkAncestors(AnalysisSession session) async {
     final libraries = <LibraryElement, ResolvedLibraryResult>{};
     for (final owner in declarations.values) {
-      if (owner.element is ExtensionTypeElement) continue;
+      if (owner.element is ExtensionTypeElement ||
+          natives.nativeClass(owner.element))
+        continue;
       for (final type in owner.element.allSupertypes) {
         final element = type.element;
         if (!element.library.uri.isScheme('dart') ||
@@ -299,6 +310,7 @@ class _Classes {
           _reject('Interfaces must be supported program or public SDK classes');
         }
       }
+      if (natives.nativeClass(owner.element)) natives.owners.add(owner.symbol);
       if (owner.node case ExtensionTypeDeclaration node) {
         if (node.augmentKeyword != null)
           _reject('Extension type augmentation is not supported');
@@ -330,7 +342,8 @@ class _Classes {
       }
       for (final member in owner.node.members) {
         if (member is FieldDeclaration) {
-          if (member.externalKeyword != null) {
+          if (member.externalKeyword != null &&
+              !natives.nativeClass(owner.element)) {
             _reject('External fields are not supported');
           }
           for (final variable in member.fields.variables) {
@@ -374,9 +387,20 @@ class _Classes {
           }
         } else if (member is MethodDeclaration) {
           if (member.externalKeyword != null) {
-            _reject(
-              'Unsupported instance method kind or signature: ${member.name.lexeme}',
+            final element = member.declaredFragment!.element;
+            memberSymbols[element] = _privateMember(
+              owner.library.ownerUri,
+              member.name.lexeme,
             );
+            natives.register(
+              owner.library,
+              owner.node,
+              member,
+              member.name.lexeme,
+              element,
+              '${owner.symbol}::${member.name.lexeme}',
+            );
+            continue;
           }
           final resolvedReturn = member.declaredFragment!.element.returnType;
           if (member.body.isAsynchronous &&
@@ -448,7 +472,8 @@ class _Classes {
       // Named applications inherit their base/mixin wrappers. They have no body
       // in which to declare additional super bridges.
       if (owner.node is ClassTypeAlias ||
-          owner.node is ExtensionTypeDeclaration)
+          owner.node is ExtensionTypeDeclaration ||
+          natives.nativeClass(owner.element))
         continue;
       final seen = <String>{};
       final superUses = _SuperUses();
@@ -545,7 +570,9 @@ class _Classes {
     // Source identifiers in our generated namespace are rejected, and method
     // helpers are invoked only by their actual declaring implementation.
     for (final owner in declarations.values) {
-      if (owner.node is ExtensionTypeDeclaration) continue;
+      if (owner.node is ExtensionTypeDeclaration ||
+          natives.nativeClass(owner.element))
+        continue;
       final inherited = <InterfaceElement>{};
       void inherit(InterfaceElement element) {
         if (!inherited.add(element)) return;
@@ -753,6 +780,16 @@ class _Classes {
         if (member is MethodDeclaration) {
           final element = member.declaredFragment!.element;
           final name = memberSymbols[element]!;
+          if (member.externalKeyword != null) {
+            classBody.writeln(
+              text(
+                owner,
+                member,
+                extra: [_Edit(member.name.offset, member.name.end, name)],
+              ),
+            );
+            continue;
+          }
           final returnType = member.returnType == null
               ? typeText(element.returnType)
               : text(owner, member.returnType!);

@@ -1394,7 +1394,7 @@ void main() { p.value += 1; }
         self.assertEqual(graph['libraries']['app:barrel.dart']['dependencies'], ['app:present.dart'])
         # Availability conditions do not open SDK APIs or arbitrary environments.
         cases = [
-            ("import 'dart:core' if (dart.library.ffi) 'dart:ffi'; void main() {}", 'Only local relative Dart imports/exports supported'),
+            ("import 'dart:core' if (dart.library.nativewrappers) 'dart:nativewrappers'; void main() {}", 'Only local relative Dart imports/exports supported'),
             ("import 'dart:core' if (custom.flag) 'dart:math'; void main() {}", 'Unsupported conditional'),
         ]
         for index, (source, error) in enumerate(cases):
@@ -2227,6 +2227,93 @@ void main() { p.value += 1; }
         self.assertEqual(result.returncode, 2, result.stdout)
         self.assertIn('Deleted classes require reference removal proof', result.stderr)
         self.assertFalse((self.root / 'patch').exists())
+
+
+    def test_ffi_bindings_and_generated_abi_bridges_retain_aot(self):
+        expected = {
+            'native': ['compute'], 'struct': ['Pair.score', 'work'],
+            'callback': ['compute', 'make'], 'callback_gc': ['listen', 'main', 'make'],
+            'address': ['compute'], 'pointer': ['work'], 'lookup': ['compute', 'target'],
+        }
+        for fixture, installed in expected.items():
+            with self.subTest(fixture=fixture):
+                base, patch, manifest = self.named_mixin_pair('ffi_' + fixture)
+                self.assertEqual(self.names(manifest, manifest['installed_functions']), installed)
+                self.assertEqual(manifest['replaced_classes'], [])
+                self.assertEqual(manifest['module_only_functions'], [])
+                graph = json.loads((base / 'source_graph.json').read_text())
+                self.assertIn('dart:ffi', graph['sdk_libraries'])
+                self.assertTrue(graph['native_contracts'])
+                patched_graph = json.loads((patch / 'source_graph.json').read_text())
+                self.assertEqual(graph['native_contracts'], patched_graph['native_contracts'])
+                for symbol, entity in manifest['entities'].items():
+                    if entity.get('kind') in {'native-binding', 'native-bridge'}:
+                        self.assertNotIn(symbol, manifest['installed_functions'])
+
+    def test_ffi_asset_and_symbol_identity_survive_relocation(self):
+        source = self.source('native-assets.dart', """
+@DefaultAsset('library-default') library;
+import 'dart:ffi';
+@Native<Int32 Function(Int32)>() external int abs(int value);
+@Native<Int32 Function(Int32)>(symbol: 'abs', assetId: 'explicit-asset')
+external int differentName(int value);
+int compute() => abs(-3) + differentName(-4);
+void main() { print(compute()); }
+""")
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        graph = json.loads((base / 'source_graph.json').read_text())
+        contracts = list(graph['native_contracts'].values())
+        self.assertEqual(len(contracts), 2)
+        self.assertTrue(all('symbol: "abs"' in value for value in contracts))
+        self.assertTrue(any('assetId: "library-default"' in value for value in contracts))
+        self.assertTrue(any('assetId: "explicit-asset"' in value for value in contracts))
+        self.assertEqual(graph['native_default_assets'], {})
+        relocated = self.source('relocated.dart', source.read_text().replace('abs(-3)', 'abs(-30)'))
+        result = self.command('patch', relocated, base, self.root / 'patch')
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_ffi_abi_layout_and_callback_changes_require_baseline(self):
+        cases = {
+            'ffi_native': [
+                ('@Native<Int32 Function(Int32)>()', "@Native<Int32 Function(Int32)>(symbol: 'labs')"),
+                ('Int32 Function(Int32)', 'Int64 Function(Int64)'),
+                ("import 'dart:ffi';", "@DefaultAsset('changed') library;\nimport 'dart:ffi';"),
+            ],
+            'ffi_struct': [('@Int32()', '@Int64()')],
+            'ffi_callback': [('Int32 Function(Int32)', 'Int64 Function(Int64)'), ('-99', '-100')],
+            'ffi_lookup': [('int target(int value)', "@Deprecated('changed callback metadata')\nint target(int value)")],
+        }
+        for fixture, replacements in cases.items():
+            source = ROOT / f'compiler/fixtures/aot_{fixture}_baseline/app.dart'
+            base = self.root / (fixture + '-base')
+            result = self.command('baseline', source, base)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            for i, (before, after) in enumerate(replacements):
+                with self.subTest(fixture=fixture, change=i):
+                    candidate = self.source(f'{fixture}-{i}.dart', source.read_text().replace(before, after))
+                    output = self.root / f'{fixture}-{i}-patch'
+                    result = self.command('patch', candidate, base, output)
+                    self.assertEqual(result.returncode, 2, result.stdout)
+                    self.assertIn('require a new baseline', result.stderr)
+                    self.assertFalse(output.exists())
+
+    def test_ffi_new_layout_and_unbound_external_fail_closed(self):
+        source = self.source('layout.dart', "import 'dart:ffi'; void main() { print(1); }")
+        base = self.root / 'base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source.write_text("import 'dart:ffi'; final class Added extends Struct { @Int32() external int value; } void main() { print(2); }")
+        result = self.command('patch', source, base, self.root / 'patch')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Native class additions or removals', result.stderr)
+        self.assertFalse((self.root / 'patch').exists())
+        source = self.source('external.dart', 'external int native(int value); void main() { print(native(1)); }')
+        result = self.command('baseline', source, self.root / 'external')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('External declarations require one static dart:ffi Native binding', result.stderr)
+        self.assertFalse((self.root / 'external').exists())
 
 
 if __name__ == '__main__':
