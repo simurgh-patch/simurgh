@@ -56,6 +56,7 @@ bool isTypeParameter(NamedType type) {
       GenericFunctionType() => scope.typeParameters,
       ClassDeclaration() => scope.namePart.typeParameters,
       ExtensionTypeDeclaration() => scope.primaryConstructor.typeParameters,
+      ExtensionDeclaration() => scope.typeParameters,
       EnumDeclaration() => scope.namePart.typeParameters,
       ClassTypeAlias() => scope.typeParameters,
       GenericTypeAlias() => scope.typeParameters,
@@ -131,13 +132,15 @@ bool supportedParameter(FormalParameter param) {
   final base = unwrapParameter(param);
   return base is SimpleFormalParameter &&
       base.covariantKeyword == null &&
-      supportedType(base.type, allowVoid: false);
+      supportedType(base.type);
 }
 
 void validateParameters(FormalParameterList parameters) {
   for (final param in parameters.parameters) {
     if (!supportedParameter(param) || param.name == null) {
-      reject('Only explicitly typed supported parameters allowed');
+      reject(
+        'Only explicitly typed supported parameters allowed: ${param.toSource()}',
+      );
     }
   }
 }
@@ -179,7 +182,6 @@ String declarationTokens(CompilationUnitMember declaration) {
 
 class Program {
   Program(this.source, this.identity) {
-    final graph = jsonDecode(identity) as Map<String, dynamic>;
     if (jsonEncode(graph['sdk_libraries']) !=
             jsonEncode(target.sdkLibraries.toList()) ||
         jsonEncode(graph['conditional_environment']) !=
@@ -205,7 +207,9 @@ class Program {
       if (declaration is ExtensionDeclaration) {
         if (declaration.name == null ||
             !supportedTypeParameters(declaration.typeParameters))
-          reject('Unsupported generated extension');
+          reject(
+            'Unsupported generated extension: ${declaration.name?.lexeme} ${declaration.typeParameters?.toSource()}',
+          );
         extensions[declaration.name!.lexeme] = declaration;
         continue;
       }
@@ -300,34 +304,26 @@ class Program {
   }
   final String source;
   final String identity;
-  CompilerTarget get target => CompilerTarget.named(
-    (jsonDecode(identity) as Map<String, dynamic>)['conditional_target']
-        as String,
-  );
-  String get languageVersion =>
-      (jsonDecode(identity) as Map<String, dynamic>)['language_version']
-          as String;
+  late final Map<String, dynamic> graph =
+      jsonDecode(identity) as Map<String, dynamic>;
+  CompilerTarget get target =>
+      CompilerTarget.named(graph['conditional_target'] as String);
+  String get languageVersion => graph['language_version'] as String;
   Map<String, String> get libraryVersions =>
-      ((jsonDecode(identity)
-                  as Map<String, dynamic>)['library_language_versions']
-              as Map)
-          .cast<String, String>();
+      (graph['library_language_versions'] as Map).cast<String, String>();
   bool get splitLibraries => libraryVersions.values.toSet().length > 1;
   String libraryFile(String uri) => 'unit_${hash(uri)}.dart';
   String entityFile(String name) => splitLibraries
       ? libraryFile((entities[name] as Map)['library'] as String)
       : 'app.dart';
   List<Map<String, dynamic>> get dynamicRoots =>
-      ((jsonDecode(identity) as Map<String, dynamic>)['dynamic_retention_roots']
-              as List)
-          .cast<Map<String, dynamic>>();
+      (graph['dynamic_retention_roots'] as List).cast<Map<String, dynamic>>();
   List<String> get dynamicSelectors =>
       dynamicRoots.map((root) => root['selector'] as String).toSet().toList()
         ..sort();
 
   Map<String, dynamic> get entities =>
-      (jsonDecode(identity) as Map<String, dynamic>)['entities']
-          as Map<String, dynamic>;
+      graph['entities'] as Map<String, dynamic>;
   String entityId(String name) =>
       (entities[name] as Map<String, dynamic>)['entity'] as String;
   final extensions = <String, ExtensionDeclaration>{};
@@ -411,6 +407,16 @@ bool isFunctionReference(SimpleIdentifier node) {
       (parent is ListLiteral && parent.elements.contains(node));
 }
 
+bool isMemberSelector(SimpleIdentifier node) {
+  final parent = node.parent;
+  return (parent is Label && parent.label == node) ||
+      (parent is PropertyAccess && parent.propertyName == node) ||
+      (parent is PrefixedIdentifier && parent.identifier == node) ||
+      (parent is MethodInvocation &&
+          parent.target != null &&
+          parent.methodName == node);
+}
+
 class BodyGuard extends RecursiveAstVisitor<void> {
   BodyGuard(this.names);
   final Set<String> names;
@@ -455,9 +461,11 @@ class BodyGuard extends RecursiveAstVisitor<void> {
   void visitSimpleIdentifier(SimpleIdentifier node) {
     if (node.name.startsWith(prefix))
       reject('Reserved identifier: ${node.name}');
-    if (names.contains(node.name)) {
+    if (names.contains(node.name) && !isMemberSelector(node)) {
       if (!isFunctionReference(node)) {
-        reject('Unsupported function reference or shadowing: ${node.name}');
+        reject(
+          'Unsupported function reference or shadowing: ${node.name} in ${node.parent?.toSource()}',
+        );
       }
     }
     super.visitSimpleIdentifier(node);

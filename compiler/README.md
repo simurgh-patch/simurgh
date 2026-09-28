@@ -1181,3 +1181,46 @@ with `--target flutter --compile-only`, then run
 Only `compute` is installed; UI callers and main remain in AOT. Host cold-process
 checks are separate from mobile validation. Full Widget lowering, Android/iOS
 ARM64 device execution, signatures/rollback and performance gates remain open.
+
+
+## Multiple mixin constraints and framework source generation
+
+Super calls in a mixin with multiple `on` constraints can resolve to an earlier
+declaration even when bridge preparation selected a nearer override. The linker
+now reuses that bridge only when its selector, accessor kind, private library
+identity and instantiated function signature match. Generic constraints,
+methods, getters/setters, private super calls and super tear-offs are exercised
+by `aot_mixin_constraints_*`. Repeated ancestor expansion is deduplicated;
+nongeneric ancestors need no type-argument substitution. Named SDK mixin
+applications, including the internal ancestor of UnmodifiableListView, are
+recognized as declarations without inventing new members or layouts.
+
+The same fixtures exercise `Future<void>` callbacks with void parameters,
+extensions with recursive generic bounds such as `T extends Comparable<T>`,
+and named parameters/properties named `main`. Resolved member selectors and
+argument labels are no longer confused with a reference to the top-level entry
+function. Original source analysis still rejects reading a void expression in
+an invalid context. Source-graph JSON is parsed once per Program rather than
+again for each entity access, allowing larger framework graphs to reach code
+generation. This is a compiler implementation improvement, not an application
+startup/performance measurement.
+
+`vm:keep-name` is retained as ordinary VM metadata. The VM fixture preserves
+annotated class/method metadata in real Kernel and original class display names
+in non-obfuscated AOT and mixed execution. An exploratory obfuscated snapshot
+retains the generated linked class name but does not restore its original
+user-visible name; obfuscated baseline/patch compatibility is still unaccepted.
+
+Use `verify_aot_lab.py --mixin-constraints-run-dir` with matching base/GC builds
+for exact original-source AOT comparisons and the installed-function boundary.
+The Flutter fixture `aot_flutter_constraints_*` uses real MethodCall from the
+pinned framework together with generic mixins and UI Offset values. Its verifier
+option is `verify_flutter_aot_lab.py --fixture constraints`, followed by the
+real host verifier. Resolve its locked dependencies using the independent
+Flutter SDK first.
+
+Full `widgets.dart` source generation now reaches a generated baseline, but
+its Kernel compilation still fails on additional super bridges, method
+signatures and receiver/local-name lowering. Generated source alone is not an
+executable Widget baseline. Mobile cold activation, obfuscation, signatures,
+rollback and physical-device performance gates remain incomplete.

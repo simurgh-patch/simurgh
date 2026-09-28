@@ -2229,6 +2229,23 @@ void main() { p.value += 1; }
         self.assertFalse((self.root / 'patch').exists())
 
 
+    def test_multiple_mixin_constraints_and_sdk_alias_ancestors(self):
+        base, patch, manifest = self.named_mixin_pair('mixin_constraints')
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['Label.value', 'Ordered.method selected', 'Painting.trace', 'ReadOnly.render', 'asset'])
+        for field in ['replaced_classes', 'replaced_globals', 'module_only_functions']:
+            self.assertEqual(manifest[field], [])
+        generated = '\n'.join(p.read_text() for p in base.glob('*.dart'))
+        self.assertIn("@msbEntity_sdk_core.pragma('vm:keep-name')", generated)
+        self.assertIn('UnmodifiableListView', generated)
+
+    def test_void_callback_parameters_keep_original_type_checks(self):
+        source = self.source('void-use.dart', 'void bad(void value) { print(value); } void main() {}')
+        result = self.command('baseline', source, self.root / 'invalid')
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn('Static source errors', result.stderr)
+        self.assertFalse((self.root / 'invalid').exists())
+
     def test_ffi_bindings_and_generated_abi_bridges_retain_aot(self):
         expected = {
             'native': ['compute'], 'struct': ['Pair.score', 'work'],

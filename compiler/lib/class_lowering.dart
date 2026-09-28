@@ -169,6 +169,7 @@ class _Classes {
   }
 
   Map<Element, String> superSubstitutions(_Class owner, _Class parent) {
+    if (parent.element.typeParameters.isEmpty) return {};
     final instantiated = owner.element.allSupertypes.firstWhere(
       (type) => type.element == parent.element,
     );
@@ -226,7 +227,8 @@ class _Classes {
         );
         if (declaration == null ||
             (declaration.node is! ClassDeclaration &&
-                declaration.node is! MixinDeclaration))
+                declaration.node is! MixinDeclaration &&
+                declaration.node is! ClassTypeAlias))
           _reject('Unsupported SDK superclass declaration: ${element.name}');
         final unit = declaration.resolvedUnit!;
         final source = _Library(
@@ -479,7 +481,9 @@ class _Classes {
       final superUses = _SuperUses();
       owner.node.accept(superUses);
       final ancestors = <InterfaceElement>[];
+      final expanded = <InterfaceElement>{};
       void collect(InterfaceElement element) {
+        if (!expanded.add(element)) return;
         ancestors.addAll(element.mixins.reversed.map((t) => t.element));
         if (element is MixinElement) {
           ancestors.addAll(
@@ -633,8 +637,38 @@ class _Classes {
     }
   }
 
-  String? superBridge(InterfaceElement owner, Element? target) =>
-      declarations[owner]?.bridges[target?.baseElement];
+  String? superBridge(InterfaceElement owner, Element? target) {
+    final bridges = declarations[owner]?.bridges;
+    final exact = bridges?[target?.baseElement];
+    if (exact != null ||
+        bridges == null ||
+        owner is! MixinElement ||
+        target is! ExecutableElement)
+      return exact;
+    // Multiple on-constraints can resolve a super selector to an earlier
+    // declaration while bridge preparation selected its nearer override.
+    // Both call super on the applying class. Reuse only the same selector and
+    // instantiated signature; never cross a private library boundary.
+    for (final candidate in bridges.keys.whereType<ExecutableElement>()) {
+      if (candidate.name != target.name ||
+          (candidate is GetterElement) != (target is GetterElement) ||
+          (candidate is SetterElement) != (target is SetterElement) ||
+          (candidate.isPrivate && candidate.library != target.library))
+        continue;
+      for (final ancestor in owner.allSupertypes) {
+        for (final member in <ExecutableElement>[
+          ...ancestor.methods,
+          ...ancestor.getters,
+          ...ancestor.setters,
+        ]) {
+          if (member.baseElement == candidate.baseElement &&
+              member.type == target.type)
+            return bridges[candidate];
+        }
+      }
+    }
+    return null;
+  }
 
   String lower() {
     final output = StringBuffer();

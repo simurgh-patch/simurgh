@@ -97,6 +97,9 @@ def main():
     elif compiler_checks['fixture'] == 'extension-types':
         expected_base = ['layout:7.0:20.0', 'callback:7.0:20.0', 'representation:true:2.0:13.0']
         expected_patch = ['layout:25.0:137.0', 'callback:25.0:137.0', 'representation:true:2.0:13.0']
+    elif compiler_checks['fixture'] == 'constraints':
+        expected_base = ['point:3.0:5.0', 'codec:MethodCall:paint']
+        expected_patch = ['point:12.0:23.0', 'codec:MethodCall:paint']
     elif compiler_checks['fixture'] == 'ffi':
         expected_base = ['ffi:5.0:8.0', 'callback:5.0:8.0']
         expected_patch = ['ffi:23.0:8.0', 'callback:23.0:8.0']

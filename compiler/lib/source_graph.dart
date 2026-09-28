@@ -971,6 +971,7 @@ class _MetadataGuard extends RecursiveAstVisitor<void> {
       if (!{
         ...dispatchUnsafePragmas,
         'vm:notify-debugger-on-exception',
+        'vm:keep-name',
         'flutter:keep-to-string-in-subtypes',
         'dart2js:tryInline',
         'dart2js:prefer-inline',
