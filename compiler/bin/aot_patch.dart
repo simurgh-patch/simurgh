@@ -511,8 +511,10 @@ class CallEdits extends RecursiveAstVisitor<void> {
 
   @override
   void visitNamedType(NamedType node) {
-    if (classNames.contains(node.name.lexeme))
-      offsets[node.name.offset] = node.name.lexeme;
+    // An unresolved named constructor can parse as prefix=Class, name=ctor.
+    // Generated classes have lowercase names, so inspect the prefix token too.
+    final name = node.importPrefix?.name ?? node.name;
+    if (classNames.contains(name.lexeme)) offsets[name.offset] = name.lexeme;
     super.visitNamedType(node);
   }
 }
@@ -702,31 +704,43 @@ void baseline(Program program, Directory output) {
   generated.writeln(
     'final ${prefix}NextUpdates = {...${prefix}ActiveUpdates, ...updates};',
   );
-  index = 0;
-  for (final name in names) {
-    final f = program.functions[name]!;
-    final type =
-        '${f.returnType!.toSource()} Function${f.functionExpression.typeParameters?.toSource() ?? ''}('
-        '${dispatchParameterTypes(f.functionExpression.parameters!.parameters)})';
-    generated.writeln(
-      "if (updates.containsKey('$name') && updates['$name'] is! $type) "
-      "{ throw StateError('Patch signature mismatch: $name'); }",
-    );
-    index++;
-  }
-  index = 0;
-  for (final name in names) {
-    final f = program.functions[name]!;
-    final type =
-        '${f.returnType!.toSource()} Function${f.functionExpression.typeParameters?.toSource() ?? ''}('
-        '${dispatchParameterTypes(f.functionExpression.parameters!.parameters)})';
-    generated.writeln(
-      "if (updates.containsKey('$name')) ${prefix}Slot$index = updates['$name'] as $type;",
-    );
-    index++;
+  // Bound AOT control-flow graph size even for the entire Flutter framework.
+  // Validate every chunk before assigning any slot, preserving atomic rejection.
+  const chunkSize = 128;
+  final chunks = (names.length + chunkSize - 1) ~/ chunkSize;
+  for (final phase in ['Validate', 'Assign']) {
+    for (var chunk = 0; chunk < chunks; chunk++) {
+      generated.writeln('${prefix}Install$phase$chunk(updates);');
+    }
   }
   generated.writeln('${prefix}ActiveUpdates = ${prefix}NextUpdates;');
   generated.writeln('}');
+  for (final phase in ['Validate', 'Assign']) {
+    for (var chunk = 0; chunk < chunks; chunk++) {
+      generated.writeln("@pragma('vm:never-inline')");
+      generated.writeln(
+        'void ${prefix}Install$phase$chunk(Map<String, Function> updates) {',
+      );
+      for (
+        var slot = chunk * chunkSize;
+        slot < names.length && slot < (chunk + 1) * chunkSize;
+        slot++
+      ) {
+        final name = names[slot];
+        final f = program.functions[name]!;
+        final type =
+            '${f.returnType!.toSource()} Function${f.functionExpression.typeParameters?.toSource() ?? ''}('
+            '${dispatchParameterTypes(f.functionExpression.parameters!.parameters)})';
+        generated.writeln(
+          phase == 'Validate'
+              ? "if (updates.containsKey('$name') && updates['$name'] is! $type) "
+                    "{ throw StateError('Patch signature mismatch: $name'); }"
+              : "if (updates.containsKey('$name')) ${prefix}Slot$slot = updates['$name'] as $type;",
+        );
+      }
+      generated.writeln('}');
+    }
+  }
   generated.writeln(isolateInfrastructure(baselineKey(program.identity)));
   index = 0;
   for (final name in names) {
@@ -748,14 +762,17 @@ void baseline(Program program, Directory output) {
         f.functionExpression.body.isGenerator) {
       // Keep dispatch synchronous: an extra async wrapper changes Future
       // identity/timing, while splicing a sync* body would lose lazy iteration.
-      // A typed local preserves the declared Future/Iterable/Stream result
-      // without narrowing its inferred element type or starting a generator.
+      // Give the implementation its own parameters: capturing and assigning
+      // wrapper parameters would disable their original flow promotions.
+      // Preserve the declared result without starting a generator eagerly.
       generated.writeln(
-        '${f.returnType!.toSource()} ${prefix}OriginalBody() $body',
+        '${f.returnType!.toSource()} ${prefix}OriginalBody${f.functionExpression.parameters!.toSource()} $body',
       );
-      generated.writeln('return ${prefix}OriginalBody();');
+      generated.writeln('return ${prefix}OriginalBody($args);');
     } else {
-      generated.writeln(body.substring(1, body.length - 1));
+      // Body locals may legally shadow parameters. Keep them in their original
+      // scope so they cannot shadow dispatch's argument forwarding above.
+      generated.writeln(body);
     }
     generated.writeln('}');
     index++;
@@ -820,6 +837,10 @@ Future<msbEntity_sdk_isolate.Isolate> ${entityPrefix}isolateSpawn<T>(void Functi
 
 String dynamicInterfaceText(Program program) =>
     "callable:\n${program.target.sdkLibraries.map((uri) => "  - library: '$uri'\n").join()}  - library: 'app.dart'\n${program.splitLibraries ? program.libraryVersions.keys.map((uri) => "  - library: '${program.libraryFile(uri)}'\n").join() : ''}"
+    // CFE map-literal lowering can call these private SDK factories from linked
+    // framework code. Keep this contract explicit and tied to the pinned SDK.
+    "  - library: 'dart:core'\n    class: 'Map'\n    member: '_fromLiteral'\n"
+    "  - library: 'dart:core'\n    class: 'Map'\n    member: '_fromKeyValues'\n"
     '${dynamicClassInterface(program)}'
     'dynamic-callable-selectors:\n${program.dynamicSelectors.map((selector) => '  - ${jsonEncode(selector)}\n').join()}';
 
@@ -871,7 +892,8 @@ class EntityReferences extends RecursiveAstVisitor<void> {
 
   @override
   void visitNamedType(NamedType node) {
-    if (names.contains(node.name.lexeme)) references.add(node.name.lexeme);
+    final name = node.importPrefix?.name ?? node.name;
+    if (names.contains(name.lexeme)) references.add(name.lexeme);
     super.visitNamedType(node);
   }
 }

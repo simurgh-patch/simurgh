@@ -10,7 +10,7 @@ from aot_lab import ROOT, ENGINE, SDK, DART_SOURCE, compiler_sha, sha, source_id
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-dir', type=Path, required=True)
-    parser.add_argument('--fixture', choices=['ui', 'foundation', 'extensions', 'extension-types', 'ffi', 'constraints'], default='ui')
+    parser.add_argument('--fixture', choices=['ui', 'foundation', 'extensions', 'extension-types', 'ffi', 'constraints', 'scopes', 'widget'], default='ui')
     parser.add_argument('--output', type=Path, help='Fresh directory for compiler verification evidence')
     args = parser.parse_args()
     folder = args.run_dir.resolve()
@@ -47,7 +47,7 @@ def main():
             raise RuntimeError(f'{name} failed')
         return process.stdout
 
-    if args.fixture in {'foundation', 'extensions', 'constraints'}:
+    if args.fixture in {'foundation', 'extensions', 'constraints', 'widget'}:
         framework = ROOT / '.engine-workspace/framework'
         revision = json.loads((ROOT / 'toolchain.lock.json').read_text())['framework_revision']
         actual = subprocess.check_output(['git', '-C', str(framework), 'rev-parse', 'HEAD'], text=True).strip()
@@ -69,10 +69,13 @@ def main():
                               folder / 'baseline/aot.dill', folder / 'baseline' / entry_library, baseline_graph]))
     patch = json.loads((folder / 'patch/manifest.json').read_text())
     installed = sorted(patch['entities'][s]['name'] for s in patch['installed_functions'])
-    expected_installed = {'constraints': ['Painting.project'], 'ffi': ['compute'], 'extension-types': ['LayoutInfo.project'], 'foundation': ['changed'], 'extensions': ['Count.getter measured'],
+    expected_installed = {'widget': ['value'], 'scopes': ['Render.project', 'promoted', 'shadow'], 'constraints': ['Painting.project'], 'ffi': ['compute'], 'extension-types': ['LayoutInfo.project'], 'foundation': ['changed'], 'extensions': ['Count.getter measured'],
                           'ui': ['diskValue', 'getter platformMarker', 'origin', 'shade', 'worker']}[args.fixture]
     if installed != expected_installed or patch['replaced_classes'] or patch['replaced_globals']:
         raise ValueError('Flutter fixture should retain main/blender and SDK classes')
+    report['installed_functions'] = installed
+    if args.fixture == 'widget':
+        report.update(fixture_scope='widget-construction-only', widget_rendered=False)
     report['source_api'] = {}
     for side in ['baseline', 'patch']:
         graph_path = folder / side / 'source_graph.json'
@@ -96,7 +99,7 @@ def main():
                 raise ValueError(f'Unexpected source URI: {uri}')
             if not path.resolve().is_relative_to(reference.resolve()):
                 raise ValueError(f'Unexpected source URI: {uri}')
-            if args.fixture in {'foundation', 'extensions', 'constraints'} and uri.startswith('package:flutter/'):
+            if args.fixture in {'foundation', 'extensions', 'constraints', 'widget'} and uri.startswith('package:flutter/'):
                 original = framework / 'packages/flutter/lib' / uri.removeprefix('package:flutter/')
                 if sha(original) != record['source_sha256']:
                     raise ValueError(f'Foundation source differs from the pinned checkout: {uri}')
@@ -121,7 +124,7 @@ def main():
         selected = [Path(uri.removeprefix('file://')).name for uri in api['imports']]
         if args.fixture == 'ui' and ('flutter.dart' not in selected or 'fallback.dart' in selected):
             raise ValueError('Original Flutter compiler selected a different conditional branch')
-        if args.fixture in {'foundation', 'extensions', 'constraints'}:
+        if args.fixture in {'foundation', 'extensions', 'constraints', 'widget'}:
             language_kernel = reference / 'languages.dill'
             language_command = command.copy()
             language_command[language_command.index('--aot')] = '--no-aot'
@@ -138,7 +141,7 @@ def main():
             report.setdefault('source_languages', {})[side] = versions
         report['source_api'][side] = {'kernel_sha256': sha(kernel), 'api': api}
     graph = json.loads(baseline_graph.read_text())
-    if args.fixture in {'foundation', 'extensions', 'constraints'}:
+    if args.fixture in {'foundation', 'extensions', 'constraints', 'widget'}:
         versions = json.loads(execute('generated-languages', [dart,
             ROOT / 'compiler/bin/inspect_kernel_languages.dart', folder / 'baseline/no-aot.dill',
             folder / 'baseline']))

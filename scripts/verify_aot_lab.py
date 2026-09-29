@@ -100,6 +100,9 @@ def main():
     parser.add_argument('--typedef-relink-run-dir', type=Path)
     parser.add_argument('--typedef-multilang-run-dir', type=Path)
     parser.add_argument('--typedef-ancestors-run-dir', type=Path)
+    parser.add_argument('--named-const-run-dir', type=Path)
+    parser.add_argument('--body-scopes-run-dir', type=Path)
+    parser.add_argument('--super-added-run-dir', type=Path)
     parser.add_argument('--mixin-constraints-run-dir', type=Path)
     parser.add_argument('--named-mixins-run-dir', type=Path)
     parser.add_argument('--named-mixin-interfaces-run-dir', type=Path)
@@ -139,7 +142,7 @@ def main():
             raise RuntimeError(f'{name} failed; inspect {destination}')
         return process.stdout
 
-    folders = [run, gc_run] + [p.resolve() for p in [args.covariant_run_dir, args.covariant_edges_run_dir, args.covariant_fields_run_dir, args.covariant_mixins_run_dir, args.covariant_relink_run_dir, args.covariant_multilang_run_dir, args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.mixin_constraints_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
+    folders = [run, gc_run] + [p.resolve() for p in [args.covariant_run_dir, args.covariant_edges_run_dir, args.covariant_fields_run_dir, args.covariant_mixins_run_dir, args.covariant_relink_run_dir, args.covariant_multilang_run_dir, args.generators_run_dir, args.generator_edges_run_dir, args.generator_async_run_dir, args.generator_relink_run_dir, args.generator_multilang_run_dir, args.metadata_run_dir, args.metadata_package_run_dir, args.metadata_relink_run_dir, args.metadata_multilang_run_dir, args.enums_run_dir, args.enum_custom_run_dir, args.enum_relink_run_dir, args.enum_multilang_run_dir, args.records_run_dir, args.record_super_run_dir, args.record_shapes_run_dir, args.record_dynamic_run_dir, args.record_multilang_run_dir, args.typedefs_run_dir, args.typedef_relink_run_dir, args.typedef_multilang_run_dir, args.typedef_ancestors_run_dir, args.named_const_run_dir, args.body_scopes_run_dir, args.super_added_run_dir, args.mixin_constraints_run_dir, args.named_mixins_run_dir, args.named_mixin_interfaces_run_dir, args.named_mixin_relink_run_dir, args.named_mixin_multilang_run_dir, args.named_mixin_retire_run_dir, args.private_interfaces_run_dir, args.private_interface_added_run_dir, args.private_interface_removed_run_dir, args.super_fields_run_dir, args.entities_run_dir, args.closures_run_dir, args.libraries_run_dir, args.classes_run_dir, args.new_classes_run_dir, args.accessors_run_dir, args.parameters_run_dir, args.async_run_dir, args.generics_run_dir, args.generic_classes_run_dir, args.layout_run_dir, args.globals_run_dir, args.late_final_run_dir, args.inference_run_dir, args.signatures_run_dir, args.dynamic_calls_run_dir, args.sdk_run_dir, args.sdk_interfaces_run_dir, args.sdk_mixins_run_dir, args.sdk_mixin_relink_run_dir, args.sdk_super_run_dir, args.sdk_super_checks_run_dir, args.sdk_super_gc_run_dir, args.sdk_super_interfaces_run_dir, args.packages_run_dir, args.multilang_run_dir, args.multilang_added_run_dir, args.multilang_packages_run_dir, args.type_names_run_dir, args.super_parameters_run_dir, args.static_run_dir, args.interfaces_run_dir, args.mixins_run_dir, args.factories_run_dir, args.late_fields_run_dir, args.late_references_run_dir, args.operators_run_dir, args.operator_removal_run_dir, args.operator_checks_run_dir, args.parts_run_dir, args.parts_packages_run_dir, args.parts_private_run_dir] if p]
     folders.extend(p.resolve() for p in (args.top_accessors_run_dir, args.top_accessor_gc_run_dir,
                                           args.top_accessor_metadata_run_dir,
                                           args.top_accessor_metadata_relink_run_dir,
@@ -1246,6 +1249,14 @@ void main() {{
                 raise ValueError('Enum display decoding escaped its generated namespace')
         report['enum_display_name_guards'] = True
     for kind, folder, expected_base, expected_patch, installed in [
+        ('named-const', args.named_const_run_dir, ['box:1'], ['box:2'], ['make']),
+        ('body-scopes', args.body_scopes_run_dir,
+         ['super:value:2', 'private:secret', 'shadow:7', 'promoted:3:8', 'generic:6',
+          'captured:14:9', 'lazy-before:0', 'lazy:[4, 5]:1', 'stream:[5, 6]', 'identity:true'],
+         ['super:value:20', 'private:secret', 'shadow:70', 'promoted:13:18', 'generic:6',
+          'captured:16:90', 'lazy-before:0', 'lazy:[4, 14]:1', 'stream:[5, 15]', 'identity:true'],
+         ['Actual.value', 'asyncShadow', 'captured', 'lazy', 'promoted', 'shadow', 'stream']),
+        ('super-added', args.super_added_run_dir, ['plain'], ['root:paint'], ['run']),
         ('mixin-constraints', args.mixin_constraints_run_dir,
          ['void:done', 'ordered:a', 'selector:true', 'trace:root:services:painting:root:services', 'exchange:3:7:7!',
           'private:private:services', 'view:4:5:4', 'readonly:true', "name:Instance of 'Label':Label:label"],
@@ -1324,6 +1335,9 @@ void main() {{
         expected_module_only = (['getter doubled', 'getter value', 'setter value']
                                 if kind == 'top-accessor-multilang' else
                                 ['getter value', 'setter value'] if relink else [])
+        if kind == 'super-added':
+            expected_replaced = ['App', 'Paint']
+            expected_module_only = ['Paint.render']
         if kind == 'extension-type-relink':
             expected_replaced = ['Reading', 'Wrapped']
             expected_module_only = ['Reading.measure', 'make', 'retained']

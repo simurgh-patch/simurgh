@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-29T11:19:30.608337+08:00",
+  "scope": "M1 restricted host AOT/bytecode: body scopes, actual mixin super use, bounded atomic installer, retained named constructors, minimal Widget construction",
+  "ordinary_verification": {
+    "command": "scripts/verify.sh",
+    "exit_code": 1,
+    "complete_verify_sh_passed": false,
+    "validation_complete_by_targeted_recheck": true,
+    "explanation": "Full run passed 191/192 Python cases and 16 Dart cases. The only failure counted installer pragmas as source accessor annotations (4 versus 2). Only that assertion scope changed; its entire test then passed. Skipped Flutter analysis and all 7 tests passed separately. Core, fixtures and all other test ASTs remained unchanged.",
+    "corrected_test_log": "output/widget-accessor-fixed-check-20260929.log",
+    "flutter_analysis_log": "output/widget-final-flutter-analysis-20260929.log",
+    "flutter_tests_log": "output/widget-final-flutter-tests-20260929.log",
+    "dart_tests": 16,
+    "python_tests": 192,
+    "python_seconds": 2472.449,
+    "flutter_tests": 7,
+    "total": 215,
+    "log": "output/widget-second-verify-20260929.log"
+  },
+  "compiler_sha256": "8cd4840144501a45c17180494cc7564ec6fe25c07265884b05c70f62bb19d025",
+  "native_checks": 25,
+  "observed_scavenges": 21,
+  "native_baseline_aot_unchanged": true,
+  "flutter_reports": {
+    "widget-second-scopes-compiler-20260929": {
+      "path": "output/widget-second-scopes-compiler-20260929/report.json",
+      "sha256": "abc8bfc9391e4342007711a8bb66b7215c092ab6bcf0154f91b87bfedd76d05d",
+      "checks": 7,
+      "engine_executed": false
+    },
+    "widget-second-scopes-host-20260929": {
+      "path": "output/widget-second-scopes-host-20260929/report.json",
+      "sha256": "04cce5c5147906bbe7816edfb7ac7c7fb2c97a0ec6c5ed1019423c355b219dad",
+      "checks": 7,
+      "engine_executed": true
+    },
+    "widget-second-compiler-checks-20260929": {
+      "path": "output/widget-second-compiler-checks-20260929/report.json",
+      "sha256": "4cf55aa42053ee2c563b36a62d1ac02194cd411251c975a2dae274f4836a63e7",
+      "checks": 13,
+      "engine_executed": false
+    },
+    "widget-second-host-checks-20260929": {
+      "path": "output/widget-second-host-checks-20260929/report.json",
+      "sha256": "e1b40a422f6f380154342e08fb2c98110db037f45f0fa14d14121aad668cb145",
+      "checks": 7,
+      "engine_executed": true
+    }
+  },
+  "widget_constructor": {
+    "functions": 16442,
+    "installed_functions": [
+      "value"
+    ],
+    "baseline_output": "SizedBox.shrink",
+    "patch_output": "SizedBox.expand",
+    "original_source_aot_matches": true,
+    "baseline_aot_unchanged": true,
+    "rendered": false,
+    "host_report": "output/widget-second-host-checks-20260929/report.json"
+  },
+  "artifact_audit": {
+    "compiler_sha256": "8cd4840144501a45c17180494cc7564ec6fe25c07265884b05c70f62bb19d025",
+    "frozen_inputs_match": true,
+    "runs": [
+      {
+        "run": "output/widget-second-base-20260929",
+        "build_sha256": "43cdd05d4c7c507891bf4ddb285280c2b66ca2a42994768fc85a20fdb5e2f645",
+        "artifact_count": 11,
+        "all_hashes_match": true
+      },
+      {
+        "run": "output/widget-second-gc-20260929",
+        "build_sha256": "732a81c741daaef51cfd41b00ec987e4fc07e0e87275af89e44082a03a10f11d",
+        "artifact_count": 11,
+        "all_hashes_match": true
+      },
+      {
+        "run": "output/widget-second-bodies-20260929",
+        "build_sha256": "451c0516a12e92d61ed2b5965edb1585ad84dd6eb681dd66943c85a7b6e84728",
+        "artifact_count": 11,
+        "all_hashes_match": true
+      },
+      {
+        "run": "output/widget-second-super-20260929",
+        "build_sha256": "61d40bc58cf86d08d101496b0aad4a606551cddfbf24db1e31765996f6e1f89c",
+        "artifact_count": 11,
+        "all_hashes_match": true
+      },
+      {
+        "run": "output/widget-second-named-20260929",
+        "build_sha256": "1cac55108be7c00d50fc41e611cbee79eb04d5401a8551ec1eb05ed7141def41",
+        "artifact_count": 11,
+        "all_hashes_match": true
+      },
+      {
+        "run": "output/widget-second-scopes-20260929",
+        "build_sha256": "c58ef4beca27f8a08e847e796d5641c5efac7ac9e5cdb6d442277f0650531a5c",
+        "artifact_count": 11,
+        "all_hashes_match": true
+      },
+      {
+        "run": "output/widget-accepted-second-20260929",
+        "build_sha256": "f516945543855b59a6811b070e770aeb561dd35e63fcbb5a9630292051cd9b99",
+        "artifact_count": 1035,
+        "all_hashes_match": true
+      }
+    ]
+  },
+  "current_source_archives_match": [
+    "compiler/fixtures/aot_baseline/app.dart",
+    "compiler/fixtures/aot_patch/app.dart",
+    "compiler/fixtures/aot_baseline/app.dart",
+    "compiler/fixtures/aot_gc_patch/app.dart",
+    "compiler/fixtures/aot_body_scopes_baseline/app.dart",
+    "compiler/fixtures/aot_body_scopes_patch/app.dart",
+    "compiler/fixtures/aot_super_added_baseline/app.dart",
+    "compiler/fixtures/aot_super_added_patch/app.dart",
+    "compiler/fixtures/aot_named_const_baseline/app.dart",
+    "compiler/fixtures/aot_named_const_patch/app.dart",
+    "compiler/fixtures/aot_flutter_scopes_baseline/app.dart",
+    "compiler/fixtures/aot_flutter_scopes_patch/app.dart",
+    "compiler/fixtures/aot_flutter_widget_baseline/app.dart",
+    "compiler/fixtures/aot_flutter_widget_patch/app.dart"
+  ],
+  "core_and_fixtures_frozen_after_tests": true,
+  "test_only_followup": {
+    "changed_methods": [
+      "test_top_level_accessor_inference_and_metadata"
+    ],
+    "before_sha256": "9af847188436d92a4787c124964a89319fc072a3f81869ae893889938e789455",
+    "after_sha256": "c9b01749526c9e9594bf9e98cce9bae254b9a9b29d4c7e3ee9bc0aae71c53e0d",
+    "correction": "Count SDK-qualified source accessor pragmas, excluding unqualified generated installer pragmas"
+  },
+  "changes": [
+    "Keep synchronous bodies in their lexical block; give async/generator implementation copies their own parameters, preserving promotion, shadowing, lazy execution and Future identity",
+    "Emit mixin super bridges only for source-used selectors, including remapped private selectors; relink first added super call instead of installing incompatible layouts",
+    "Split validation and assignment into separate never-inline helpers of at most 128 slots; validate all chunks before slot mutation and commit the active map last",
+    "Qualify retained named constructors and follow their layout dependencies even when parsed as NamedType prefixes",
+    "Explicitly retain pinned SDK Map._fromLiteral and Map._fromKeyValues for compiler-generated map-literal calls"
+  ],
+  "failures_and_repairs": [
+    {
+      "issue": "Full final verify.sh exited 1: source accessor pragma assertion counted two generated installer pragmas (4 != 2)",
+      "evidence": "output/widget-second-verify-20260929.log",
+      "resolution": "Only annotation assertion scope corrected; complete affected case passed, Flutter analysis and 7 tests run separately; no claim that a fresh entire verify.sh passed"
+    },
+    {
+      "issue": "Previous turn full verification exhausted disk in two FFI subcases",
+      "evidence": "output/widget-scopes-full-verification.log",
+      "resolution": "Final full Python discovery had no disk failures; unrelated stale-assertion failure was corrected and individually reverified"
+    },
+    {
+      "issue": "Previous monolithic Widget snapshot hit stack guard (139); larger-stack retry was SIGKILL (137), cause of kill not established",
+      "evidence": "output/widget-scopes-snapshot-result.json",
+      "additional_evidence": "output/widget-scopes-snapshot-large-stack-result.json",
+      "resolution": "128-slot non-inlined validation/assignment helpers; final snapshot succeeded with inherited default stack limit"
+    },
+    {
+      "issue": "First Widget bytecode generation missed retained named constructor prefix and private Map factory contract (254)",
+      "evidence": "output/widget-accepted-20260929.log",
+      "archive": "output/widget-accepted-20260929-archive.json",
+      "resolution": "NamedType prefix/reference handling and two explicit pinned SDK map factories; final full Widget compilation and original/mixed constructor runs passed"
+    },
+    {
+      "issue": "First current ordinary verification was intentionally interrupted (130) after the new constructor issue was found",
+      "evidence": "output/widget-final-verify-20260929.log",
+      "resolution": "Core repaired, inputs frozen, all final builds regenerated and full verify.sh restarted; sole stale assertion subsequently corrected and rechecked"
+    },
+    {
+      "issue": "Mounted Widget generated baseline fails before its first frame: nested on-constraint super bridge is shadowed by a throwing interface stub",
+      "evidence": "output/widget-render-probe-20260929/comparison.json",
+      "minimal_reproducer": "output/widget-render-super-next-20260929/mixed/baseline-run.log",
+      "status": "unfixed on main; generated baseline exits 6 with zero software frames; minimal native baseline exits 255 while original AOT prints root:a:b:c",
+      "next": "Traverse transitive on-constraint inheritance without dropping genuine implements-only obligations; verify original/mixed frames and callbacks"
+    }
+  ],
+  "rendering_exploration": {
+    "original_source_two_sides_rendered": true,
+    "generated_baseline_rendered": false,
+    "mixed_patch_rendered": false,
+    "minimal_generated_stub_removal_prototype_passed": true,
+    "prototype_is_compiler_fix": false,
+    "next_notes": "output/widget-render-super-next-20260929/NEXT.md"
+  },
+  "engine_rebuilt": false,
+  "engine_sha256": "aa920d8d6c1b3f3a75d964a70113d3fe91cb27c1d9f2ce52ec58a7fad3953b87",
+  "physical_device_accepted": false,
+  "performance_measured": false,
+  "signing_and_rollback_accepted": false,
+  "complete_runtime_implemented": false,
+  "m1_passed": false,
+  "m2_passed": false,
+  "production_patch": false,
+  "evidence_sha256": {
+    "output/widget-accepted-20260929-archive.json": "fb84d3d6ab2e47570ba21c8a6a3c49d3d8e2ac05705c67f391f9896a92d6daa9",
+    "output/widget-accepted-20260929.log": "2bdaab032d989356b48624fb4a45bba8e2be2121bc02a0859b511ad06b0b6edd",
+    "output/widget-accessor-fixed-check-20260929.log": "1034008765e0668a44ee6a1a960b53a4b281825df7103307fccaa72431aa46ee",
+    "output/widget-final-directed-second-20260929.log": "360d60b356960529a6453894b3b52d0e7e8302f00aac7beec10a5a5134793e87",
+    "output/widget-final-environment-20260929.json": "73160c460886f38373eec2cc861db70ad938b7bec73130523dd215b75081e60e",
+    "output/widget-final-flutter-analysis-20260929.log": "a25312ee1aa16fd1da97df018f6769009c5bc228244118a2a516ede513fede17",
+    "output/widget-final-flutter-tests-20260929.log": "a39e04b4007e75b94e8740ba6f54e81afbee44fa2dba950401421ee167401cfb",
+    "output/widget-final-verify-20260929.log": "ba33a06a19af5200230aab4ac39d33033e340eddbba77d58d2278ca123e07b71",
+    "output/widget-render-probe-20260929/candidate-report.json": "3d5e95dbcd180872c3d279267e09e975ef93c4d1cdec3180cb77ee769121fc34",
+    "output/widget-render-probe-20260929/comparison.json": "5080b8c23835507257bd23bb88138a34def10145fb573e1010d6a86ea158653a",
+    "output/widget-render-probe-20260929/original-pixel-checks.json": "6b5921490b3507f3990e5ef7ef7d2cb409293238383647e85fed7277d6308845",
+    "output/widget-render-probe-20260929/original-report.json": "666a6f5470900ed49bb0bff7fb9d1c1fb36fa4ef0db6f10795f9b836262ddcd0",
+    "output/widget-render-super-next-20260929/NEXT.md": "58d42f3a1df70366ec0f7f8f428ed074612ac8e32ff6b8cb05bed99eedc67d51",
+    "output/widget-render-super-next-20260929/mixed/baseline-run.log": "418cebd9b897a8edb3dbcd72946a0c425d8623c9a52f8ddd1d585df9ca9d2b2b",
+    "output/widget-render-super-next-20260929/prototype.log": "51f51a0c44f74316fdbbfdbb353e80f07c08b4b9420f10e0f7cf525f02b9f2dc",
+    "output/widget-scopes-full-verification.log": "fd1b0044374e00e75737a24236aeeb120bf692a3082c1ebd490afe3c9daad889",
+    "output/widget-scopes-snapshot-large-stack-result.json": "66bffe841d3cbdb2c83ccdf2ce4161bbc9a288a7f06c05ddd8528de2a752abb2",
+    "output/widget-scopes-snapshot-result.json": "db48950cbbb2f3870d9e00cec46ff589418302e0873f176976bcfe7f9a6091f3",
+    "output/widget-second-artifact-audit-20260929.json": "74445acd6ba7699f38b8def015834a89703e6f076c83e11aaf3c4db1db379374",
+    "output/widget-second-frozen-20260929.json": "c355c5bcb157af17d9bcac66d02860a075cd46e89780d9e9709b0b3d981afe46",
+    "output/widget-second-native-checks-20260929/report.json": "be2dd169a8e9b5b3bc509f02b126655bd9e57e834d8bac1d2ec73f6eff68bddb",
+    "output/widget-second-test-before-assertion-fix-20260929.py": "9af847188436d92a4787c124964a89319fc072a3f81869ae893889938e789455",
+    "output/widget-second-verify-20260929.log": "4c541757b15b41d0ce48bc5dd99aab4131cdd60baa4ebb81d614ed83a9e50b7b"
+  },
+  "next_step": "Repair transitive on-constraint bridge-stub shadowing, then formally verify mounted Widget first frame, callbacks and state in mixed execution; Android/iOS device cold-start and performance gates remain open"
+}

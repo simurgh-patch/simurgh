@@ -478,7 +478,7 @@ class _Classes {
           natives.nativeClass(owner.element))
         continue;
       final seen = <String>{};
-      final superUses = _SuperUses();
+      final superUses = _SuperUses(owner.library.ownerUri);
       owner.node.accept(superUses);
       final ancestors = <InterfaceElement>[];
       final expanded = <InterfaceElement>{};
@@ -539,7 +539,9 @@ class _Classes {
               : method is SetterElement
               ? 'set'
               : 'call';
-          if (constraintInterfaces.contains(parent) &&
+          // Even concrete on-constraint members may be implemented only by
+          // the applying class. Unused super calls add illegal requirements.
+          if (owner.element is MixinElement &&
               !superUses.selectors.contains('$kind::$dispatchName'))
             continue;
           // An abstract/synthetic nearer member still shadows deeper methods.
@@ -1219,19 +1221,24 @@ class _Classes {
 
 // Track source-level super requirements without visiting inherited SDK bodies.
 class _SuperUses extends RecursiveAstVisitor<void> {
+  _SuperUses(this.library);
+  final String library;
   final selectors = <String>{};
   @override
   void visitSuperExpression(SuperExpression node) {
     final parent = node.parent;
     if (parent is MethodInvocation) {
-      selectors.add('call::${parent.methodName.name}');
+      selectors.add('call::${_privateMember(library, parent.methodName.name)}');
     } else if (parent is PropertyAccess) {
       final name = parent.propertyName;
       if (name.inGetterContext()) {
-        selectors.add('get::${name.name}');
-        selectors.add('call::${name.name}'); // Method tear-off.
+        selectors.add('get::${_privateMember(library, name.name)}');
+        selectors.add(
+          'call::${_privateMember(library, name.name)}',
+        ); // Tear-off.
       }
-      if (name.inSetterContext()) selectors.add('set::${name.name}');
+      if (name.inSetterContext())
+        selectors.add('set::${_privateMember(library, name.name)}');
     } else if (parent is IndexExpression) {
       if (parent.inGetterContext()) selectors.add('call::[]');
       if (parent.inSetterContext()) selectors.add('call::[]=');

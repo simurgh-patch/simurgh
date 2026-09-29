@@ -53,6 +53,9 @@ def main():
               'probe_source_sha256': sha(source), 'verifier_sha256': sha(__file__),
               'compiler_checks_sha256': sha(checks / 'report.json')}
 
+    if compiler_checks['fixture'] == 'widget':
+        report.update(fixture_scope='widget-construction-only', widget_rendered=False)
+
     def save():
         (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
 
@@ -97,6 +100,12 @@ def main():
     elif compiler_checks['fixture'] == 'extension-types':
         expected_base = ['layout:7.0:20.0', 'callback:7.0:20.0', 'representation:true:2.0:13.0']
         expected_patch = ['layout:25.0:137.0', 'callback:25.0:137.0', 'representation:true:2.0:13.0']
+    elif compiler_checks['fixture'] == 'widget':
+        expected_base = ['SizedBox.shrink']
+        expected_patch = ['SizedBox.expand']
+    elif compiler_checks['fixture'] == 'scopes':
+        expected_base = ['render:4.0:5.0', 'shadow:5.0:6.0', 'async:8.0:9.0']
+        expected_patch = ['render:13.0:24.0', 'shadow:50.0:60.0', 'async:17.0:28.0']
     elif compiler_checks['fixture'] == 'constraints':
         expected_base = ['point:3.0:5.0', 'codec:MethodCall:paint']
         expected_patch = ['point:12.0:23.0', 'codec:MethodCall:paint']

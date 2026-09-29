@@ -1219,8 +1219,64 @@ option is `verify_flutter_aot_lab.py --fixture constraints`, followed by the
 real host verifier. Resolve its locked dependencies using the independent
 Flutter SDK first.
 
-Full `widgets.dart` source generation now reaches a generated baseline, but
-its Kernel compilation still fails on additional super bridges, method
-signatures and receiver/local-name lowering. Generated source alone is not an
-executable Widget baseline. Mobile cold activation, obfuscation, signatures,
+Full `widgets.dart` source generation and both ordinary/AOT Kernel compilation
+are covered by the `aot_flutter_widget_*` constructor fixture. The initial
+monolithic installer hit a stack guard during AOT SSA renaming; a larger-stack
+retry was killed without producing a snapshot. Install validation and assignment
+now use separate, non-inlined helpers of at most 128 slots. All validation
+helpers run before any assignment helper; the active update map is committed
+last. The 300-function regression compiles and runs native AOT to check late-chunk
+signature rejection, unknown entities, partial-map merging and empty updates.
+
+Build the constructor fixture with `aot_lab.py --target flutter --compile-only`,
+then run `verify_flutter_aot_lab.py --fixture widget` and the real host verifier.
+These compare `SizedBox.shrink` with `SizedBox.expand` in separate cold processes,
+including independent original-source AOT references. Only `value` is installed;
+main and the framework remain AOT. This fixture constructs a Widget but does not
+mount a tree or render a frame. Mobile cold activation, obfuscation, signatures,
 rollback and physical-device performance gates remain incomplete.
+
+
+## Body scopes and actual mixin super requirements
+
+Baseline dispatch preserves the original synchronous body as a nested block, so
+body locals that legally shadow parameters cannot capture the wrapper's argument
+forwarding. Async and generator implementations receive their own exact
+parameters rather than capturing mutable wrapper parameters. This preserves
+flow promotion after assignment, named/optional defaults, generic typing and
+closure mutation, while dispatch remains synchronous and generators remain lazy.
+The body-scopes fixture compares both original AOT programs with mixed execution,
+including nullable-parameter promotion, parameter shadowing, sync*/async*,
+mutation across await and Future identity.
+
+Mixin super bridges are emitted only for selectors actually used in the mixin's
+source. A concrete `on` constraint does not guarantee a concrete member in the
+applying superclass: that superclass may only implement the interface, with the
+member supplied by the final class. Eager unused bridges would add illegal super
+requirements. Private selectors follow their declaring library's renamed
+identity. A patch's first super call adds a bridge and relinks the mixin and its
+applications; the new helper is not installed into an incompatible old slot.
+
+Build `aot_body_scopes_*` and `aot_super_added_*`, and pass their directories to
+`verify_aot_lab.py --body-scopes-run-dir` and `--super-added-run-dir` along with
+current base/GC builds. The Flutter `aot_flutter_scopes_*` fixture combines these
+semantics with Offset objects; use compiler verification `--fixture scopes` and
+then the real host verifier. Host execution does not establish mobile acceptance.
+
+
+Named constant constructors on retained classes are qualified against the baseline
+library even when the unresolved parser represents `GeneratedClass.named` as a
+type prefix. Dependency discovery uses the same token, so constructor consumers
+follow a replaced class layout. The `aot_named_const_*` fixture and
+`verify_aot_lab.py --named-const-run-dir` compare original and mixed AOT behavior.
+The pinned dynamic interface explicitly retains `Map._fromLiteral` and
+`Map._fromKeyValues`, which the CFE can introduce while lowering framework map
+literals; this does not open arbitrary private SDK members.
+
+
+The current rendering boundary is nested mixin `on` constraints: an indirect
+constraint can be treated as an implements-only interface when generating helper
+stubs. A throwing stub then shadows a real inherited super bridge. A three-level
+mixin chain reproduces this in native AOT, and `WidgetsFlutterBinding`
+initialization fails before presenting a frame. Constructor-only acceptance does
+not cover this path; mounted Widget rendering remains unaccepted.

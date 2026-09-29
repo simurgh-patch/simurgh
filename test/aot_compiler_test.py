@@ -44,6 +44,71 @@ class AotCompilerTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         return base
 
+    def test_retained_named_const_constructor_and_layout_dependency(self):
+        base, patch, manifest = self.named_mixin_pair('named_const')
+        box = self.symbol(manifest, 'Box')
+        self.assertIn('const simurghBaseline.' + box + '.named(2)',
+                      (patch / 'module.dart').read_text())
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['make'])
+        self.assertEqual(manifest['replaced_classes'], [])
+        source = self.source('layout.dart',
+            (ROOT / 'compiler/fixtures/aot_named_const_patch/app.dart').read_text().replace(
+                'const Box.named(this.value);',
+                'final int other; const Box.named(this.value) : other = 5;'))
+        relocated = self.root / 'layout-patch'
+        result = self.command('patch', source, base, relocated)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        layout = json.loads((relocated / 'manifest.json').read_text())
+        self.assertIn('make', self.names(layout, layout['changed_functions']))
+        self.assertEqual(self.names(layout, layout['replaced_classes']), ['Box'])
+        self.assertNotIn('simurghBaseline.' + box + '.named',
+                         (relocated / 'module.dart').read_text())
+
+    def test_large_install_rejects_late_chunk_without_mutating_slots(self):
+        source = self.source('large.dart', '\n'.join(
+            f'int value{i:03d}() => {i};' for i in range(300)) + '\nvoid main() {}\n')
+        base = self.root / 'large-base'
+        result = self.command('baseline', source, base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        manifest = json.loads((base / 'manifest.json').read_text())
+        symbols = sorted(key for key, entity in manifest['entities'].items()
+                         if entity['name'].startswith('value'))
+        first, middle, last = symbols[0], symbols[150], symbols[-1]
+        key = manifest['baseline_fingerprint']
+        driver = self.source('check.dart', f"""
+import '{(base / 'app.dart').as_uri()}' as base;
+void check(bool ok) {{ if (!ok) throw StateError('Install was not atomic'); }}
+void main() {{
+  base.simurghInstall('{key}', {{'{first}': () => 901}});
+  final previous = base.simurghActiveUpdates;
+  final oldMiddle = base.{middle}();
+  final oldLast = base.{last}();
+  for (final updates in <Map<String, Function>>[
+    {{'{first}': () => 902, '{last}': () => 'invalid'}},
+    {{'{first}': () => 902, 'unknown': () => 0}},
+  ]) {{
+    var rejected = false;
+    try {{ base.simurghInstall('{key}', updates); }} on StateError {{ rejected = true; }}
+    check(rejected && base.{first}() == 901 && base.{middle}() == oldMiddle &&
+        base.{last}() == oldLast && identical(previous, base.simurghActiveUpdates));
+  }}
+  base.simurghInstall('{key}', {{'{middle}': () => 903, '{last}': () => 904}});
+  check(base.{first}() == 901 && base.{middle}() == 903 && base.{last}() == 904 &&
+      base.simurghActiveUpdates.length == 3);
+  base.simurghInstall('{key}', {{}});
+  check(base.{first}() == 901 && base.{last}() == 904);
+  print('CHUNK_INSTALL_ATOMIC');
+}}
+""")
+        snapshot = self.root / 'check.aot'
+        result = subprocess.run([str(DART), 'compile', 'aot-snapshot', str(driver),
+                                 '-o', str(snapshot)], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        result = subprocess.run([str(DART.parent / 'dartaotruntime'), str(snapshot)],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), ['CHUNK_INSTALL_ATOMIC'])
+
     def test_original_class_names_keep_distinct_link_identities(self):
         base = self.root / 'type-names'
         result = self.command('baseline', ROOT / 'compiler/fixtures/aot_type_names_baseline/app.dart', base)
@@ -1232,7 +1297,10 @@ void main() { p.value += 1; }
                       if entity['name'] == 'getter value')
         label = self.symbol(graph, 'label')
         self.assertIn(label, getter['references'])
-        self.assertEqual((base / 'app.dart').read_text().count('vm:never-inline'), 2)
+        # Source pragmas are SDK-qualified; generated installer helpers carry
+        # their own unqualified never-inline markers and are not accessor metadata.
+        self.assertEqual((base / 'app.dart').read_text().count(
+            "@msbEntity_sdk_core.pragma('vm:never-inline')"), 2)
         annotated = self.source('annotated.dart',
                                 "@pragma('vm:unknown') int get value => 1; "
                                 'void main() { print(value); }')
@@ -2228,6 +2296,21 @@ void main() { p.value += 1; }
         self.assertIn('Deleted classes require reference removal proof', result.stderr)
         self.assertFalse((self.root / 'patch').exists())
 
+
+    def test_body_scopes_keep_promotion_shadowing_and_lazy_dispatch(self):
+        base, patch, manifest = self.named_mixin_pair('body_scopes')
+        self.assertEqual(self.names(manifest, manifest['installed_functions']),
+                         ['Actual.value', 'asyncShadow', 'captured', 'lazy', 'promoted', 'shadow', 'stream'])
+        for field in ['replaced_classes', 'replaced_globals', 'module_only_functions']:
+            self.assertEqual(manifest[field], [])
+        self.assertNotIn('main', self.names(manifest, manifest['changed_functions']))
+
+    def test_new_concrete_constraint_super_call_relinks_applications(self):
+        base, patch, manifest = self.named_mixin_pair('super_added')
+        self.assertEqual(self.names(manifest, manifest['replaced_classes']), ['App', 'Paint'])
+        self.assertEqual(self.names(manifest, manifest['module_only_functions']), ['Paint.render'])
+        self.assertEqual(self.names(manifest, manifest['installed_functions']), ['run'])
+        self.assertNotIn('main', self.names(manifest, manifest['changed_functions']))
 
     def test_multiple_mixin_constraints_and_sdk_alias_ancestors(self):
         base, patch, manifest = self.named_mixin_pair('mixin_constraints')
